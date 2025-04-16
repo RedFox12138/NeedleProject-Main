@@ -1,0 +1,659 @@
+2025-04-11 09:25:19 - 脚本执行失败，返回码: 1
+2025-04-11 09:25:19 - 错误输出: Traceback (most recent call last):
+  File "c:\users\administrator\appdata\local\programs\python\python37\lib\site-packages\numpy\core\__init__.py", line 17, in <module>
+    from . import multiarray
+  File "c:\users\administrator\appdata\local\programs\python\python37\lib\site-packages\numpy\core\multiarray.py", line 14, in <module>
+    from . import overrides
+  File "c:\users\administrator\appdata\local\programs\python\python37\lib\site-packages\numpy\core\overrides.py", line 7, in <module>
+    from numpy.core._multiarray_umath import (
+ModuleNotFoundError: No module named 'numpy.core._multiarray_umath'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\PyProject\QTneedle\QTneedle\Standard I-V test program use Keithley2450.py", line 14, in <module>
+    from matplotlib import pyplot as plt
+  File "c:\users\administrator\appdata\local\programs\python\python37\lib\site-packages\matplotlib\__init__.py", line 104, in <module>
+    import numpy
+  File "c:\users\administrator\appdata\local\programs\python\python37\lib\site-packages\numpy\__init__.py", line 142, in <module>
+    from . import core
+  File "c:\users\administrator\appdata\local\programs\python\python37\lib\site-packages\numpy\core\__init__.py", line 47, in <module>
+    raise ImportError(msg)
+ImportError: 
+
+IMPORTANT: PLEASE READ THIS FOR ADVICE ON HOW TO SOLVE THIS ISSUE!
+
+Importing the numpy c-extensions failed.
+- Try uninstalling and reinstalling numpy.
+- If you have already done that, then:
+  1. Check that you expected to use Python3.12 from "C:\Users\Administrator\AppData\Local\Programs\Python\Python312\python.exe",
+     and that you have no directories in your PATH or PYTHONPATH that can
+     interfere with the Python and numpy version "1.17.0" you're trying to use.
+  2. If (1) looks fine, you can open a new issue at
+     https://github.com/numpy/numpy/issues.  Please include details on:
+     - how you installed Python
+     - how you installed numpy
+     - your operating system
+     - whether or not you have multiple versions of Python installed
+     - if you built from source, your compiler versions and ideally a build log
+
+- If you're working with a numpy git repository, try `git clean -xdf`
+  (removes all files not under version control) and rebuild numpy.
+
+Note: this error has many possible causes, so please don't comment on
+an existing issue about this - open a new one instead.
+
+Original error was: No module named 'numpy.core._multiarray_umath'
+
+
+2025-04-11 09:25:38 - 脚本执行失败，返回码: 1
+2025-04-11 09:25:38 - 错误输出: Traceback (most recent call last):
+  File "c:\users\administrator\appdata\local\programs\python\python37\lib\site-packages\numpy\core\__init__.py", line 17, in <module>
+    from . import multiarray
+  File "c:\users\administrator\appdata\local\programs\python\python37\lib\site-packages\numpy\core\multiarray.py", line 14, in <module>
+    from . import overrides
+  File "c:\users\administrator\appdata\local\programs\python\python37\lib\site-packages\numpy\core\overrides.py", line 7, in <module>
+    from numpy.core._multiarray_umath import (
+ModuleNotFoundError: No module named 'numpy.core._multiarray_umath'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\PyProject\QTneedle\QTneedle\Standard I-V test program use Keithley2450.py", line 14, in <module>
+    from matplotlib import pyplot as plt
+  File "c:\users\administrator\appdata\local\programs\python\python37\lib\site-packages\matplotlib\__init__.py", line 104, in <module>
+    import numpy
+  File "c:\users\administrator\appdata\local\programs\python\python37\lib\site-packages\numpy\__init__.py", line 142, in <module>
+    from . import core
+  File "c:\users\administrator\appdata\local\programs\python\python37\lib\site-packages\numpy\core\__init__.py", line 47, in <module>
+    raise ImportError(msg)
+ImportError: 
+
+IMPORTANT: PLEASE READ THIS FOR ADVICE ON HOW TO SOLVE THIS ISSUE!
+
+Importing the numpy c-extensions failed.
+- Try uninstalling and reinstalling numpy.
+- If you have already done that, then:
+  1. Check that you expected to use Python3.12 from "C:\Users\Administrator\AppData\Local\Programs\Python\Python312\python.exe",
+     and that you have no directories in your PATH or PYTHONPATH that can
+     interfere with the Python and numpy version "1.17.0" you're trying to use.
+  2. If (1) looks fine, you can open a new issue at
+     https://github.com/numpy/numpy/issues.  Please include details on:
+     - how you installed Python
+     - how you installed numpy
+     - your operating system
+     - whether or not you have multiple versions of Python installed
+     - if you built from source, your compiler versions and ideally a build log
+
+- If you're working with a numpy git repository, try `git clean -xdf`
+  (removes all files not under version control) and rebuild numpy.
+
+Note: this error has many possible causes, so please don't comment on
+an existing issue about this - open a new one instead.
+
+Original error was: No module named 'numpy.core._multiarray_umath'
+
+
+2025-04-11 09:28:11 - 脚本执行失败，返回码: 1
+2025-04-11 09:28:11 - 错误输出: Traceback (most recent call last):
+  File "c:\users\administrator\appdata\local\programs\python\python37\lib\site-packages\numpy\core\__init__.py", line 17, in <module>
+    from . import multiarray
+  File "c:\users\administrator\appdata\local\programs\python\python37\lib\site-packages\numpy\core\multiarray.py", line 14, in <module>
+    from . import overrides
+  File "c:\users\administrator\appdata\local\programs\python\python37\lib\site-packages\numpy\core\overrides.py", line 7, in <module>
+    from numpy.core._multiarray_umath import (
+ModuleNotFoundError: No module named 'numpy.core._multiarray_umath'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\PyProject\QTneedle\QTneedle\Standard I-V test program use Keithley2450.py", line 14, in <module>
+    from matplotlib import pyplot as plt
+  File "c:\users\administrator\appdata\local\programs\python\python37\lib\site-packages\matplotlib\__init__.py", line 104, in <module>
+    import numpy
+  File "c:\users\administrator\appdata\local\programs\python\python37\lib\site-packages\numpy\__init__.py", line 142, in <module>
+    from . import core
+  File "c:\users\administrator\appdata\local\programs\python\python37\lib\site-packages\numpy\core\__init__.py", line 47, in <module>
+    raise ImportError(msg)
+ImportError: 
+
+IMPORTANT: PLEASE READ THIS FOR ADVICE ON HOW TO SOLVE THIS ISSUE!
+
+Importing the numpy c-extensions failed.
+- Try uninstalling and reinstalling numpy.
+- If you have already done that, then:
+  1. Check that you expected to use Python3.12 from "C:\Users\Administrator\AppData\Local\Programs\Python\Python312\python.exe",
+     and that you have no directories in your PATH or PYTHONPATH that can
+     interfere with the Python and numpy version "1.17.0" you're trying to use.
+  2. If (1) looks fine, you can open a new issue at
+     https://github.com/numpy/numpy/issues.  Please include details on:
+     - how you installed Python
+     - how you installed numpy
+     - your operating system
+     - whether or not you have multiple versions of Python installed
+     - if you built from source, your compiler versions and ideally a build log
+
+- If you're working with a numpy git repository, try `git clean -xdf`
+  (removes all files not under version control) and rebuild numpy.
+
+Note: this error has many possible causes, so please don't comment on
+an existing issue about this - open a new one instead.
+
+Original error was: No module named 'numpy.core._multiarray_umath'
+
+
+2025-04-11 09:29:24 - 脚本执行失败，返回码: 1
+2025-04-11 09:31:11 - 错误输出: Traceback (most recent call last):
+  File "c:\users\administrator\appdata\local\programs\python\python37\lib\site-packages\numpy\core\__init__.py", line 17, in <module>
+    from . import multiarray
+  File "c:\users\administrator\appdata\local\programs\python\python37\lib\site-packages\numpy\core\multiarray.py", line 14, in <module>
+    from . import overrides
+  File "c:\users\administrator\appdata\local\programs\python\python37\lib\site-packages\numpy\core\overrides.py", line 7, in <module>
+    from numpy.core._multiarray_umath import (
+ModuleNotFoundError: No module named 'numpy.core._multiarray_umath'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Pycharm\PyCharm 2024.3.3\plugins\python-ce\helpers\pydev\pydevd.py", line 1570, in _exec
+    pydev_imports.execfile(file, globals, locals)  # execute the script
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm\PyCharm 2024.3.3\plugins\python-ce\helpers\pydev\_pydev_imps\_pydev_execfile.py", line 18, in execfile
+    exec(compile(contents+"\n", file, 'exec'), glob, loc)
+  File "D:\PyProject\QTneedle\QTneedle\Standard I-V test program use Keithley2450.py", line 14, in <module>
+    from matplotlib import pyplot as plt
+  File "c:\users\administrator\appdata\local\programs\python\python37\lib\site-packages\matplotlib\__init__.py", line 104, in <module>
+    import numpy
+  File "c:\users\administrator\appdata\local\programs\python\python37\lib\site-packages\numpy\__init__.py", line 142, in <module>
+    from . import core
+  File "c:\users\administrator\appdata\local\programs\python\python37\lib\site-packages\numpy\core\__init__.py", line 47, in <module>
+    raise ImportError(msg)
+ImportError: 
+
+IMPORTANT: PLEASE READ THIS FOR ADVICE ON HOW TO SOLVE THIS ISSUE!
+
+Importing the numpy c-extensions failed.
+- Try uninstalling and reinstalling numpy.
+- If you have already done that, then:
+  1. Check that you expected to use Python3.12 from "C:\Users\Administrator\AppData\Local\Programs\Python\Python312\python.exe",
+     and that you have no directories in your PATH or PYTHONPATH that can
+     interfere with the Python and numpy version "1.17.0" you're trying to use.
+  2. If (1) looks fine, you can open a new issue at
+     https://github.com/numpy/numpy/issues.  Please include details on:
+     - how you installed Python
+     - how you installed numpy
+     - your operating system
+     - whether or not you have multiple versions of Python installed
+     - if you built from source, your compiler versions and ideally a build log
+
+- If you're working with a numpy git repository, try `git clean -xdf`
+  (removes all files not under version control) and rebuild numpy.
+
+Note: this error has many possible causes, so please don't comment on
+an existing issue about this - open a new one instead.
+
+Original error was: No module named 'numpy.core._multiarray_umath'
+
+
+2025-04-11 09:33:25 - 脚本输出: ---
+
+2025-04-11 09:33:25 - 成功执行IU参数计算
+2025-04-11 09:33:45 - 脚本执行失败，返回码: 1
+2025-04-11 09:33:45 - 错误输出: Traceback (most recent call last):
+  File "D:\PyProject\QTneedle\QTneedle\Standard I-V test program use Keithley2450.py", line 64, in <module>
+    keithley.wires
+  File "D:\PyProject\.venv\Lib\site-packages\pymeasure\instruments\common_base.py", line 298, in __getattribute__
+    return super().__getattribute__(name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pymeasure\instruments\common_base.py", line 555, in fget
+    vals = self.values(command_process(get_command),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pymeasure\instruments\common_base.py", line 406, in values
+    results = self.ask(command, **kwargs).strip()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pymeasure\instruments\common_base.py", line 387, in ask
+    return self.read()
+           ^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pymeasure\instruments\instrument.py", line 173, in read
+    return self.adapter.read(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pymeasure\adapters\adapter.py", line 108, in read
+    read = self._read(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pymeasure\adapters\visa.py", line 172, in _read
+    return self.connection.read(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pyvisa\resources\messagebased.py", line 519, in read
+    message = self._read_raw().decode(enco)
+              ^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pyvisa\resources\messagebased.py", line 473, in _read_raw
+    chunk, status = self.visalib.read(self.session, size)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pyvisa\ctwrapper\functions.py", line 2339, in read
+    ret = library.viRead(session, buffer, count, byref(return_count))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pyvisa\ctwrapper\highlevel.py", line 227, in _return_handler
+    return self.handle_return_value(session, ret_value)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pyvisa\highlevel.py", line 252, in handle_return_value
+    raise errors.VisaIOError(rv)
+pyvisa.errors.VisaIOError: VI_ERROR_IO (-1073807298): Could not perform operation because of I/O error.
+
+2025-04-11 09:34:01 - 脚本执行失败，返回码: 1
+2025-04-11 09:34:01 - 错误输出: Traceback (most recent call last):
+  File "D:\PyProject\QTneedle\QTneedle\Standard I-V test program use Keithley2450.py", line 64, in <module>
+    keithley.wires
+  File "D:\PyProject\.venv\Lib\site-packages\pymeasure\instruments\common_base.py", line 298, in __getattribute__
+    return super().__getattribute__(name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pymeasure\instruments\common_base.py", line 555, in fget
+    vals = self.values(command_process(get_command),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pymeasure\instruments\common_base.py", line 406, in values
+    results = self.ask(command, **kwargs).strip()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pymeasure\instruments\common_base.py", line 387, in ask
+    return self.read()
+           ^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pymeasure\instruments\instrument.py", line 173, in read
+    return self.adapter.read(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pymeasure\adapters\adapter.py", line 108, in read
+    read = self._read(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pymeasure\adapters\visa.py", line 172, in _read
+    return self.connection.read(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pyvisa\resources\messagebased.py", line 519, in read
+    message = self._read_raw().decode(enco)
+              ^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pyvisa\resources\messagebased.py", line 473, in _read_raw
+    chunk, status = self.visalib.read(self.session, size)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pyvisa\ctwrapper\functions.py", line 2339, in read
+    ret = library.viRead(session, buffer, count, byref(return_count))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pyvisa\ctwrapper\highlevel.py", line 227, in _return_handler
+    return self.handle_return_value(session, ret_value)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pyvisa\highlevel.py", line 252, in handle_return_value
+    raise errors.VisaIOError(rv)
+pyvisa.errors.VisaIOError: VI_ERROR_IO (-1073807298): Could not perform operation because of I/O error.
+
+2025-04-11 09:34:37 - 脚本执行失败，返回码: 1
+2025-04-11 09:34:37 - 错误输出: Traceback (most recent call last):
+  File "D:\Pycharm\PyCharm 2024.3.3\plugins\python-ce\helpers\pydev\pydevd.py", line 1570, in _exec
+    pydev_imports.execfile(file, globals, locals)  # execute the script
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Pycharm\PyCharm 2024.3.3\plugins\python-ce\helpers\pydev\_pydev_imps\_pydev_execfile.py", line 18, in execfile
+    exec(compile(contents+"\n", file, 'exec'), glob, loc)
+  File "D:\PyProject\QTneedle\QTneedle\Standard I-V test program use Keithley2450.py", line 64, in <module>
+    keithley.wires
+  File "D:\PyProject\.venv\Lib\site-packages\pymeasure\instruments\common_base.py", line 298, in __getattribute__
+    return super().__getattribute__(name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pymeasure\instruments\common_base.py", line 555, in fget
+    vals = self.values(command_process(get_command),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pymeasure\instruments\common_base.py", line 406, in values
+    results = self.ask(command, **kwargs).strip()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pymeasure\instruments\common_base.py", line 387, in ask
+    return self.read()
+           ^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pymeasure\instruments\instrument.py", line 173, in read
+    return self.adapter.read(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pymeasure\adapters\adapter.py", line 108, in read
+    read = self._read(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pymeasure\adapters\visa.py", line 172, in _read
+    return self.connection.read(**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pyvisa\resources\messagebased.py", line 519, in read
+    message = self._read_raw().decode(enco)
+              ^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pyvisa\resources\messagebased.py", line 473, in _read_raw
+    chunk, status = self.visalib.read(self.session, size)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pyvisa\ctwrapper\functions.py", line 2339, in read
+    ret = library.viRead(session, buffer, count, byref(return_count))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pyvisa\ctwrapper\highlevel.py", line 227, in _return_handler
+    return self.handle_return_value(session, ret_value)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PyProject\.venv\Lib\site-packages\pyvisa\highlevel.py", line 252, in handle_return_value
+    raise errors.VisaIOError(rv)
+pyvisa.errors.VisaIOError: VI_ERROR_IO (-1073807298): Could not perform operation because of I/O error.
+
+2025-04-11 09:50:35 - 成功执行IU参数计算
+2025-04-11 09:54:09 - 成功执行IU参数计算
+2025-04-11 09:54:47 - 探针往下移动了
+2025-04-11 09:54:54 - 探针抬升了 10
+2025-04-11 09:54:59 - 探针抬升了 10
+2025-04-11 09:55:01 - 探针抬升了 10
+2025-04-11 09:55:04 - 探针抬升了 10
+2025-04-11 09:55:05 - 探针抬升了 10
+2025-04-11 09:55:06 - 探针抬升了 10
+2025-04-11 09:55:07 - 探针抬升了 10
+2025-04-11 09:55:09 - 探针抬升了 10
+2025-04-11 09:55:10 - 探针抬升了 10
+2025-04-11 09:55:11 - 探针抬升了 10
+2025-04-11 09:55:13 - 探针抬升了 10
+2025-04-11 09:55:15 - 探针抬升了 10
+2025-04-11 09:55:16 - 探针抬升了 10
+2025-04-11 09:55:17 - 探针抬升了 10
+2025-04-11 09:55:18 - 探针抬升了 10
+2025-04-11 09:55:19 - 探针抬升了 10
+2025-04-11 09:55:20 - 探针抬升了 10
+2025-04-11 09:55:22 - 探针往上移动了
+2025-04-11 09:55:26 - 探针抬升了 10
+2025-04-11 09:57:38 - 探针往下移动了
+2025-04-11 09:57:50 - 探针往下移动了
+2025-04-11 09:57:58 - 探针往左移动了
+2025-04-11 09:59:11 - 探针往下移动了
+2025-04-11 10:00:27 - 探针往上移动了
+2025-04-11 10:00:44 - 探针往下移动了
+2025-04-11 10:01:48 - 探针抬升了 10
+2025-04-11 10:01:51 - 探针抬升了 10
+2025-04-11 10:01:52 - 探针抬升了 10
+2025-04-11 10:01:53 - 探针抬升了 10
+2025-04-11 10:01:54 - 探针抬升了 10
+2025-04-11 10:01:56 - 探针抬升了 10
+2025-04-11 10:01:57 - 探针抬升了 10
+2025-04-11 10:01:58 - 探针抬升了 10
+2025-04-11 10:02:00 - 探针抬升了 10
+2025-04-11 10:02:02 - 探针抬升了 10
+2025-04-11 10:02:03 - 探针抬升了 10
+2025-04-11 10:02:05 - 探针抬升了 10
+2025-04-11 10:02:08 - 探针抬升了 10
+2025-04-11 10:02:10 - 探针抬升了 10
+2025-04-11 10:02:12 - 探针抬升了 10
+2025-04-11 10:02:17 - 探针抬升了 10
+2025-04-11 10:02:19 - 探针抬升了 10
+2025-04-11 10:02:21 - 探针抬升了 10
+2025-04-11 10:02:23 - 探针抬升了 10
+2025-04-11 10:02:25 - 探针抬升了 10
+2025-04-11 10:02:27 - 探针抬升了 10
+2025-04-11 10:02:28 - 探针抬升了 10
+2025-04-11 10:02:30 - 探针抬升了 10
+2025-04-11 10:02:32 - 探针抬升了 10
+2025-04-11 10:02:34 - 探针抬升了 10
+2025-04-11 10:02:42 - 探针抬升了 100
+2025-04-11 10:02:44 - 探针抬升了 100
+2025-04-11 10:02:47 - 探针抬升了 100
+2025-04-11 10:04:51 - 探针往上移动了
+2025-04-11 10:05:28 - 探针往上移动了
+2025-04-11 10:09:08 - 探针下压了 10
+2025-04-11 10:09:10 - 探针下压了 10
+2025-04-11 10:09:11 - 探针下压了 10
+2025-04-11 10:09:12 - 探针下压了 10
+2025-04-11 10:09:13 - 探针下压了 10
+2025-04-11 10:09:21 - 探针抬升了 100
+2025-04-11 10:09:23 - 探针抬升了 100
+2025-04-11 10:09:24 - 探针抬升了 100
+2025-04-11 10:09:25 - 探针抬升了 100
+2025-04-11 10:09:26 - 探针抬升了 100
+2025-04-11 10:09:27 - 探针抬升了 100
+2025-04-11 10:09:28 - 探针抬升了 100
+2025-04-11 10:09:29 - 探针抬升了 100
+2025-04-11 10:09:35 - 探针往右移动了
+2025-04-11 10:09:46 - 探针抬升了 100
+2025-04-11 10:09:46 - 探针抬升了 100
+2025-04-11 10:09:47 - 探针抬升了 100
+2025-04-11 10:09:48 - 探针抬升了 100
+2025-04-11 10:09:50 - 探针抬升了 100
+2025-04-11 10:09:51 - 探针抬升了 100
+2025-04-11 10:09:52 - 探针抬升了 100
+2025-04-11 10:09:53 - 探针抬升了 100
+2025-04-11 10:09:54 - 探针抬升了 100
+2025-04-11 10:09:55 - 探针抬升了 100
+2025-04-11 10:09:57 - 探针往左移动了
+2025-04-11 10:10:03 - 探针抬升了 100
+2025-04-11 10:10:05 - 探针往左移动了
+2025-04-11 10:10:24 - 探针抬升了 100
+2025-04-11 10:10:25 - 探针抬升了 100
+2025-04-11 10:10:27 - 探针抬升了 100
+2025-04-11 10:10:28 - 探针抬升了 100
+2025-04-11 10:10:46 - 探针抬升了 100
+2025-04-11 10:10:48 - 探针抬升了 100
+2025-04-11 10:10:49 - 探针抬升了 100
+2025-04-11 10:10:50 - 探针抬升了 100
+2025-04-11 10:10:51 - 探针抬升了 100
+2025-04-11 10:10:59 - 探针往下移动了
+2025-04-11 10:15:38 - 探针往上移动了
+2025-04-11 10:15:45 - 探针往上移动了
+2025-04-11 10:16:01 - 探针下压了 100
+2025-04-11 10:16:03 - 探针下压了 100
+2025-04-11 10:16:04 - 探针下压了 100
+2025-04-11 10:16:05 - 探针下压了 100
+2025-04-11 10:16:06 - 探针下压了 100
+2025-04-11 10:16:07 - 探针下压了 100
+2025-04-11 10:16:08 - 探针下压了 100
+2025-04-11 10:16:08 - 探针下压了 100
+2025-04-11 10:20:54 - 探针往上移动了
+2025-04-11 10:20:58 - 探针往右移动了
+2025-04-11 10:21:01 - 探针往下移动了
+2025-04-11 10:21:04 - 探针往右移动了
+2025-04-11 10:21:26 - 探针下压了 10
+2025-04-11 10:21:28 - 探针下压了 10
+2025-04-11 10:21:29 - 探针下压了 10
+2025-04-11 10:21:31 - 探针下压了 10
+2025-04-11 10:21:32 - 探针下压了 10
+2025-04-11 10:21:36 - 探针下压了 100
+2025-04-11 10:21:37 - 探针下压了 100
+2025-04-11 10:21:39 - 探针下压了 100
+2025-04-11 10:21:44 - 探针下压了 100
+2025-04-11 10:21:46 - 探针下压了 100
+2025-04-11 10:21:47 - 探针下压了 100
+2025-04-11 10:23:12 - 探针下压了 100
+2025-04-11 10:23:16 - 探针下压了 100
+2025-04-11 10:23:19 - 探针下压了 100
+2025-04-11 10:23:26 - 探针抬升了 100
+2025-04-11 10:23:27 - 探针抬升了 100
+2025-04-11 10:23:28 - 探针抬升了 100
+2025-04-11 10:23:29 - 探针抬升了 100
+2025-04-11 10:23:30 - 探针抬升了 100
+2025-04-11 10:23:31 - 探针抬升了 100
+2025-04-11 10:23:32 - 探针抬升了 100
+2025-04-11 10:23:33 - 探针抬升了 100
+2025-04-11 10:23:34 - 探针抬升了 100
+2025-04-11 10:23:35 - 探针抬升了 100
+2025-04-11 10:23:36 - 探针抬升了 100
+2025-04-11 10:23:37 - 探针抬升了 100
+2025-04-11 10:23:38 - 探针抬升了 100
+2025-04-11 10:23:38 - 探针抬升了 100
+2025-04-11 10:23:39 - 探针抬升了 100
+2025-04-11 10:23:40 - 探针抬升了 100
+2025-04-11 10:23:41 - 探针抬升了 100
+2025-04-11 10:23:42 - 探针抬升了 100
+2025-04-11 10:23:43 - 探针抬升了 100
+2025-04-11 10:23:44 - 探针抬升了 100
+2025-04-11 10:23:45 - 探针抬升了 100
+2025-04-11 10:23:55 - 探针往下移动了
+2025-04-11 10:23:58 - 探针往下移动了
+2025-04-11 10:24:39 - 探针往上移动了
+2025-04-11 10:25:42 - 探针抬升了 100
+2025-04-11 10:25:43 - 探针抬升了 100
+2025-04-11 10:25:44 - 探针抬升了 100
+2025-04-11 10:26:33 - 探针抬升了 100
+2025-04-11 10:26:34 - 探针抬升了 100
+2025-04-11 10:26:35 - 探针抬升了 100
+2025-04-11 10:26:36 - 探针抬升了 100
+2025-04-11 10:26:37 - 探针抬升了 100
+2025-04-11 10:26:37 - 探针抬升了 100
+2025-04-11 10:26:38 - 探针抬升了 100
+2025-04-11 10:26:39 - 探针抬升了 100
+2025-04-11 10:26:40 - 探针抬升了 100
+2025-04-11 10:26:41 - 探针抬升了 100
+2025-04-11 10:26:42 - 探针抬升了 100
+2025-04-11 10:26:43 - 探针抬升了 100
+2025-04-11 10:26:44 - 探针抬升了 100
+2025-04-11 10:26:44 - 探针抬升了 100
+2025-04-11 10:26:45 - 探针抬升了 100
+2025-04-11 10:26:46 - 探针抬升了 100
+2025-04-11 10:26:47 - 探针抬升了 100
+2025-04-11 10:26:48 - 探针抬升了 100
+2025-04-11 10:26:49 - 探针抬升了 100
+2025-04-11 10:26:50 - 探针抬升了 100
+2025-04-11 10:26:57 - 探针往下移动了
+2025-04-11 10:27:09 - 探针下压了 100
+2025-04-11 10:27:11 - 探针下压了 100
+2025-04-11 10:27:12 - 探针下压了 100
+2025-04-11 10:27:13 - 探针下压了 100
+2025-04-11 10:27:14 - 探针下压了 100
+2025-04-11 10:27:15 - 探针下压了 100
+2025-04-11 10:27:16 - 探针下压了 100
+2025-04-11 10:27:17 - 探针下压了 100
+2025-04-11 10:27:18 - 探针下压了 100
+2025-04-11 10:27:41 - 探针往上移动了
+2025-04-11 10:28:55 - 探针抬升了 100
+2025-04-11 10:28:56 - 探针抬升了 100
+2025-04-11 10:28:57 - 探针抬升了 100
+2025-04-11 10:28:58 - 探针抬升了 100
+2025-04-11 10:28:59 - 探针抬升了 100
+2025-04-11 10:29:00 - 探针抬升了 100
+2025-04-11 10:29:01 - 探针抬升了 100
+2025-04-11 10:29:01 - 探针抬升了 100
+2025-04-11 10:29:02 - 探针抬升了 100
+2025-04-11 10:29:03 - 探针抬升了 100
+2025-04-11 10:29:04 - 探针抬升了 100
+2025-04-11 10:29:05 - 探针抬升了 100
+2025-04-11 10:29:06 - 探针抬升了 100
+2025-04-11 10:29:07 - 探针抬升了 100
+2025-04-11 10:29:08 - 探针抬升了 100
+2025-04-11 10:29:09 - 探针抬升了 100
+2025-04-11 10:29:09 - 探针抬升了 100
+2025-04-11 10:29:10 - 探针抬升了 100
+2025-04-11 10:29:11 - 探针抬升了 100
+2025-04-11 10:29:12 - 探针抬升了 100
+2025-04-11 10:44:17 - 脚本输出: ---
+
+2025-04-11 10:44:17 - 成功执行IU参数计算
+2025-04-11 10:59:08 - 探针往上移动了
+2025-04-11 10:59:20 - 探针下压了 10
+2025-04-11 11:00:06 - 探针往下移动了
+2025-04-11 11:00:51 - 探针抬升了 30.0
+2025-04-11 11:00:53 - 探针下压了 30.0
+2025-04-11 11:00:55 - 探针下压了 30.0
+2025-04-11 11:01:12 - 探针抬升了 100
+2025-04-11 11:01:14 - 探针抬升了 100
+2025-04-11 11:01:15 - 探针抬升了 100
+2025-04-11 11:01:16 - 探针抬升了 100
+2025-04-11 11:01:18 - 探针抬升了 100
+2025-04-11 11:01:20 - 探针抬升了 100
+2025-04-11 11:01:22 - 探针抬升了 100
+2025-04-11 11:01:24 - 探针抬升了 100
+2025-04-11 11:01:26 - 探针抬升了 100
+2025-04-11 11:01:27 - 探针抬升了 100
+2025-04-11 11:01:29 - 探针抬升了 100
+2025-04-11 11:01:30 - 探针抬升了 100
+2025-04-11 11:01:31 - 探针抬升了 100
+2025-04-11 11:01:32 - 探针抬升了 100
+2025-04-11 11:01:34 - 探针抬升了 100
+2025-04-11 11:01:35 - 探针抬升了 100
+2025-04-11 11:01:36 - 探针抬升了 100
+2025-04-11 11:01:58 - 探针往上移动了
+2025-04-11 11:02:02 - 探针往下移动了
+2025-04-11 11:02:06 - 探针往下移动了
+2025-04-11 11:02:08 - 探针往下移动了
+2025-04-11 11:03:08 - 探针往下移动了
+2025-04-11 11:03:18 - 探针往上移动了
+2025-04-11 11:03:21 - 探针往下移动了
+2025-04-11 11:03:23 - 探针往下移动了
+2025-04-11 11:03:25 - 探针往下移动了
+2025-04-11 11:03:28 - 探针往下移动了
+2025-04-11 11:03:30 - 探针往右移动了
+2025-04-11 11:04:39 - 探针往左移动了
+2025-04-11 11:04:59 - 探针往上移动了
+2025-04-11 11:05:02 - 探针往下移动了
+2025-04-11 11:05:06 - 探针往下移动了
+2025-04-11 11:05:09 - 探针往上移动了
+2025-04-11 11:05:13 - 探针往下移动了
+2025-04-11 11:05:16 - 探针往下移动了
+2025-04-11 11:05:18 - 探针往下移动了
+2025-04-11 11:05:21 - 探针往下移动了
+2025-04-11 11:06:26 - 探针抬升了 100
+2025-04-11 11:06:27 - 探针抬升了 100
+2025-04-11 11:06:28 - 探针抬升了 100
+2025-04-11 11:06:29 - 探针抬升了 100
+2025-04-11 11:06:30 - 探针往上移动了
+2025-04-11 11:06:36 - 探针往上移动了
+2025-04-11 11:06:43 - 探针抬升了 100
+2025-04-11 11:06:44 - 探针抬升了 100
+2025-04-11 11:06:45 - 探针抬升了 100
+2025-04-11 11:06:46 - 探针抬升了 100
+2025-04-11 11:06:48 - 探针往上移动了
+2025-04-11 11:06:54 - 探针往左移动了
+2025-04-11 11:06:59 - 探针往上移动了
+2025-04-11 11:07:03 - 探针抬升了 100
+2025-04-11 11:07:04 - 探针抬升了 100
+2025-04-11 11:07:05 - 探针抬升了 100
+2025-04-11 11:07:06 - 探针抬升了 100
+2025-04-11 11:07:07 - 探针抬升了 100
+2025-04-11 11:07:08 - 探针抬升了 100
+2025-04-11 11:07:09 - 探针抬升了 100
+2025-04-11 11:07:09 - 探针抬升了 100
+2025-04-11 11:07:10 - 探针抬升了 100
+2025-04-11 11:07:11 - 探针往上移动了
+2025-04-11 11:07:15 - 探针往下移动了
+2025-04-11 11:07:20 - 探针往上移动了
+2025-04-11 11:07:28 - 探针往右移动了
+2025-04-11 11:07:33 - 探针往下移动了
+2025-04-11 11:09:06 - 探针往右移动了
+2025-04-11 11:09:10 - 探针往右移动了
+2025-04-11 11:09:14 - 探针往上移动了
+2025-04-11 11:09:17 - 探针往上移动了
+2025-04-11 11:09:20 - 探针往右移动了
+2025-04-11 11:09:26 - 探针往左移动了
+2025-04-11 11:09:31 - 探针抬升了 100
+2025-04-11 11:09:32 - 探针抬升了 100
+2025-04-11 11:09:33 - 探针抬升了 100
+2025-04-11 11:09:34 - 探针抬升了 100
+2025-04-11 11:09:35 - 探针抬升了 100
+2025-04-11 11:09:36 - 探针抬升了 100
+2025-04-11 11:09:37 - 探针抬升了 100
+2025-04-11 11:09:38 - 探针抬升了 100
+2025-04-11 11:09:39 - 探针抬升了 100
+2025-04-11 11:09:46 - 探针抬升了 100
+2025-04-11 11:09:47 - 探针抬升了 100
+2025-04-11 11:09:48 - 探针抬升了 100
+2025-04-11 11:09:49 - 探针往右移动了
+2025-04-11 11:10:07 - 探针往上移动了
+2025-04-11 11:16:45 - 探针往左移动了
+2025-04-11 11:17:21 - 探针往下移动了
+2025-04-11 11:17:51 - 探针往上移动了
+2025-04-11 11:18:02 - 探针往右移动了
+2025-04-11 11:18:26 - 探针往下移动了
+2025-04-11 11:18:39 - 探针往上移动了
+2025-04-11 11:19:03 - 探针往下移动了 279.508
+2025-04-11 11:19:04 - 探针往左移动了 279.508
+2025-04-11 11:19:05 - 探针往下移动了 235.85
+2025-04-11 11:19:06 - 探针往右移动了 235.85
+2025-04-11 11:19:19 - 探针往上移动了
+2025-04-11 11:19:32 - 探针往上移动了
+2025-04-11 11:19:35 - 探针往下移动了
+2025-04-11 11:19:38 - 探针往上移动了
+2025-04-11 11:20:03 - 探针往下移动了 127.475
+2025-04-11 11:20:03 - 探针往右移动了 127.475
+2025-04-11 11:22:18 - 探针抬升了 10
+2025-04-11 11:22:19 - 探针抬升了 10
+2025-04-11 11:22:20 - 探针抬升了 10
+2025-04-11 11:22:21 - 探针抬升了 10
+2025-04-11 11:22:22 - 探针抬升了 10
+2025-04-11 11:22:22 - 探针抬升了 10
+2025-04-11 11:22:23 - 探针抬升了 10
+2025-04-11 11:22:24 - 探针抬升了 10
+2025-04-11 11:22:25 - 探针抬升了 10
+2025-04-11 11:22:26 - 探针抬升了 10
+2025-04-11 11:22:27 - 探针抬升了 10
+2025-04-11 11:22:28 - 探针抬升了 10
+2025-04-11 11:22:28 - 探针抬升了 10
+2025-04-11 11:25:01 - 探针往左移动了
+2025-04-11 11:25:27 - 探针往右移动了
+2025-04-11 11:25:52 - 探针往下移动了
+2025-04-11 11:26:05 - 探针往上移动了
+2025-04-11 11:26:22 - 探针往下移动了 125.0
+2025-04-11 11:26:23 - 探针往左移动了 125.0
+2025-04-11 11:29:33 - 探针往下移动了 160.078
+2025-04-11 11:29:34 - 探针往左移动了 160.078
