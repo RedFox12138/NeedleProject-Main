@@ -83,18 +83,6 @@ class MainPage1(QMainWindow, Ui_MainWindow):
     ):
         super().__init__()
 
-        #坐标相关
-        # self.lineEdit_Xlocation =lineEdit_Xlocation
-        # self.lineEdit_Ylocation = lineEdit_Ylocation
-        #
-        #
-        # self.lineEdit_Location1 = lineEdit_Location1
-        # self.lineEdit_Location2 = lineEdit_Location2
-        # self.lineEdit_Location3 = lineEdit_Location3
-        # self.lineEdit_Location1.setText("0")
-        # self.lineEdit_Location2.setText("0")
-        # self.lineEdit_Location3.setText("0")
-
         #调用电学测量函数，传入保存路径
         self.lineEdit_SaveResult = lineEdit_SaveResult
 
@@ -585,6 +573,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                 encoding='utf-8',  # 明确指定编码
             )
 
+
             # 记录输出和错误（如果有）
             if result.stdout:
                 self.log_operation(f"脚本输出: {result.stdout}")
@@ -843,7 +832,9 @@ class MainPage1(QMainWindow, Ui_MainWindow):
             distance = np.sqrt((target_x - probe_x) ** 2 + (target_y - probe_y) ** 2)
             if distance < 5:  # 设定一个阈值，比如10
                 break
-            distance = distance*50
+
+            # 低温情况下应该是乘以50
+            distance = distance * 1
             if target_y < probe_y:
                 ReturnNeedleMove(self.needleup, distance,self.indicator,True,False,MainPage1.equipment)
                 self.log_operation("探针往上移动了 {}".format(round((distance/2),3)))
@@ -856,7 +847,9 @@ class MainPage1(QMainWindow, Ui_MainWindow):
             elif target_x > probe_x:
                 ReturnNeedleMove(self.needleright, distance,self.indicator,True,False,MainPage1.equipment)
                 self.log_operation("探针往右移动了 {}".format(round((distance/2),3)))
-            time.sleep(0.5)
+
+            # 低温情况下应该是0.5
+            time.sleep(0.1)
         # self.align_allowed = True  # 完成移动后重新允许对齐
         # locationClass.locationX, locationClass.locationY, locationClass.locationZ = getPosition()
         self.allow_alignment = True  # 重新允许对齐
@@ -874,24 +867,27 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                 none
         '''
         # sim928_2 = SIM928(5, 'GPIB4::2::INSTR')
-        sim928 = SIM928ConnectionThread.anc
-        if sim928 is None:
-            print("SIM928未正常连接")
-
+        keithley = SIM928ConnectionThread.anc
+        if keithley is None:
+            print("keithley未正常连接")
         else:
             try:
                 voltage_input = 0.1 if not self.lineEdit_SIM928.text() else float(self.lineEdit_SIM928.text())
             except ValueError:
                 voltage_input = 0.1
                 print("输入的不是有效数字，已使用默认值 0.1")
-            self.voltage928max = voltage_input  # 更新电压最大值
-            V_max = self.voltage928max
-
             try:
-                sim928.set_output(True)
-                sim928.set_voltage(V_max)
+                keithley.use_rear_terminals  # 使用仪器前面端子
+                keithley.wires
+                keithley.apply_voltage()  # 设置为电压源
+                keithley.compliance_current = 0.1  # 设置合规电流
+                keithley.auto_range_source()
+                keithley.measure_current()  # 设置为测量电流
+                keithley.enable_source()  # 打开源表
+                keithley.source_voltage = voltage_input
+                time.sleep(0.1)
             except (AttributeError, ValueError):
-                print("SIM928未正常连接")
+                print("keithley未正常连接")
 
     def update_SIM_display(self):
         '''
@@ -923,6 +919,9 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
     def Pushing(self):
         ReturnNeedleMove(5, min(1000, MainPage1.needle_distanceZ), self.indicator,False,False,MainPage1.equipment)
+        keithley = SIM928ConnectionThread.anc
+        current = keithley.current
+        print(current)
         self.log_operation("探针下压了 {}".format(MainPage1.needle_distanceZ))
 
     def Pulling(self):

@@ -1,7 +1,10 @@
+import time
+
 from PyQt5.QtWidgets import QMainWindow
 import serial.tools.list_ports
 from PyQt5.QtCore import QTimer, QThread, pyqtSignal
-from SRS_SIM928 import SIM928
+from pymeasure.instruments.keithley import Keithley2450
+
 from SRS_SIM970 import SRSSIM970
 from ZauxdllTest import GBIOConnect
 from demo import Ui_MainWindow
@@ -19,7 +22,7 @@ class SerialPage(QMainWindow, Ui_MainWindow):
                  comboBox1_SIM928,comboBox2_SIM928,status_led_SIM928,connect_button_SIM928,disconnect_button_SIM928,
                  comboBox1_SIM970,comboBox2_SIM970,status_led_SIM970,connect_button_SIM970,disconnect_button_SIM970,
                  GBIO_connect_button,
-                 comboBox_relay,status_led_relay,Button_relayConnect,Button_relayDisConnect):
+                 comboBox_relay,status_led_relay,Button_relayConnect,Button_relayDisConnect,Serial_connect_refresh):
         super().__init__()
         self.port_combo = comboBox_micro
         self.connect_button = connect_button_micro
@@ -43,7 +46,6 @@ class SerialPage(QMainWindow, Ui_MainWindow):
         self.SIM970_status_led = status_led_SIM970
         self.SIM970_disconnect_button = disconnect_button_SIM970
 
-        self.GBIO_connect_button = GBIO_connect_button
 
         self.comboBox_relay = comboBox_relay
         self.Button_relayConnect = Button_relayConnect
@@ -93,9 +95,14 @@ class SerialPage(QMainWindow, Ui_MainWindow):
             lambda: self.disconnect_from_serial("SIM970", self.SIM970_status_led,
                                                 self.SIM970_connect_button, self.SIM970_disconnect_button))
 
-        self.GBIO_connect_button.clicked.connect(
+        GBIO_connect_button.clicked.connect(
             self.GBIO_clicked
         )
+
+        Serial_connect_refresh.clicked.connect(
+            self.Serial_clicked
+        )
+
         # 初始化串口连接对象
         self.zaux = None
         self.connection_thread = None
@@ -110,6 +117,12 @@ class SerialPage(QMainWindow, Ui_MainWindow):
         self.update_GBIO_ports(self.SIM928_GBIO_combo)  # 再执行
         self.update_GBIO_ports(self.SIM970_GBIO_combo)  # 最后执行
 
+
+
+    def Serial_clicked(self):
+        self.update_serial_ports(self.needle_port_combo)
+        self.update_serial_ports(self.comboBox_relay)
+        self.update_serial_ports(self.port_combo)
 
     def update_serial_ports(self,port_combo):
         """ 获取系统中所有可用的串口，并更新到下拉框中 """
@@ -297,6 +310,7 @@ class SerialPage(QMainWindow, Ui_MainWindow):
             elif (flag == "relay"):
                 RelayConnectionThread.anc = None
             elif (flag == "SIM928"):
+                SIM928ConnectionThread.anc.shutdown()
                 SIM928ConnectionThread.anc = None
             elif (flag == "SIM970"):
                 SIM970ConnectionThread.anc.quit_vol()
@@ -310,15 +324,6 @@ class SerialPage(QMainWindow, Ui_MainWindow):
             status_led.setText('连接状态: 断开失败')
             status_led.setStyleSheet("color: red; font-size: 20px;")
             print("断开失败:", e)
-
-
-
-
-
-
-
-
-
 
 #位移器的串口连接
 class SerialConnectionThread(QThread):
@@ -334,36 +339,6 @@ class SerialConnectionThread(QThread):
     def run(self):
         """ 运行连接操作 """
         try:
-            # SerialConnectionThread.zaux = zauxdllPython.ZMCWrapper()
-            # SerialConnectionThread.zaux.connect(SerialConnectionThread.port_ip)
-            #
-            # SerialConnectionThread.zaux.set_atype(0, 1)
-            # SerialConnectionThread.zaux.set_units(0, 10000)
-            # SerialConnectionThread.zaux.set_accel(0, 1000)
-            # SerialConnectionThread.zaux.set_decel(0, 10)
-            # SerialConnectionThread.zaux.set_speed(0, 1000)
-            # # 获取轴X参数
-            # SerialConnectionThread.zaux.get_atype(0)
-            # SerialConnectionThread.zaux.get_untis(0)
-            # SerialConnectionThread.zaux.get_accel(0)
-            # SerialConnectionThread.zaux.get_decel(0)
-            # SerialConnectionThread.zaux.get_speed(0)
-
-
-
-            # SerialConnectionThread.zaux = zauxdllPython.ZMCWrapper()
-            # SerialConnectionThread.zaux.connectcom
-
-            # SerialConnectionThread.zaux.set_atype(0, 1)
-            # SerialConnectionThread.zaux.set_units(0, 10000)
-            # SerialConnectionThread.zaux.set_accel(0, 1000)
-            # SerialConnectionThread.zaux.set_decel(0, 10)
-            # SerialConnectionThread.zaux.set_speed(0, 1000)
-            # SerialConnectionThread.zaux.get_atype(0)
-            # SerialConnectionThread.zaux.get_untis(0)
-            # SerialConnectionThread.zaux.get_accel(0)
-            # SerialConnectionThread.zaux.get_decel(0)
-            # SerialConnectionThread.zaux.get_speed(0)
             self.connected.emit(True, f"连接成功，端口 {SerialConnectionThread.port_com}")
         except Exception as e:
             self.connected.emit(False, f"连接失败: {str(e)}")
@@ -385,21 +360,6 @@ class NeedelConnectionThread(QThread):
             bps = 115200  # 波特率（数据传输速率）
             port = "COM"+str(NeedelConnectionThread.port_number)  # 串口号（Windows系统常用COM格式）
             NeedelConnectionThread.anc = serial.Serial(port, bps, timeout=0.1)  # 创建串口对象，设置超时0.1秒
-            # locationupdater = LocationUpdater(NeedelConnectionThread.anc)
-            # locationupdater.start()
-
-            # port_name = 'ASRL'+str(NeedelConnectionThread.port_number)+'::INSTR'
-            # NeedelConnectionThread.anc = Positioner(port_name)  # anc300地址
-            # # 定义位移函数=============================================================================
-            # ax = {'x': 1, 'y': 2, 'z': 3, 'x2': 4, 'y2': 5, 'z2': 6}
-            # for AID in sorted(ax.keys()):
-            #     NeedelConnectionThread.anc.setf(ax[AID], 100)  # 加速度
-            #     NeedelConnectionThread.anc.setv(ax[AID], 100)
-
-            # NeedelConnectionThread.anc.setm(ax['x'], 'stp')
-            # NeedelConnectionThread.anc.stepu(ax['x'], 0.1)
-            # # t = math.ceil(distance / 300) + 1
-            # time.sleep(0.1)  # x2+
             self.connected.emit(True, f"连接成功，端口 {NeedelConnectionThread.port_number}")
         except Exception as e:
             self.connected.emit(False, f"连接失败: {str(e)}")
@@ -416,8 +376,6 @@ class RelayConnectionThread(QThread):
         """ 运行连接操作 """
         try:
             serialPort = self.port_number  # 串口
-            # serialPort="/dev/ttyCH341USB0"
-            # serialPort="/dev/ttyUSB0"
             baudRate = 9600  # 波特率
             RelayConnectionThread.anc = serial.Serial("COM"+str(serialPort), baudRate, timeout=0.5)
 
@@ -433,14 +391,21 @@ class SIM928ConnectionThread(QThread):
     anc = None
     def __init__(self, port_number,GBIO_number):
         super().__init__()
-        self.port_number = port_number
+        # self.port_number = port_number
         self.GBIO_number = GBIO_number
     def run(self):
         """ 运行连接操作 """
         try:
-            SIM928ConnectionThread.anc = SIM928(self.port_number, self.GBIO_number)
+            SIM928ConnectionThread.anc = Keithley2450(self.GBIO_number)  # keithley2450地址
+            keithley = SIM928ConnectionThread.anc
+            keithley.reset()  # keithley2450初始化
+            time.sleep(0.1)
+            # 测量部分
+
+            # SIM928ConnectionThread.anc = SIM928(self.port_number, self.GBIO_number)
             self.connected.emit(True, f"连接成功，端口 {self.GBIO_number}")
         except Exception as e:
+            SIM928ConnectionThread.anc.shutdown()
             self.connected.emit(False, f"连接失败: {str(e)}")
 
 class SIM970ConnectionThread(QThread):

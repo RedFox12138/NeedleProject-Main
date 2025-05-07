@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(2269, 1121)
+        MainWindow.resize(2269, 1123)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -109,7 +109,7 @@ class Ui_MainWindow(object):
         self.Button_needle1Up.setFont(font)
         self.Button_needle1Up.setText("")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("Icon/Vup.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("Vup.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.Button_needle1Up.setIcon(icon)
         self.Button_needle1Up.setIconSize(QtCore.QSize(40, 40))
         self.Button_needle1Up.setFlat(True)
@@ -125,7 +125,7 @@ class Ui_MainWindow(object):
 "}")
         self.Button_needle1Left.setText("")
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("Icon/Vleft.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap("Vleft.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.Button_needle1Left.setIcon(icon1)
         self.Button_needle1Left.setIconSize(QtCore.QSize(40, 40))
         self.Button_needle1Left.setFlat(True)
@@ -138,7 +138,7 @@ class Ui_MainWindow(object):
         self.Button_needle1Down.setFont(font)
         self.Button_needle1Down.setText("")
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap("Icon/Vdown.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap("Vdown.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.Button_needle1Down.setIcon(icon2)
         self.Button_needle1Down.setIconSize(QtCore.QSize(40, 40))
         self.Button_needle1Down.setFlat(True)
@@ -151,12 +151,41 @@ class Ui_MainWindow(object):
         self.Button_needle1Right.setFont(font)
         self.Button_needle1Right.setText("")
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap("Icon/Vright.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon3.addPixmap(QtGui.QPixmap("Vright.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.Button_needle1Right.setIcon(icon3)
         self.Button_needle1Right.setIconSize(QtCore.QSize(40, 40))
         self.Button_needle1Right.setFlat(True)
         self.Button_needle1Right.setObjectName("Button_needle1Right")
         self.gridLayout_2.addWidget(self.Button_needle1Right, 1, 2, 1, 1)
+        self.Button_needle1Stop = QtWidgets.QPushButton(self.gridLayoutWidget_2)
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(-1)
+        font.setBold(True)
+        font.setWeight(75)
+        self.Button_needle1Stop.setFont(font)
+        self.Button_needle1Stop.setStyleSheet("QPushButton {\n"
+"    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ff4444, stop:1 #cc0000); /* 红色渐变背景 */\n"
+"    border: 2px solid #cc0000; /* 边框颜色 */\n"
+"    color: white; /* 文字颜色 */\n"
+"    font-size: 30px; /* 字体大小 */\n"
+"    font-weight: bold; /* 字体加粗 */\n"
+"    text-align: center; /* 文字居中 */\n"
+"    border-radius: 40px; /* 圆形按钮（半径设置为宽度和高度的一半） */\n"
+"    min-width: 80px; /* 最小宽度 */\n"
+"    min-height: 80px; /* 最小高度 */\n"
+"    padding: 0; /* 去除内边距 */\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #0077ff, stop:1 #0044cc); /* 悬停时的蓝色渐变背景 */\n"
+"}\n"
+"\n"
+"QPushButton:pressed {\n"
+"    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #cc0000, stop:1 #ff4444); /* 按下时的渐变背景 */\n"
+"}")
+        self.Button_needle1Stop.setObjectName("Button_needle1Stop")
+        self.gridLayout_2.addWidget(self.Button_needle1Stop, 1, 1, 1, 1)
         self.label_4 = QtWidgets.QLabel(self.frame_6)
         self.label_4.setGeometry(QtCore.QRect(340, 140, 38, 24))
         font = QtGui.QFont()
@@ -272,7 +301,7 @@ class Ui_MainWindow(object):
 "}")
         self.lineEdit_needle1Zdistance.setObjectName("lineEdit_needle1Zdistance")
         self.Button_needle1SetXdisConfirm = QtWidgets.QPushButton(self.frame_6)
-        self.Button_needle1SetXdisConfirm.setGeometry(QtCore.QRect(460, 60, 75, 32))
+        self.Button_needle1SetXdisConfirm.setGeometry(QtCore.QRect(530, 50, 75, 32))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
@@ -292,35 +321,6 @@ class Ui_MainWindow(object):
         font.setPointSize(15)
         self.Button_needle1SetZdisConfirm.setFont(font)
         self.Button_needle1SetZdisConfirm.setObjectName("Button_needle1SetZdisConfirm")
-        self.Button_needle1Stop = QtWidgets.QPushButton(self.frame_6)
-        self.Button_needle1Stop.setGeometry(QtCore.QRect(560, 90, 84, 84))
-        font = QtGui.QFont()
-        font.setFamily("Calibri")
-        font.setPointSize(-1)
-        font.setBold(True)
-        font.setWeight(75)
-        self.Button_needle1Stop.setFont(font)
-        self.Button_needle1Stop.setStyleSheet("QPushButton {\n"
-"    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ff4444, stop:1 #cc0000); /* 红色渐变背景 */\n"
-"    border: 2px solid #cc0000; /* 边框颜色 */\n"
-"    color: white; /* 文字颜色 */\n"
-"    font-size: 30px; /* 字体大小 */\n"
-"    font-weight: bold; /* 字体加粗 */\n"
-"    text-align: center; /* 文字居中 */\n"
-"    border-radius: 40px; /* 圆形按钮（半径设置为宽度和高度的一半） */\n"
-"    min-width: 80px; /* 最小宽度 */\n"
-"    min-height: 80px; /* 最小高度 */\n"
-"    padding: 0; /* 去除内边距 */\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ff6666, stop:1 #dd2222); /* 悬停时的渐变背景 */\n"
-"}\n"
-"\n"
-"QPushButton:pressed {\n"
-"    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #cc0000, stop:1 #ff4444); /* 按下时的渐变背景 */\n"
-"}")
-        self.Button_needle1Stop.setObjectName("Button_needle1Stop")
         self.Button_pulling = QtWidgets.QPushButton(self.frame_6)
         self.Button_pulling.setGeometry(QtCore.QRect(340, 180, 111, 41))
         font = QtGui.QFont()
@@ -344,6 +344,15 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         self.label_needle1.setFont(font)
         self.label_needle1.setObjectName("label_needle1")
+        self.label_needle1_2 = QtWidgets.QLabel(self.frame_6)
+        self.label_needle1_2.setGeometry(QtCore.QRect(340, 10, 181, 31))
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(20)
+        font.setBold(True)
+        font.setWeight(75)
+        self.label_needle1_2.setFont(font)
+        self.label_needle1_2.setObjectName("label_needle1_2")
         self.frame_7 = QtWidgets.QFrame(self.tab)
         self.frame_7.setGeometry(QtCore.QRect(1080, 370, 331, 321))
         self.frame_7.setStyleSheet("#frame_7{\n"
@@ -1144,7 +1153,7 @@ class Ui_MainWindow(object):
         self.tab_3 = QtWidgets.QWidget()
         self.tab_3.setObjectName("tab_3")
         self.gridLayoutWidget_6 = QtWidgets.QWidget(self.tab_3)
-        self.gridLayoutWidget_6.setGeometry(QtCore.QRect(740, 100, 321, 621))
+        self.gridLayoutWidget_6.setGeometry(QtCore.QRect(1020, 0, 321, 621))
         self.gridLayoutWidget_6.setObjectName("gridLayoutWidget_6")
         self.gridLayout_6 = QtWidgets.QGridLayout(self.gridLayoutWidget_6)
         self.gridLayout_6.setContentsMargins(0, 0, 0, 0)
@@ -1153,74 +1162,23 @@ class Ui_MainWindow(object):
         self.frame_5.setFrameShape(QtWidgets.QFrame.HLine)
         self.frame_5.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame_5.setObjectName("frame_5")
-        self.gridLayout_6.addWidget(self.frame_5, 1, 0, 1, 1)
-        self.label_15 = QtWidgets.QLabel(self.gridLayoutWidget_6)
-        font = QtGui.QFont()
-        font.setFamily("Calibri")
-        font.setPointSize(15)
-        self.label_15.setFont(font)
-        self.label_15.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_15.setObjectName("label_15")
-        self.gridLayout_6.addWidget(self.label_15, 0, 0, 1, 1, QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-        self.lineEdit_microSetYdis = QtWidgets.QLineEdit(self.gridLayoutWidget_6)
-        font = QtGui.QFont()
-        font.setFamily("Calibri")
-        font.setPointSize(15)
-        self.lineEdit_microSetYdis.setFont(font)
-        self.lineEdit_microSetYdis.setStyleSheet("QLineEdit {\n"
-"    background-color: #f0f0f0;\n"
-"    border: 2px solid #a0a0a0;\n"
-"    border-radius: 5px;\n"
-"    padding: 5px;\n"
-"    color: #000000;\n"
-"    selection-background-color: #c0c0c0;\n"
-"    selection-color: #000000;\n"
-"}\n"
-"\n"
-"QLineEdit:focus {\n"
-"    border: 2px solid #606060;\n"
-"    background-color: #e0e0e0;\n"
-"}\n"
-"\n"
-"QLineEdit:hover {\n"
-"    border: 2px solid #808080;\n"
-"}\n"
-"\n"
-"QLineEdit:disabled {\n"
-"    background-color: #d0d0d0;\n"
-"    color: #808080;\n"
-"    border: 2px solid #c0c0c0;\n"
-"}")
-        self.lineEdit_microSetYdis.setObjectName("lineEdit_microSetYdis")
-        self.gridLayout_6.addWidget(self.lineEdit_microSetYdis, 5, 0, 1, 1)
-        self.pushButton_MicroConfirm = QtWidgets.QPushButton(self.gridLayoutWidget_6)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_MicroConfirm.sizePolicy().hasHeightForWidth())
-        self.pushButton_MicroConfirm.setSizePolicy(sizePolicy)
-        font = QtGui.QFont()
-        font.setFamily("Calibri")
-        font.setPointSize(15)
-        self.pushButton_MicroConfirm.setFont(font)
-        self.pushButton_MicroConfirm.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.pushButton_MicroConfirm.setObjectName("pushButton_MicroConfirm")
-        self.gridLayout_6.addWidget(self.pushButton_MicroConfirm, 6, 0, 1, 1, QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
-        self.label_17 = QtWidgets.QLabel(self.gridLayoutWidget_6)
+        self.gridLayout_6.addWidget(self.frame_5, 0, 0, 1, 1)
+        self.label_17 = QtWidgets.QLabel(self.tab_3)
+        self.label_17.setGeometry(QtCore.QRect(330, 170, 319, 125))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
         self.label_17.setFont(font)
         self.label_17.setObjectName("label_17")
-        self.gridLayout_6.addWidget(self.label_17, 2, 0, 1, 1, QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
-        self.label_18 = QtWidgets.QLabel(self.gridLayoutWidget_6)
+        self.label_18 = QtWidgets.QLabel(self.tab_3)
+        self.label_18.setGeometry(QtCore.QRect(330, 370, 255, 24))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
         self.label_18.setFont(font)
         self.label_18.setObjectName("label_18")
-        self.gridLayout_6.addWidget(self.label_18, 4, 0, 1, 1, QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
-        self.lineEdit_microSetXdis = QtWidgets.QLineEdit(self.gridLayoutWidget_6)
+        self.lineEdit_microSetXdis = QtWidgets.QLineEdit(self.tab_3)
+        self.lineEdit_microSetXdis.setGeometry(QtCore.QRect(580, 220, 231, 31))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
@@ -1250,7 +1208,58 @@ class Ui_MainWindow(object):
 "    border: 2px solid #c0c0c0;\n"
 "}")
         self.lineEdit_microSetXdis.setObjectName("lineEdit_microSetXdis")
-        self.gridLayout_6.addWidget(self.lineEdit_microSetXdis, 3, 0, 1, 1)
+        self.lineEdit_microSetYdis = QtWidgets.QLineEdit(self.tab_3)
+        self.lineEdit_microSetYdis.setGeometry(QtCore.QRect(580, 370, 231, 31))
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(15)
+        self.lineEdit_microSetYdis.setFont(font)
+        self.lineEdit_microSetYdis.setStyleSheet("QLineEdit {\n"
+"    background-color: #f0f0f0;\n"
+"    border: 2px solid #a0a0a0;\n"
+"    border-radius: 5px;\n"
+"    padding: 5px;\n"
+"    color: #000000;\n"
+"    selection-background-color: #c0c0c0;\n"
+"    selection-color: #000000;\n"
+"}\n"
+"\n"
+"QLineEdit:focus {\n"
+"    border: 2px solid #606060;\n"
+"    background-color: #e0e0e0;\n"
+"}\n"
+"\n"
+"QLineEdit:hover {\n"
+"    border: 2px solid #808080;\n"
+"}\n"
+"\n"
+"QLineEdit:disabled {\n"
+"    background-color: #d0d0d0;\n"
+"    color: #808080;\n"
+"    border: 2px solid #c0c0c0;\n"
+"}")
+        self.lineEdit_microSetYdis.setObjectName("lineEdit_microSetYdis")
+        self.pushButton_MicroConfirm = QtWidgets.QPushButton(self.tab_3)
+        self.pushButton_MicroConfirm.setGeometry(QtCore.QRect(730, 490, 75, 32))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton_MicroConfirm.sizePolicy().hasHeightForWidth())
+        self.pushButton_MicroConfirm.setSizePolicy(sizePolicy)
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(15)
+        self.pushButton_MicroConfirm.setFont(font)
+        self.pushButton_MicroConfirm.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.pushButton_MicroConfirm.setObjectName("pushButton_MicroConfirm")
+        self.label_15 = QtWidgets.QLabel(self.tab_3)
+        self.label_15.setGeometry(QtCore.QRect(320, 90, 140, 24))
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(15)
+        self.label_15.setFont(font)
+        self.label_15.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_15.setObjectName("label_15")
         self.tabWidget.addTab(self.tab_3, "")
         self.tab_4 = QtWidgets.QWidget()
         self.tab_4.setObjectName("tab_4")
@@ -1886,12 +1895,19 @@ class Ui_MainWindow(object):
         self.frame_3.setObjectName("frame_3")
         self.gridLayout_9.addWidget(self.frame_3, 0, 1, 19, 1)
         self.GBIO_connect_button = QtWidgets.QPushButton(self.tab_5)
-        self.GBIO_connect_button.setGeometry(QtCore.QRect(790, 710, 211, 61))
+        self.GBIO_connect_button.setGeometry(QtCore.QRect(1060, 720, 211, 61))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
         self.GBIO_connect_button.setFont(font)
         self.GBIO_connect_button.setObjectName("GBIO_connect_button")
+        self.Serial_connect_refresh = QtWidgets.QPushButton(self.tab_5)
+        self.Serial_connect_refresh.setGeometry(QtCore.QRect(500, 720, 211, 61))
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(15)
+        self.Serial_connect_refresh.setFont(font)
+        self.Serial_connect_refresh.setObjectName("Serial_connect_refresh")
         self.tabWidget.addTab(self.tab_5, "")
         self.tab_6 = QtWidgets.QWidget()
         self.tab_6.setObjectName("tab_6")
@@ -1950,6 +1966,16 @@ class Ui_MainWindow(object):
         self.Button_scriptConfirm.setFont(font)
         self.Button_scriptConfirm.setObjectName("Button_scriptConfirm")
         self.horizontalLayout_2.addWidget(self.Button_scriptConfirm)
+        self.Button_scriptUpdate = QtWidgets.QPushButton(self.horizontalLayoutWidget_2)
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(15)
+        self.Button_scriptUpdate.setFont(font)
+        self.Button_scriptUpdate.setObjectName("Button_scriptUpdate")
+        self.horizontalLayout_2.addWidget(self.Button_scriptUpdate)
+        self.verticalLayout = QtWidgets.QVBoxLayout()
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.horizontalLayout_2.addLayout(self.verticalLayout)
         self.horizontalLayoutWidget_3 = QtWidgets.QWidget(self.tab_6)
         self.horizontalLayoutWidget_3.setGeometry(QtCore.QRect(380, 150, 1041, 71))
         font = QtGui.QFont()
@@ -2069,13 +2095,14 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(5)
+        self.tabWidget.setCurrentIndex(4)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "超低温探针台自动化控制软件 V1.05"))
         self.plainTextEdit_log.setPlaceholderText(_translate("MainWindow", "日志"))
+        self.Button_needle1Stop.setText(_translate("MainWindow", "STOP"))
         self.label_4.setText(_translate("MainWindow", "Z dis"))
         self.label_3.setText(_translate("MainWindow", "X dis"))
         self.label_2.setText(_translate("MainWindow", "Y dis"))
@@ -2085,10 +2112,10 @@ class Ui_MainWindow(object):
         self.Button_needle1SetXdisConfirm.setText(_translate("MainWindow", "确认"))
         self.Button_needle1SetYdisConfirm.setText(_translate("MainWindow", "确认"))
         self.Button_needle1SetZdisConfirm.setText(_translate("MainWindow", "确认"))
-        self.Button_needle1Stop.setText(_translate("MainWindow", "STOP"))
         self.Button_pulling.setText(_translate("MainWindow", "抬升"))
         self.Button_pushing.setText(_translate("MainWindow", "按压"))
         self.label_needle1.setText(_translate("MainWindow", "探针位移"))
+        self.label_needle1_2.setText(_translate("MainWindow", "连续移动步进"))
         self.label.setText(_translate("MainWindow", "显微镜位移"))
         self.label_6.setText(_translate("MainWindow", "实时检测"))
         self.label_10.setText(_translate("MainWindow", "计数值"))
@@ -2125,10 +2152,10 @@ class Ui_MainWindow(object):
         self.label_12.setText(_translate("MainWindow", "曝光（初始为5000）："))
         self.label_11.setText(_translate("MainWindow", "相机参数设置"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "相机设置"))
-        self.label_15.setText(_translate("MainWindow", "显微镜参数设置"))
-        self.pushButton_MicroConfirm.setText(_translate("MainWindow", "确认"))
         self.label_17.setText(_translate("MainWindow", "X轴移动距离（初始为0.5）："))
         self.label_18.setText(_translate("MainWindow", "Y轴移动距离（初始为0.5）："))
+        self.pushButton_MicroConfirm.setText(_translate("MainWindow", "确认"))
+        self.label_15.setText(_translate("MainWindow", "显微镜参数设置"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("MainWindow", "显微镜设置"))
         self.Button_needleSetConfirm.setText(_translate("MainWindow", "确认"))
         self.label_30.setText(_translate("MainWindow", "Z频率(初始为100)："))
@@ -2156,18 +2183,20 @@ class Ui_MainWindow(object):
         self.label_31.setText(_translate("MainWindow", "请选择显微镜串口："))
         self.Button_relayDisConnect.setText(_translate("MainWindow", "断开连接"))
         self.Button_SIM970Connect.setText(_translate("MainWindow", "连接"))
-        self.label_34.setText(_translate("MainWindow", "请选择SIM928串口："))
+        self.label_34.setText(_translate("MainWindow", "请选择Keithley2450串口："))
         self.Button_microDisConnect.setText(_translate("MainWindow", "断开连接"))
         self.label_33.setText(_translate("MainWindow", "请选择探针串口："))
         self.Button_SIM970DisConnect.setText(_translate("MainWindow", "断开连接"))
         self.Button_microConnect.setText(_translate("MainWindow", "连接"))
         self.GBIO_connect_button.setText(_translate("MainWindow", "扫描所有GBIO设备"))
+        self.Serial_connect_refresh.setText(_translate("MainWindow", "刷新串口"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_5), _translate("MainWindow", "串口设置"))
         self.label_40.setText(_translate("MainWindow", "导入的脚本路径："))
         self.lineEdit_Scripts.setPlaceholderText(_translate("MainWindow", "请选择脚本的路径"))
         self.Button_ScriptsBrowse.setText(_translate("MainWindow", "浏览"))
         self.textEdit_Scripts.setPlaceholderText(_translate("MainWindow", "脚本内容将在此处显示..."))
         self.Button_scriptConfirm.setText(_translate("MainWindow", "确认"))
+        self.Button_scriptUpdate.setText(_translate("MainWindow", "修改"))
         self.label_42.setText(_translate("MainWindow", "保存结果的路径："))
         self.lineEdit_SaveResult.setPlaceholderText(_translate("MainWindow", "请选择要保存结果的路径"))
         self.Button_SaveResultBrowse.setText(_translate("MainWindow", "浏览"))

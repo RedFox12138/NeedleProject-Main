@@ -12,6 +12,8 @@ from matplotlib.widgets import Button
 
 #
 from QTneedle.QTneedle.Position import getPosition, move_to_target, move_to_Z
+from SerialPage import SIM928ConnectionThread
+
 from StopClass import StopClass
 
 custom_lib_path = "c:\\users\\administrator\\appdata\\local\\programs\\python\\python37\\lib\\site-packages"
@@ -44,10 +46,10 @@ class locationClass(QMainWindow, Ui_MainWindow):
                  Button_ContinueTest,Button_StopTest,
                  lineEdit_Pushlocation, lineEdit_Pulllocation,
                  Button_PushLocation, Button_PullLocation,
-                 Button_PushBack, Button_PullBack,lineEdit_Scripts
+                 Button_PushBack, Button_PullBack,lineEdit_Scripts,lineEdit_SaveResult
     ):
         super().__init__()
-
+        self.lineEdit_SaveResult = lineEdit_SaveResult
         self.lineEdit_Scripts = lineEdit_Scripts
         self.device_positions = []
         self.ax = None
@@ -99,8 +101,8 @@ class locationClass(QMainWindow, Ui_MainWindow):
         # 开始测试按钮 从头开始自动化测试
         # 创建按钮并调整布局
 
-    def PushBack(self):
-        move_to_Z(self.Zlocation1)
+    def PushBack(self,flag=True):
+        move_to_Z(self.Zlocation1,flag)
         locationClass.locationX, locationClass.locationY, locationClass.locationZ = getPosition()
 
     def PullBack(self):
@@ -146,13 +148,13 @@ class locationClass(QMainWindow, Ui_MainWindow):
             self.fig = None  # 显式释放资源
 
 
-        # # 用户输入的参数
-        # top_left = (2.9043, -0.6384)
-        # top_right = (-0.3782275, -0.6384)
-        # bottom_right = (-0.3782275, -2.5518)
-        # row = 16
-        # col = 14
-        #
+        # 用户输入的参数
+        # top_left = (3.2726, -0.7094)
+        # top_right = (3.0408, -0.7096)
+        # bottom_right = (3.0408, -0.9634)
+        # row = 3
+        # col = 2
+
         row = int(self.lineEdit_row.text())
         col = int(self.lineEdit_col.text())
 
@@ -176,8 +178,8 @@ class locationClass(QMainWindow, Ui_MainWindow):
             fontsize=9,
             clip_on=False  # 关键！关闭裁剪限制
         )
-        self.ax.set_xlim(4, -1)
-        self.ax.set_ylim(-4, 0)
+        self.ax.set_xlim(4, -4)
+        self.ax.set_ylim(-4, 4)
         self.ax.set_aspect('equal')
 
         # 绘制设备点
@@ -228,7 +230,6 @@ class locationClass(QMainWindow, Ui_MainWindow):
 
     # 遍历设备位置，依次移动探针 从头开始测试所有的探针
     def move_to_all_targets(self,start_index=0):
-        from QTneedle.QTneedle.MainPage import MainPage1
         test_event.set()
         try:
             for i in range(start_index, len(self.device_positions)):
@@ -241,26 +242,44 @@ class locationClass(QMainWindow, Ui_MainWindow):
                 self.mainpage1.match_and_move()
                 locationClass.locationX, locationClass.locationY,_ = getPosition()
                 time.sleep(1)  # 等待 1 秒，确保探针稳定
-                self.PushBack()
-                #执行IU计算
-                run_script = self.lineEdit_Scripts.text()
-                if (run_script == ''):
-                    run_script = "./jiaoben.py"
+                keithley = SIM928ConnectionThread.anc
+                keithley.use_rear_terminals  # 使用仪器前面端子
+                keithley.wires
+                keithley.apply_voltage()  # 设置为电压源
+                keithley.compliance_current = 0.1  # 设置合规电流
+                keithley.auto_range_source()
+                keithley.measure_current()  # 设置为测量电流
+                keithley.enable_source()  # 打开源表
+                keithley.source_voltage = 0.1
+                current = keithley.current
 
-                save_script = self.lineEdit_SaveResult.text()
-                if (save_script == ''):
-                    save_script = 'D:\\lzg\\data\\' + time.strftime("save_%Y-%m-%d_%H-%M-%S") + '\\IV\\'
+                # keithley = SIM928ConnectionThread.anc
+                self.PushBack(True)
+                time.sleep(0.5)  # 等待 1 秒，确保探针稳定
+                # try:
+                #     current = keithley.current
+                # except Exception as e:
+                #     current = 10e-11
+                current = keithley.current
+                print("按压完成后的电流是",current)
+                if current >= 9e-10:
+                    #执行IU计算
+                    run_script = self.lineEdit_Scripts.text()
+                    if (run_script == ''):
+                        run_script = "./jiaoben.py"
 
-                result = subprocess.run(
-                    [sys.executable, run_script, save_script],
-                    capture_output=True,
-                    text=True,
-                    check=True,  # 如果返回非零会抛出异常
-                    encoding='utf-8',  # 明确指定编码
-                )
+                    save_script = self.lineEdit_SaveResult.text()
+                    if (save_script == ''):
+                        save_script = 'D:\\lzg\\data\\' + time.strftime("save_%Y-%m-%d_%H-%M-%S") + '\\IV\\'
 
-                print(result.stdout)
-
+                    result = subprocess.run(
+                        [sys.executable, run_script, save_script],
+                        capture_output=True,
+                        text=True,
+                        check=True,  # 如果返回非零会抛出异常
+                        encoding='utf-8',  # 明确指定编码
+                    )
+                    print(result.stdout)
                 self.PullBack()
 
 

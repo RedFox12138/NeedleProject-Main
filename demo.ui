@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>2269</width>
-    <height>1121</height>
+    <height>1123</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -87,7 +87,7 @@ QTabWidget::pane {
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>5</number>
+     <number>4</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -180,7 +180,7 @@ border_color:rgb(255,255,127);
           </property>
           <property name="icon">
            <iconset>
-            <normaloff>Icon/Vup.png</normaloff>Icon/Vup.png</iconset>
+            <normaloff>Vup.png</normaloff>Vup.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -211,7 +211,7 @@ border_color:rgb(255,255,127);
           </property>
           <property name="icon">
            <iconset>
-            <normaloff>Icon/Vleft.png</normaloff>Icon/Vleft.png</iconset>
+            <normaloff>Vleft.png</normaloff>Vleft.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -237,7 +237,7 @@ border_color:rgb(255,255,127);
           </property>
           <property name="icon">
            <iconset>
-            <normaloff>Icon/Vdown.png</normaloff>Icon/Vdown.png</iconset>
+            <normaloff>Vdown.png</normaloff>Vdown.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -263,7 +263,7 @@ border_color:rgb(255,255,127);
           </property>
           <property name="icon">
            <iconset>
-            <normaloff>Icon/Vright.png</normaloff>Icon/Vright.png</iconset>
+            <normaloff>Vright.png</normaloff>Vright.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -273,6 +273,43 @@ border_color:rgb(255,255,127);
           </property>
           <property name="flat">
            <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QPushButton" name="Button_needle1Stop">
+          <property name="font">
+           <font>
+            <family>Calibri</family>
+            <pointsize>-1</pointsize>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton {
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ff4444, stop:1 #cc0000); /* 红色渐变背景 */
+    border: 2px solid #cc0000; /* 边框颜色 */
+    color: white; /* 文字颜色 */
+    font-size: 30px; /* 字体大小 */
+    font-weight: bold; /* 字体加粗 */
+    text-align: center; /* 文字居中 */
+    border-radius: 40px; /* 圆形按钮（半径设置为宽度和高度的一半） */
+    min-width: 80px; /* 最小宽度 */
+    min-height: 80px; /* 最小高度 */
+    padding: 0; /* 去除内边距 */
+}
+
+QPushButton:hover {
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #0077ff, stop:1 #0044cc); /* 悬停时的蓝色渐变背景 */
+}
+
+QPushButton:pressed {
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #cc0000, stop:1 #ff4444); /* 按下时的渐变背景 */
+}</string>
+          </property>
+          <property name="text">
+           <string>STOP</string>
           </property>
          </widget>
         </item>
@@ -473,8 +510,8 @@ QLineEdit:disabled {
       <widget class="QPushButton" name="Button_needle1SetXdisConfirm">
        <property name="geometry">
         <rect>
-         <x>460</x>
-         <y>60</y>
+         <x>530</x>
+         <y>50</y>
          <width>75</width>
          <height>32</height>
         </rect>
@@ -525,49 +562,6 @@ QLineEdit:disabled {
        </property>
        <property name="text">
         <string>确认</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="Button_needle1Stop">
-       <property name="geometry">
-        <rect>
-         <x>560</x>
-         <y>90</y>
-         <width>84</width>
-         <height>84</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>Calibri</family>
-         <pointsize>-1</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QPushButton {
-    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ff4444, stop:1 #cc0000); /* 红色渐变背景 */
-    border: 2px solid #cc0000; /* 边框颜色 */
-    color: white; /* 文字颜色 */
-    font-size: 30px; /* 字体大小 */
-    font-weight: bold; /* 字体加粗 */
-    text-align: center; /* 文字居中 */
-    border-radius: 40px; /* 圆形按钮（半径设置为宽度和高度的一半） */
-    min-width: 80px; /* 最小宽度 */
-    min-height: 80px; /* 最小高度 */
-    padding: 0; /* 去除内边距 */
-}
-
-QPushButton:hover {
-    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ff6666, stop:1 #dd2222); /* 悬停时的渐变背景 */
-}
-
-QPushButton:pressed {
-    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #cc0000, stop:1 #ff4444); /* 按下时的渐变背景 */
-}</string>
-       </property>
-       <property name="text">
-        <string>STOP</string>
        </property>
       </widget>
       <widget class="QPushButton" name="Button_pulling">
@@ -627,6 +621,27 @@ QPushButton:pressed {
        </property>
        <property name="text">
         <string>探针位移</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_needle1_2">
+       <property name="geometry">
+        <rect>
+         <x>340</x>
+         <y>10</y>
+         <width>181</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Calibri</family>
+         <pointsize>20</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>连续移动步进</string>
        </property>
       </widget>
      </widget>
@@ -690,7 +705,7 @@ border_color:rgb(255,255,127);
           </property>
           <property name="icon">
            <iconset>
-            <normaloff>Icon/Vright.png</normaloff>Icon/Vright.png</iconset>
+            <normaloff>Vright.png</normaloff>Vright.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -710,7 +725,7 @@ border_color:rgb(255,255,127);
           </property>
           <property name="icon">
            <iconset>
-            <normaloff>Icon/Vdown.png</normaloff>Icon/Vdown.png</iconset>
+            <normaloff>Vdown.png</normaloff>Vdown.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -733,7 +748,7 @@ border_color:rgb(255,255,127);
           </property>
           <property name="icon">
            <iconset>
-            <normaloff>Icon/Vup.png</normaloff>Icon/Vup.png</iconset>
+            <normaloff>Vup.png</normaloff>Vup.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -753,7 +768,7 @@ border_color:rgb(255,255,127);
           </property>
           <property name="icon">
            <iconset>
-            <normaloff>Icon/Vleft.png</normaloff>Icon/Vleft.png</iconset>
+            <normaloff>Vleft.png</normaloff>Vleft.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -2080,14 +2095,14 @@ border_color:rgb(255,255,127);
      <widget class="QWidget" name="gridLayoutWidget_6">
       <property name="geometry">
        <rect>
-        <x>740</x>
-        <y>100</y>
+        <x>1020</x>
+        <y>0</y>
         <width>321</width>
         <height>621</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_6">
-       <item row="1" column="0">
+       <item row="0" column="0">
         <widget class="QFrame" name="frame_5">
          <property name="frameShape">
           <enum>QFrame::HLine</enum>
@@ -2097,143 +2112,179 @@ border_color:rgb(255,255,127);
          </property>
         </widget>
        </item>
-       <item row="0" column="0" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-        <widget class="QLabel" name="label_15">
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>15</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>显微镜参数设置</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0">
-        <widget class="QLineEdit" name="lineEdit_microSetYdis">
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>15</pointsize>
-          </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QLineEdit {
-    background-color: #f0f0f0;
-    border: 2px solid #a0a0a0;
-    border-radius: 5px;
-    padding: 5px;
-    color: #000000;
-    selection-background-color: #c0c0c0;
-    selection-color: #000000;
-}
-
-QLineEdit:focus {
-    border: 2px solid #606060;
-    background-color: #e0e0e0;
-}
-
-QLineEdit:hover {
-    border: 2px solid #808080;
-}
-
-QLineEdit:disabled {
-    background-color: #d0d0d0;
-    color: #808080;
-    border: 2px solid #c0c0c0;
-}</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-        <widget class="QPushButton" name="pushButton_MicroConfirm">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>15</pointsize>
-          </font>
-         </property>
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
-         <property name="text">
-          <string>确认</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0" alignment="Qt::AlignLeft|Qt::AlignVCenter">
-        <widget class="QLabel" name="label_17">
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>15</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>X轴移动距离（初始为0.5）：</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0" alignment="Qt::AlignLeft|Qt::AlignVCenter">
-        <widget class="QLabel" name="label_18">
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>15</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Y轴移动距离（初始为0.5）：</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLineEdit" name="lineEdit_microSetXdis">
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>15</pointsize>
-          </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QLineEdit {
-    background-color: #f0f0f0;
-    border: 2px solid #a0a0a0;
-    border-radius: 5px;
-    padding: 5px;
-    color: #000000;
-    selection-background-color: #c0c0c0;
-    selection-color: #000000;
-}
-
-QLineEdit:focus {
-    border: 2px solid #606060;
-    background-color: #e0e0e0;
-}
-
-QLineEdit:hover {
-    border: 2px solid #808080;
-}
-
-QLineEdit:disabled {
-    background-color: #d0d0d0;
-    color: #808080;
-    border: 2px solid #c0c0c0;
-}</string>
-         </property>
-        </widget>
-       </item>
       </layout>
+     </widget>
+     <widget class="QLabel" name="label_17">
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>170</y>
+        <width>319</width>
+        <height>125</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Calibri</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>X轴移动距离（初始为0.5）：</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_18">
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>370</y>
+        <width>255</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Calibri</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Y轴移动距离（初始为0.5）：</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit_microSetXdis">
+      <property name="geometry">
+       <rect>
+        <x>580</x>
+        <y>220</y>
+        <width>231</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Calibri</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLineEdit {
+    background-color: #f0f0f0;
+    border: 2px solid #a0a0a0;
+    border-radius: 5px;
+    padding: 5px;
+    color: #000000;
+    selection-background-color: #c0c0c0;
+    selection-color: #000000;
+}
+
+QLineEdit:focus {
+    border: 2px solid #606060;
+    background-color: #e0e0e0;
+}
+
+QLineEdit:hover {
+    border: 2px solid #808080;
+}
+
+QLineEdit:disabled {
+    background-color: #d0d0d0;
+    color: #808080;
+    border: 2px solid #c0c0c0;
+}</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit_microSetYdis">
+      <property name="geometry">
+       <rect>
+        <x>580</x>
+        <y>370</y>
+        <width>231</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Calibri</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QLineEdit {
+    background-color: #f0f0f0;
+    border: 2px solid #a0a0a0;
+    border-radius: 5px;
+    padding: 5px;
+    color: #000000;
+    selection-background-color: #c0c0c0;
+    selection-color: #000000;
+}
+
+QLineEdit:focus {
+    border: 2px solid #606060;
+    background-color: #e0e0e0;
+}
+
+QLineEdit:hover {
+    border: 2px solid #808080;
+}
+
+QLineEdit:disabled {
+    background-color: #d0d0d0;
+    color: #808080;
+    border: 2px solid #c0c0c0;
+}</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_MicroConfirm">
+      <property name="geometry">
+       <rect>
+        <x>730</x>
+        <y>490</y>
+        <width>75</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <family>Calibri</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="text">
+       <string>确认</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_15">
+      <property name="geometry">
+       <rect>
+        <x>320</x>
+        <y>90</y>
+        <width>140</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Calibri</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>显微镜参数设置</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_4">
@@ -3084,7 +3135,7 @@ QLineEdit:disabled {
           </font>
          </property>
          <property name="text">
-          <string>请选择SIM928串口：</string>
+          <string>请选择Keithley2450串口：</string>
          </property>
         </widget>
        </item>
@@ -3213,8 +3264,8 @@ QLineEdit:disabled {
      <widget class="QPushButton" name="GBIO_connect_button">
       <property name="geometry">
        <rect>
-        <x>790</x>
-        <y>710</y>
+        <x>1060</x>
+        <y>720</y>
         <width>211</width>
         <height>61</height>
        </rect>
@@ -3227,6 +3278,25 @@ QLineEdit:disabled {
       </property>
       <property name="text">
        <string>扫描所有GBIO设备</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="Serial_connect_refresh">
+      <property name="geometry">
+       <rect>
+        <x>500</x>
+        <y>720</y>
+        <width>211</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Calibri</family>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>刷新串口</string>
       </property>
      </widget>
     </widget>
@@ -3332,6 +3402,22 @@ QLineEdit:disabled {
           <string>确认</string>
          </property>
         </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="Button_scriptUpdate">
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>15</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>修改</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout"/>
        </item>
       </layout>
      </widget>

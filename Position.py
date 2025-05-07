@@ -4,7 +4,7 @@ import tkinter as tk
 
 
 from QTneedle.QTneedle.SerialLock import SerialLock
-from SerialPage import NeedelConnectionThread
+from SerialPage import NeedelConnectionThread, SIM928ConnectionThread
 import sys
 
 from StopClass import StopClass
@@ -62,48 +62,65 @@ def getPosition(Z_flag=False):
     z_distance = (1 - distance / 2.5) * 10.92 - 5
     time.sleep(0.1)
 
-    anc.write('[ch1:0]'.encode())
-    anc.write('[ch2:0]'.encode())
-    anc.write('[ch3:0]'.encode())
+    # anc.write('[ch1:0]'.encode())
+    # anc.write('[ch2:0]'.encode())
+    # anc.write('[ch3:0]'.encode())
+
     return round(x_distance,4),round(y_distance,4),round(z_distance,6)
 
-def move_to_Z(z):
+def move_to_Z(z,Voltage_flag=False):
     with SerialLock.serial_lock:
         _,_,z_current = getPosition(True)
 
-    while (abs(z_current - z) > 0.0003) :
+    #低温情况下应该是0.001
+    while (abs(z_current - z) > 0.005) :
+        # 低温情况下应该是500
+        Z_k = 0.1
+        if(Voltage_flag==True):
+            keithley = SIM928ConnectionThread.anc
+            current = keithley.current
+            print(current)
+            if current>= 9e-10:
+                break
         if (StopClass.stop_num == 1):
             break
         flag = False
-        step_per_unit = 0.06  # 假设每 0.06 单位对应 100 步
+
+        # 低温情况下是0.06
+        step_per_unit = 0.12
         with SerialLock.serial_lock:
             z_diff = round((z - z_current), 3)
             if z_diff > 0:
-                move('-Z', abs(z_diff) / step_per_unit * 500, flag)
+                move('-Z', abs(z_diff) / step_per_unit * Z_k, flag)
             elif z_diff < 0:
-                move('Z', abs(z_diff) / step_per_unit * 500, flag)
+                move('Z', abs(z_diff) / step_per_unit * Z_k, flag)
             _,_,z_current = getPosition(True)
     StopClass.stop_num =0
     return z_current
 
 
 def move_to_target(x, y):
+    # 低温情况下应该是1000
+    XY_k = 100
+    step_per_unit = 0.06  # 假设每 0.06 单位对应 100 步
     with SerialLock.serial_lock:
         x_current, y_current,_ = getPosition()
         x_diff = round((x - x_current), 3)
         y_diff = round((y - y_current), 3)
         flag = True
         if (x_diff > 0):
-            move('X', abs(x_diff) / 0.03 * 1000, flag)
+            move('X', abs(x_diff) / 0.03 * XY_k, flag)
         elif (x_diff < 0):
-            move('-X', abs(x_diff) / 0.03 * 1000, flag)
+            move('-X', abs(x_diff) / 0.03 * XY_k, flag)
 
         if (y_diff > 0):
-            move('Y', abs(y_diff) / 0.03 * 1000, flag)
+            move('Y', abs(y_diff) / 0.03 * XY_k, flag)
         elif (y_diff < 0):
-            move('-Y', abs(y_diff) / 0.03 * 1000, flag)
+            move('-Y', abs(y_diff) / 0.03 * XY_k, flag)
         x_current, y_current,_ = getPosition()
-    while ( (abs(y_current - y) > 0.003 or abs(x_current - x) > 0.003)):
+
+
+    while  abs(y_current - y) > 0.003 :
         if(StopClass.stop_num==1):
             StopClass.stop_num=0
             anc = NeedelConnectionThread.anc
@@ -129,22 +146,52 @@ def move_to_target(x, y):
             break
         else:
             flag = False
-            step_per_unit = 0.06  # 假设每 0.06 单位对应 100 步
+            with SerialLock.serial_lock:
+                y_diff = round((y - y_current), 3)
+                if y_diff > 0:
+                    move('Y', abs(y_diff) / step_per_unit * XY_k, flag)
+                elif y_diff < 0:
+                    move('-Y', abs(y_diff) / step_per_unit * XY_k, flag)
+                _, y_current,_ = getPosition()
+    while abs(x_current - x) > 0.003:
+        if(StopClass.stop_num == 1):
+            StopClass.stop_num = 0
+            anc = NeedelConnectionThread.anc
+            anc.write('[ch1:1]'.encode())
+            anc.write('[cap:000nF]'.encode())
+            anc.write('[volt:+000V] '.encode())
+            anc.write('[freq:+00000Hz]'.encode())
+            time.sleep(0.2)
+            anc.write('[ch2:1]'.encode())
+            anc.write('[cap:000nF]'.encode())
+            anc.write('[volt:+000V] '.encode())
+            anc.write('[freq:+00000Hz]'.encode())
+            time.sleep(0.2)
+            anc.write('[ch3:1]'.encode())
+            anc.write('[cap:000nF]'.encode())
+            anc.write('[volt:+000V] '.encode())
+            anc.write('[freq:+00000Hz]'.encode())
+            time.sleep(0.2)
+            anc.write('[ch1:0]'.encode())
+            anc.write('[ch2:0]'.encode())
+            anc.write('[ch3:0]'.encode())
+            time.sleep(0.2)
+            break
+        else:
+            flag = False
             with SerialLock.serial_lock:
                 x_diff = round((x - x_current), 3)
-                y_diff = round((y - y_current), 3)
                 if x_diff > 0:
-                    move('X', abs(x_diff) / step_per_unit * 1000, flag)
+                    move('X', abs(x_diff) / step_per_unit * XY_k, flag)
                 elif x_diff < 0:
-                    move('-X', abs(x_diff) / step_per_unit * 1000, flag)
-                if y_diff > 0:
-                    move('Y', abs(y_diff) / step_per_unit * 1000, flag)
-                elif y_diff < 0:
-                    move('-Y', abs(y_diff) / step_per_unit * 1000, flag)
-                x_current, y_current,_ = getPosition()
+                    move('-X', abs(x_diff) / step_per_unit * XY_k, flag)
+                x_current, _, _ = getPosition()
+
     return x_current, y_current
 
 def move(axis,distance,flag):
+    # 移动时间，低温下是0.3
+    move_time = 0.1
     ser4 = NeedelConnectionThread.anc
     if(axis == '-X'):
         ser4.write('[ch3:1]'.encode())
@@ -186,7 +233,7 @@ def move(axis,distance,flag):
     if(flag):
         time.sleep((distance+1)/1000)
     else:
-        time.sleep(0.3)
+        time.sleep(move_time)
 
     # ser4.write('[ch1:0]'.encode())
     # ser4.write('[ch2:0]'.encode())

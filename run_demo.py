@@ -64,7 +64,7 @@ class UsingTest(QMainWindow, Ui_MainWindow):
                                     self.Button_SIM970Connect, self.Button_SIM970DisConnect,
                                     self.GBIO_connect_button,
                                     self.comboBox_relay, self.label_relayConnect, self.Button_relayConnect,
-                                    self.Button_relayDisConnect)
+                                    self.Button_relayDisConnect,self.Serial_connect_refresh)
 
         self.mainpage3 = CameraPage(self.lineEdit_cameraBao, self.lineEdit_cameraGain, self.lineEdit_cameraRate, self.Button_cameraConfirm)
         self.mainpage4 = MicroPage(self.lineEdit_microSetXdis, self.lineEdit_microSetYdis, self.pushButton_MicroConfirm)
@@ -72,7 +72,7 @@ class UsingTest(QMainWindow, Ui_MainWindow):
                                     self.lineEdit_needleSetXvol, self.lineEdit_needleSetYvol, self.lineEdit_needleSetZvol,
                                     self.lineEdit_needleSetXfreq, self.lineEdit_needleSetYfreq, self.lineEdit_needleSetZfreq, self.Button_needleSetConfirm)
         self.mainpage6 = ScriptPage(self.lineEdit_Scripts, self.Button_ScriptsBrowse, self.textEdit_Scripts, self.Button_scriptConfirm,
-                                    self.lineEdit_SaveResult,self.Button_SaveResultBrowse)
+                                    self.lineEdit_SaveResult,self.Button_SaveResultBrowse,self.Button_scriptUpdate)
         self.mainpage7 = SelectPage(self.pushButton_select, self.label_select)
         self.locationClass = locationClass( self.lineEdit_Xlocation,self.lineEdit_Ylocation,self.lineEdit_Zlocation,
                                    self.lineEdit_Location1,self.lineEdit_Location2,self.lineEdit_Location3,
@@ -81,7 +81,7 @@ class UsingTest(QMainWindow, Ui_MainWindow):
                                    self.Button_ContinueTest,self.Button_StopTest,
                                    self.lineEdit_Pushlocation,self.lineEdit_Pulllocation,
                                             self.Button_PushLocation,self.Button_PullLocation,
-                                            self.Button_PushBack,self.Button_PullBack,self.lineEdit_Scripts)
+                                            self.Button_PushBack,self.Button_PullBack,self.lineEdit_Scripts,self.lineEdit_SaveResult)
 
 
 if __name__ == '__main__':
