@@ -39,8 +39,8 @@
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>70</y>
+      <x>110</x>
+      <y>90</y>
       <width>2131</width>
       <height>931</height>
      </rect>
@@ -87,7 +87,7 @@ QTabWidget::pane {
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>4</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -96,9 +96,9 @@ QTabWidget::pane {
      <widget class="QPlainTextEdit" name="plainTextEdit_log">
       <property name="geometry">
        <rect>
-        <x>1080</x>
+        <x>1050</x>
         <y>700</y>
-        <width>701</width>
+        <width>671</width>
         <height>161</height>
        </rect>
       </property>
@@ -138,9 +138,9 @@ border_color:rgb(255,255,127);
      <widget class="QFrame" name="frame_6">
       <property name="geometry">
        <rect>
-        <x>1080</x>
+        <x>1050</x>
         <y>80</y>
-        <width>701</width>
+        <width>671</width>
         <height>281</height>
        </rect>
       </property>
@@ -510,8 +510,8 @@ QLineEdit:disabled {
       <widget class="QPushButton" name="Button_needle1SetXdisConfirm">
        <property name="geometry">
         <rect>
-         <x>530</x>
-         <y>50</y>
+         <x>450</x>
+         <y>60</y>
          <width>75</width>
          <height>32</height>
         </rect>
@@ -567,9 +567,9 @@ QLineEdit:disabled {
       <widget class="QPushButton" name="Button_pulling">
        <property name="geometry">
         <rect>
-         <x>340</x>
-         <y>180</y>
-         <width>111</width>
+         <x>330</x>
+         <y>220</y>
+         <width>81</width>
          <height>41</height>
         </rect>
        </property>
@@ -586,9 +586,9 @@ QLineEdit:disabled {
       <widget class="QPushButton" name="Button_pushing">
        <property name="geometry">
         <rect>
-         <x>460</x>
-         <y>180</y>
-         <width>111</width>
+         <x>430</x>
+         <y>220</y>
+         <width>81</width>
          <height>41</height>
         </rect>
        </property>
@@ -648,7 +648,7 @@ QLineEdit:disabled {
      <widget class="QFrame" name="frame_7">
       <property name="geometry">
        <rect>
-        <x>1080</x>
+        <x>1050</x>
         <y>370</y>
         <width>331</width>
         <height>321</height>
@@ -691,8 +691,8 @@ border_color:rgb(255,255,127);
       <widget class="QWidget" name="gridLayoutWidget">
        <property name="geometry">
         <rect>
-         <x>70</x>
-         <y>40</y>
+         <x>60</x>
+         <y>70</y>
          <width>221</width>
          <height>221</height>
         </rect>
@@ -787,7 +787,7 @@ border_color:rgb(255,255,127);
      <widget class="QFrame" name="frame_9">
       <property name="geometry">
        <rect>
-        <x>1450</x>
+        <x>1390</x>
         <y>370</y>
         <width>331</width>
         <height>321</height>
@@ -827,30 +827,11 @@ border_color:rgb(255,255,127);
         <string>实时检测</string>
        </property>
       </widget>
-      <widget class="QLabel" name="label_10">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>90</y>
-         <width>81</width>
-         <height>33</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>Calibri</family>
-         <pointsize>15</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>计数值</string>
-       </property>
-      </widget>
       <widget class="QPushButton" name="Button_SIM928">
        <property name="geometry">
         <rect>
          <x>210</x>
-         <y>60</y>
+         <y>50</y>
          <width>75</width>
          <height>32</height>
         </rect>
@@ -865,56 +846,11 @@ border_color:rgb(255,255,127);
         <string>确认</string>
        </property>
       </widget>
-      <widget class="QLineEdit" name="lineEdit_SIM970">
-       <property name="geometry">
-        <rect>
-         <x>100</x>
-         <y>100</y>
-         <width>101</width>
-         <height>30</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>Calibri</family>
-         <pointsize>15</pointsize>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QLineEdit {
-    background-color: #f0f0f0;
-    border: 2px solid #a0a0a0;
-    border-radius: 5px;
-    padding: 5px;
-    color: #000000;
-    selection-background-color: #c0c0c0;
-    selection-color: #000000;
-}
-
-QLineEdit:focus {
-    border: 2px solid #606060;
-    background-color: #e0e0e0;
-}
-
-QLineEdit:hover {
-    border: 2px solid #808080;
-}
-
-QLineEdit:disabled {
-    background-color: #d0d0d0;
-    color: #808080;
-    border: 2px solid #c0c0c0;
-}</string>
-       </property>
-       <property name="placeholderText">
-        <string/>
-       </property>
-      </widget>
       <widget class="QLineEdit" name="lineEdit_SIM928">
        <property name="geometry">
         <rect>
          <x>100</x>
-         <y>60</y>
+         <y>50</y>
          <width>101</width>
          <height>30</height>
         </rect>
@@ -971,30 +907,11 @@ QLineEdit:disabled {
         <string>探针电压</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="Button_SIM970">
-       <property name="geometry">
-        <rect>
-         <x>210</x>
-         <y>100</y>
-         <width>75</width>
-         <height>32</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>Calibri</family>
-         <pointsize>15</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>确认</string>
-       </property>
-      </widget>
       <widget class="QLabel" name="label_25">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>140</y>
+         <y>90</y>
          <width>81</width>
          <height>33</height>
         </rect>
@@ -1013,7 +930,7 @@ QLineEdit:disabled {
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>170</y>
+         <y>130</y>
          <width>81</width>
          <height>33</height>
         </rect>
@@ -1032,7 +949,7 @@ QLineEdit:disabled {
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>200</y>
+         <y>170</y>
          <width>81</width>
          <height>33</height>
         </rect>
@@ -1050,9 +967,9 @@ QLineEdit:disabled {
       <widget class="QLineEdit" name="lineEdit_Location1">
        <property name="geometry">
         <rect>
-         <x>60</x>
-         <y>140</y>
-         <width>171</width>
+         <x>100</x>
+         <y>90</y>
+         <width>101</width>
          <height>30</height>
         </rect>
        </property>
@@ -1092,9 +1009,9 @@ QLineEdit:disabled {
       <widget class="QLineEdit" name="lineEdit_Location2">
        <property name="geometry">
         <rect>
-         <x>60</x>
-         <y>170</y>
-         <width>171</width>
+         <x>100</x>
+         <y>130</y>
+         <width>101</width>
          <height>30</height>
         </rect>
        </property>
@@ -1134,9 +1051,9 @@ QLineEdit:disabled {
       <widget class="QLineEdit" name="lineEdit_Location3">
        <property name="geometry">
         <rect>
-         <x>60</x>
-         <y>200</y>
-         <width>171</width>
+         <x>100</x>
+         <y>170</y>
+         <width>101</width>
          <height>30</height>
         </rect>
        </property>
@@ -1176,8 +1093,8 @@ QLineEdit:disabled {
       <widget class="QPushButton" name="Button_Location1">
        <property name="geometry">
         <rect>
-         <x>240</x>
-         <y>140</y>
+         <x>210</x>
+         <y>90</y>
          <width>75</width>
          <height>32</height>
         </rect>
@@ -1195,8 +1112,8 @@ QLineEdit:disabled {
       <widget class="QPushButton" name="Button_Location2">
        <property name="geometry">
         <rect>
-         <x>240</x>
-         <y>170</y>
+         <x>210</x>
+         <y>130</y>
          <width>75</width>
          <height>32</height>
         </rect>
@@ -1214,8 +1131,8 @@ QLineEdit:disabled {
       <widget class="QPushButton" name="Button_Location3">
        <property name="geometry">
         <rect>
-         <x>240</x>
-         <y>200</y>
+         <x>210</x>
+         <y>170</y>
          <width>75</width>
          <height>32</height>
         </rect>
@@ -1233,8 +1150,8 @@ QLineEdit:disabled {
       <widget class="QLineEdit" name="lineEdit_row">
        <property name="geometry">
         <rect>
-         <x>60</x>
-         <y>240</y>
+         <x>40</x>
+         <y>220</y>
          <width>41</width>
          <height>30</height>
         </rect>
@@ -1275,8 +1192,8 @@ QLineEdit:disabled {
       <widget class="QLineEdit" name="lineEdit_col">
        <property name="geometry">
         <rect>
-         <x>150</x>
-         <y>240</y>
+         <x>120</x>
+         <y>220</y>
          <width>41</width>
          <height>30</height>
         </rect>
@@ -1317,8 +1234,8 @@ QLineEdit:disabled {
       <widget class="QLabel" name="label_35">
        <property name="geometry">
         <rect>
-         <x>20</x>
-         <y>240</y>
+         <x>10</x>
+         <y>220</y>
          <width>31</width>
          <height>33</height>
         </rect>
@@ -1336,8 +1253,8 @@ QLineEdit:disabled {
       <widget class="QLabel" name="label_37">
        <property name="geometry">
         <rect>
-         <x>120</x>
-         <y>240</y>
+         <x>90</x>
+         <y>220</y>
          <width>31</width>
          <height>33</height>
         </rect>
@@ -1355,8 +1272,8 @@ QLineEdit:disabled {
       <widget class="QPushButton" name="Button_CreateMap">
        <property name="geometry">
         <rect>
-         <x>70</x>
-         <y>280</y>
+         <x>180</x>
+         <y>220</y>
          <width>101</width>
          <height>32</height>
         </rect>
@@ -1374,8 +1291,8 @@ QLineEdit:disabled {
       <widget class="QPushButton" name="Button_ContinueTest">
        <property name="geometry">
         <rect>
-         <x>190</x>
-         <y>280</y>
+         <x>20</x>
+         <y>270</y>
          <width>101</width>
          <height>32</height>
         </rect>
@@ -1393,8 +1310,8 @@ QLineEdit:disabled {
       <widget class="QPushButton" name="Button_StopTest">
        <property name="geometry">
         <rect>
-         <x>200</x>
-         <y>240</y>
+         <x>170</x>
+         <y>270</y>
          <width>101</width>
          <height>32</height>
         </rect>
@@ -1413,7 +1330,7 @@ QLineEdit:disabled {
      <widget class="QPushButton" name="Button_relay">
       <property name="geometry">
        <rect>
-        <x>1080</x>
+        <x>1050</x>
         <y>30</y>
         <width>171</width>
         <height>41</height>
@@ -3526,7 +3443,7 @@ QLineEdit:disabled {
    <widget class="QLabel" name="label_light">
     <property name="geometry">
      <rect>
-      <x>1480</x>
+      <x>1490</x>
       <y>10</y>
       <width>41</width>
       <height>41</height>
@@ -3641,7 +3558,7 @@ QLineEdit:disabled {
    <widget class="QCheckBox" name="Checkbox_microAutoTrace">
     <property name="geometry">
      <rect>
-      <x>1530</x>
+      <x>1550</x>
       <y>10</y>
       <width>211</width>
       <height>41</height>

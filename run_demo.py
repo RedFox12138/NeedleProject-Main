@@ -50,8 +50,8 @@ class UsingTest(QMainWindow, Ui_MainWindow):
                                    self.Button_Micro_up, self.Button_Micro_down, self.Button_Micro_left,self.Button_Micro_right,
                                    self.Button_needle1Up, self.Button_needle1Down, self.Button_needle1Left, self.Button_needle1Right,
                                    self.lineEdit_needle1Xdistance,self.lineEdit_needle1Ydistance, self.lineEdit_needle1Zdistance,
-                                   self.Button_needle1SetXdisConfirm,self.Button_needle1SetYdisConfirm, self.Button_needle1SetZdisConfirm, self.Button_needle1Stop, self.label_light,
-                                   self.lineEdit_SIM928, self.Button_SIM928, self.lineEdit_SIM970,
+                                   self.Button_needle1SetXdisConfirm,self.Button_needle1SetYdisConfirm, self.Button_needle1SetZdisConfirm, self.label_light,
+                                   self.lineEdit_SIM928, self.Button_SIM928,
                                    self.Button_pushing, self.Button_pulling, self.Button_relay,
                                    self.label_needle1,self.lineEdit_SaveResult)
         self.mainpage2 = SerialPage(self.comboBox_micro, self.label_microConnect, self.Button_microConnect,

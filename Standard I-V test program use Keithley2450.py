@@ -1,8 +1,5 @@
-
-
 import os
 import sys
-# 定义你要添加的库文件路径
 custom_lib_path = "c:\\users\\administrator\\appdata\\local\\programs\\python\\python37\\lib\\site-packages"
 
 # 将路径添加到 sys.path
@@ -104,7 +101,7 @@ def main():
     last_time = time.time()
     time_str = datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')
 
-    # datapath = 'D:\\lzg\\DATA\\20241129_walk\\IV\\'              # 数据文件夹目录
+    #datapath = 'D:\\lzg\\DATA\\20241129_walk\\IV\\'              # 数据文件夹目录
     datapath = sys.argv[1]
     print("保存路径是",datapath)
     # datapath = sys.argv[0]

@@ -1,11 +1,7 @@
-import math
 import os
-import re
 import subprocess
 import sys
 
-from MoveFunc import getPosition
-from QTneedle.QTneedle.locationClass import locationClass
 from StopClass import StopClass
 
 # 定义你要添加的库文件路径
@@ -30,20 +26,20 @@ from CameraConfig.CamOperation_class import CameraOperation, To_hex_str, Is_colo
 from CameraConfig.CameraParams_header import MV_CC_DEVICE_INFO_LIST
 from CameraConfig.ImagePro import load_templates, template, match_device_templates
 from CameraConfig.MvCameraControl_class import MV_GIGE_DEVICE, MV_USB_DEVICE, MvCamera
-from CameraConfig.PixelType_header import PixelType_Gvsp_RGB8_Packed
 from LTDS import ReturnNeedleMove, WhileMove
 from Microscope import ReturnZauxdll
-from QTneedle.QTneedle.threading_location import LocationUpdater
 from SerialPage import SIM928ConnectionThread, SIM970ConnectionThread, RelayConnectionThread, NeedelConnectionThread
 from demo import Ui_MainWindow
-from shared import lock_singleton
 
 
 def handle_coordinates(x, y):
     print(f"Received coordinates: x={x}, y={y}")
 
+
 global red_dot_x
 global red_dot_y
+
+
 class MainPage1(QMainWindow, Ui_MainWindow):
     micro_distanceY = 0.5
     micro_distanceX = 0.5
@@ -56,9 +52,9 @@ class MainPage1(QMainWindow, Ui_MainWindow):
     stop_num = 0
     # 默认的脚本位置
     import_script = "./jiaoben.py"
-    #默认的保存路径
-    save_script = 'D:\\lzg\\data\\'  +time.strftime("save_%Y-%m-%d_%H-%M-%S") +  '\\IV\\'
-    
+    # 默认的保存路径
+    save_script = 'D:\\lzg\\data\\' + time.strftime("save_%Y-%m-%d_%H-%M-%S") + '\\IV\\'
+
     # 给小灯设置颜色
     def get_stylesheet(status):
         color = "red" if status else "green"
@@ -70,20 +66,22 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                }}
            """
 
-
-    def __init__(self,label_video,label_cameraLabel,Button_screenshot,lineEdit_savePath,Button_browse,Button_needleTemplate,
-                 Button_padTemplate,Button_iuCalculate,plainTextEdit_log,log_file,Checkbox_microAutoTrace,Checkbox_ElecNeedle,Checkbox_Light,
-                 Button_Micro_up,Button_Micro_down,Button_Micro_left,Button_Micro_right,
+    def __init__(self, label_video, label_cameraLabel, Button_screenshot, lineEdit_savePath, Button_browse,
+                 Button_needleTemplate,
+                 Button_padTemplate, Button_iuCalculate, plainTextEdit_log, log_file, Checkbox_microAutoTrace,
+                 Checkbox_ElecNeedle, Checkbox_Light,
+                 Button_Micro_up, Button_Micro_down, Button_Micro_left, Button_Micro_right,
                  Button_needle1Up, Button_needle1Down, Button_needle1Left, Button_needle1Right,
                  lineEdit_needle1Xdistance, lineEdit_needle1Ydistance, lineEdit_needle1Zdistance,
-                 Button_needle1SetXdisConfirm, Button_needle1SetYdisConfirm, Button_needle1SetZdisConfirm, Button_needle1Stop,label_light,
-                 lineEdit_SIM928,Button_SIM928,lineEdit_SIM970,
+                 Button_needle1SetXdisConfirm, Button_needle1SetYdisConfirm, Button_needle1SetZdisConfirm,
+                 label_light,
+                 lineEdit_SIM928, Button_SIM928,
                  Button_pushing, Button_pulling,
-                 Button_relay,label_needle1,lineEdit_SaveResult
-    ):
+                 Button_relay, label_needle1, lineEdit_SaveResult
+                 ):
         super().__init__()
 
-        #调用电学测量函数，传入保存路径
+        # 调用电学测量函数，传入保存路径
         self.lineEdit_SaveResult = lineEdit_SaveResult
 
         # 电和光的选择按钮
@@ -93,7 +91,6 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         self.Checkbox_Light = Checkbox_Light
 
         self.voltage928max = 0
-        self.lineEdit_SIM970 = lineEdit_SIM970
 
         # 日志的路径
         self.log_file = log_file
@@ -124,8 +121,6 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         self.needleuleft = 2
         self.needleright = 3
 
-
-
         self.deviceList = MV_CC_DEVICE_INFO_LIST()
         self.cam = MvCamera()
 
@@ -152,9 +147,9 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         self.plainTextEdit_log = plainTextEdit_log
 
         # 探针距离设置的输入框
-        self.lineEdit_needle1Xdistance=lineEdit_needle1Xdistance
-        self.lineEdit_needle1Ydistance=lineEdit_needle1Ydistance
-        self.lineEdit_needle1Zdistance=lineEdit_needle1Zdistance
+        self.lineEdit_needle1Xdistance = lineEdit_needle1Xdistance
+        self.lineEdit_needle1Ydistance = lineEdit_needle1Ydistance
+        self.lineEdit_needle1Zdistance = lineEdit_needle1Zdistance
 
         self.lineEdit_needle1Xdistance.setText("30")
         self.lineEdit_needle1Ydistance.setText("30")
@@ -164,13 +159,10 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         self.lineEdit_SIM928 = lineEdit_SIM928
         Button_SIM928.clicked.connect(self.update_voltage)
 
-
         # 三个方向距离的确认按钮
         Button_needle1SetXdisConfirm.clicked.connect(self.update_needle_distanceX)
         Button_needle1SetYdisConfirm.clicked.connect(self.update_needle_distanceY)
         Button_needle1SetZdisConfirm.clicked.connect(self.update_needle_distanceZ)
-
-
 
         Button_screenshot.clicked.connect(lambda: threading.Thread(target=self.save_image).start())
         Button_browse.clicked.connect(self.browse_folder)
@@ -178,31 +170,28 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         Button_padTemplate.clicked.connect(lambda: threading.Thread(target=self.select_pad_template).start())
         Button_iuCalculate.clicked.connect(lambda: threading.Thread(target=self.CalIU()).start())
 
-        #显微镜是否跟随
+        # 显微镜是否跟随
         Checkbox_microAutoTrace.stateChanged.connect(self.checkbox_state_changed)
 
-        #电探针和光的复选框
-        self.Checkbox_ElecNeedle.toggled.connect(lambda :self.checkbox_ElecNeedle_changed(self.Checkbox_ElecNeedle))
-        self.Checkbox_Light.toggled.connect(lambda :self.checkbox_Light_changed(self.Checkbox_Light))
+        # 电探针和光的复选框
+        self.Checkbox_ElecNeedle.toggled.connect(lambda: self.checkbox_ElecNeedle_changed(self.Checkbox_ElecNeedle))
+        self.Checkbox_Light.toggled.connect(lambda: self.checkbox_Light_changed(self.Checkbox_Light))
 
-        #显微镜移动按钮
+        # 显微镜移动按钮
         Button_Micro_up.clicked.connect(self.move_microscope_up)
         Button_Micro_down.clicked.connect(self.move_microscope_down)
         Button_Micro_left.clicked.connect(self.move_microscope_left)
         Button_Micro_right.clicked.connect(self.move_microscope_right)
 
-        #探针移动按钮
+        # 探针移动按钮
         Button_needle1Up.clicked.connect(self.move_probe_up)
         Button_needle1Down.clicked.connect(self.move_probe_down)
         Button_needle1Left.clicked.connect(self.move_probe_left)
         Button_needle1Right.clicked.connect(self.move_probe_right)
 
-        #继电器的按钮
+        # 继电器的按钮
         Button_relay.clicked.connect(self.relay_IO)
         self.relay_flag = False
-
-        # 停止程序，避免探针移动距离过大导致损坏
-        # Button_needle1Stop.clicked.connect(self.STOP_MOVE)
 
         Button_pushing.clicked.connect(lambda: threading.Thread(target=self.Pushing).start())
         Button_pulling.clicked.connect(lambda: threading.Thread(target=self.Pulling()).start())
@@ -211,21 +200,16 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         self.log_timer.timeout.connect(self.update_log_display)
         self.log_timer.start(500)  # 每秒更新一次
 
-        # self.SIM970_timer = QTimer(self)
-        # self.SIM970_timer.timeout.connect(self.update_SIM_display)
-        # self.SIM970_timer.start(500)  # 每秒更新一次
-
-
-    #继电器的开关函数
+    # 继电器的开关函数
     def relay_IO(self):
         try:
-            if(self.relay_flag):
+            if (self.relay_flag):
                 d = bytes.fromhex('A0 01 00 A1')  # 关闭
                 RelayConnectionThread.anc.write(d)
                 self.relay_flag = False
                 time.sleep(0.1)
             else:
-                d=bytes.fromhex('A0 01 01 A2')#打开
+                d = bytes.fromhex('A0 01 01 A2')  # 打开
                 RelayConnectionThread.anc.write(d)
                 self.relay_flag = True
                 time.sleep(0.1)
@@ -255,8 +239,6 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         if ret != 0:
             return
 
-
-
     # @staticmethod
     def update_frame(self):
         load_templates()
@@ -270,13 +252,14 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                     data = np.frombuffer(MainPage1.obj_cam_operation.buf_grab_image, dtype=np.uint8,
                                          count=stFrameInfo.nFrameLen)
 
-
                     frame = data.reshape((stFrameInfo.nHeight, stFrameInfo.nWidth))
                     self.frame_resized = cv2.cvtColor(frame, cv2.COLOR_BayerBG2RGB)
-                    self.frame_resized = cv2.resize(self.frame_resized, (stFrameInfo.nWidth//4,stFrameInfo.nHeight//4),interpolation=cv2.INTER_LINEAR)
-                    self.frame_resized = cv2.resize(self.frame_resized, (1021,851), interpolation=cv2.INTER_LINEAR)
+                    self.frame_resized = cv2.resize(self.frame_resized,
+                                                    (stFrameInfo.nWidth // 4, stFrameInfo.nHeight // 4),
+                                                    interpolation=cv2.INTER_LINEAR)
+                    self.frame_resized = cv2.resize(self.frame_resized, (1021, 851), interpolation=cv2.INTER_LINEAR)
 
-                    with open('dia'+str(MainPage1.equipment)+ '.txt', 'r') as file:
+                    with open('dia' + str(MainPage1.equipment) + '.txt', 'r') as file:
                         line = file.readline().strip()  # 读取第一行并去除首尾空白字符
                     # 将字符串按空格分割成列表
                     numbers = line.split(',')
@@ -284,9 +267,8 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                     xdia = int(numbers[0])
                     ydia = int(numbers[1])
 
-                    red_dot_x, red_dot_y,self.board_height,self.board_width = template(self.frame_resized,xdia,
-                                                                                        ydia,MainPage1.equipment)
-                    # match_device_templates(self.frame_resized)
+                    red_dot_x, red_dot_y, self.board_height, self.board_width = template(self.frame_resized, xdia,
+                                                                                         ydia, MainPage1.equipment)
 
                     self.frame_resized = self.align_frame_with_probe()
 
@@ -322,7 +304,6 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         path = os.path.join(self.save_folder, filename)
         cv2.imwrite(path, frame)
 
-
     def match_and_move(self):
         # 获取当前帧并进行模板匹配
         video = self.update_frame()  # 这是一个假设函数，你需要从摄像头获取当前帧
@@ -330,16 +311,14 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
         if matched_centers:
             min_distance = float('inf')
-            matched_centers= match_device_templates(video)
+            matched_centers = match_device_templates(video)
             probe_x, probe_y = self.get_probe_position()
             for center_x, center_y in matched_centers:
-                distance = pow(abs(center_x-probe_x),2) + pow(abs(center_y-probe_y),2)
+                distance = pow(abs(center_x - probe_x), 2) + pow(abs(center_y - probe_y), 2)
                 if distance < min_distance:
                     min_distance = distance
                     closet = [center_x, center_y]
-            self.move_probe_to_target(closet[0],closet[1])
-
-
+            self.move_probe_to_target(closet[0], closet[1])
 
     # 选择模板的函数
     def select_template(self):
@@ -385,62 +364,18 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         if r is not None:
             x, y, w, h = r
             cropped_image = param[y:y + h, x:x + w]
-            if(MainPage1.equipment):
+            if (MainPage1.equipment):
                 cv2.imwrite("templateLight.png", cropped_image)
             else:
                 cv2.imwrite("templateNeedle.png", cropped_image)
             load_templates()
-            red_dot_x, red_dot_y, _, _ = template(self.frame_resized,MainPage1.equipment)
+            red_dot_x, red_dot_y, _, _ = template(self.frame_resized, MainPage1.equipment)
             self.x_dia = mouseX - red_dot_x
             self.y_dia = mouseY - red_dot_y
-
-            # self.dia[MainPage1.equipment][0] = self.x_dia
-            # self.dia[MainPage1.equipment][1] = self.y_dia
-
             cv2.destroyWindow("Select Needle Template")
 
-            with open('dia'+str(MainPage1.equipment)+ '.txt', 'w') as f:
+            with open('dia' + str(MainPage1.equipment) + '.txt', 'w') as f:
                 f.write(f"{self.x_dia},{self.y_dia}")
-
-    # 选择垫片模板的函数
-    # def select_pad_template(self):
-    #     param = self.frame_resized
-    #
-    #     r = cv2.selectROI("Select pad Template", param)
-    #
-    #     # 检查用户是否取消选择或选择了无效的区域
-    #     if r[2] == 0 or r[3] == 0:
-    #         print("选择被取消或无效。")
-    #         cv2.destroyWindow("Select pad Template")
-    #         return None
-    #
-    #     if r is not None:
-    #         x, y, w, h = r
-    #         cropped_image = param[y:y + h, x:x + w]
-    #         cv2.imwrite("templatepad.png", cropped_image)
-    #         load_templates()
-    #         red_dot_x, red_dot_y, _, _ = template(self.frame_resized)
-    #         self.x_dia = mouseX - red_dot_x
-    #         self.y_dia = mouseY - red_dot_y
-    #         cv2.destroyWindow("Select pad Template")
-
-    # def select_pad_template(self):
-    #     param = self.frame_resized
-    #     r = cv2.selectROI("Select Needle Template", param, showCrosshair=True, fromCenter=False)
-    #
-    #     # 检查用户是否取消选择或选择了无效的区域
-    #     if r[2] == 0 or r[3] == 0:
-    #         print("选择被取消或无效。")
-    #         cv2.destroyWindow("Select Needle Template")
-    #         return None
-    #
-    #     # 获取选中的矩形区域，并进行裁剪
-    #     if r is not None:
-    #         x, y, w, h = r
-    #         cropped_image = param[y:y + h, x:x + w]
-    #         cv2.imwrite("templatepad.png", cropped_image)
-    #         load_templates()
-    #         cv2.destroyWindow("Select Needle Template")
 
     def take_screenshot(self):
         # 截取当前帧并让用户框选区域
@@ -532,16 +467,10 @@ class MainPage1(QMainWindow, Ui_MainWindow):
             f.write(f"{x_dia},{y_dia}")
         print(f"偏移量已保存: x_dia={x_dia}, y_dia={y_dia}")
 
-
-
-
-
-
     # 用于写入日志，在每次操作后加入这个函数就可
-    def log_operation(self,action):
+    def log_operation(self, action):
         with open(self.log_file, 'a') as f:
             f.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - {action}\n")
-
 
     def CalIU(self):
         '''
@@ -560,19 +489,17 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                 self.log_operation(f"错误：脚本文件不存在 - {script_path}")
                 return
 
-
             save_script = self.lineEdit_SaveResult.text()
-            if (save_script==''):
-                save_script = 'D:\\lzg\\data\\'  +time.strftime("save_%Y-%m-%d_%H-%M-%S") +  '\\IV\\'
+            if (save_script == ''):
+                save_script = 'D:\\lzg\\data\\' + time.strftime("save_%Y-%m-%d_%H-%M-%S") + '\\IV\\'
             # 使用完整路径执行，添加错误检查
             result = subprocess.run(
-                [sys.executable, script_path,save_script],
+                [sys.executable, script_path, save_script],
                 capture_output=True,
                 text=True,
                 check=True,  # 如果返回非零会抛出异常
                 encoding='utf-8',  # 明确指定编码
             )
-
 
             # 记录输出和错误（如果有）
             if result.stdout:
@@ -582,9 +509,6 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
             self.log_operation("成功执行IU参数计算")
 
-        # except subprocess.CalledProcessError as e:
-        #     self.log_operation(f"脚本执行失败，返回码: {e.returncode}")
-        #     self.log_operation(f"错误输出: {e.stderr}")
         except Exception as e:
             self.log_operation(f"执行过程中发生错误: {str(e)}")
 
@@ -632,7 +556,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
             MainPage1.equipment = 0
             self.label_needle1.setText("探针位移")
 
-    #自动跟随函数
+    # 自动跟随函数
     def align_frame_with_probe(self):
         if not self.allow_alignment:  # 检查是否允许对齐
             return self.frame_resized
@@ -657,13 +581,13 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
                 # 调整摄像头向探针移动
                 if distance_y < 0:
-                    ReturnZauxdll(self.microY, self.microdown*abs(distance_y)/500 )
+                    ReturnZauxdll(self.microY, self.microdown * abs(distance_y) / 500)
                 elif distance_y > 0:
-                    ReturnZauxdll(self.microY, self.microup*abs(distance_y)/500 )
+                    ReturnZauxdll(self.microY, self.microup * abs(distance_y) / 500)
                 if distance_x < 0:
-                    ReturnZauxdll(self.microX, self.microright*abs(distance_x)/500)
+                    ReturnZauxdll(self.microX, self.microright * abs(distance_x) / 500)
                 elif distance_x > 0:
-                    ReturnZauxdll(self.microX, self.microleft*abs(distance_x)/500 )
+                    ReturnZauxdll(self.microX, self.microleft * abs(distance_x) / 500)
 
                 # 可选，为了视觉确认重绘画面的中心
                 cv2.circle(self.frame_resized, (frame_center_x, frame_center_y), 5, (255, 0, 0), -1)
@@ -682,19 +606,19 @@ class MainPage1(QMainWindow, Ui_MainWindow):
     # 显微镜移动函数
     def move_microscope_up(self):
         distance = self.get_distance(MainPage1.micro_distanceY, 0.5)
-        threading.Thread(target=ReturnZauxdll, args=(self.microY, self.microup*distance)).start()
+        threading.Thread(target=ReturnZauxdll, args=(self.microY, self.microup * distance)).start()
 
     def move_microscope_down(self):
         distance = self.get_distance(MainPage1.micro_distanceY, 0.5)
-        threading.Thread(target=ReturnZauxdll, args=(self.microY, self.microdown*distance)).start()
+        threading.Thread(target=ReturnZauxdll, args=(self.microY, self.microdown * distance)).start()
 
     def move_microscope_left(self):
         distance = self.get_distance(MainPage1.micro_distanceX, 0.5)
-        threading.Thread(target=ReturnZauxdll, args=(self.microX, self.microleft*distance)).start()
+        threading.Thread(target=ReturnZauxdll, args=(self.microX, self.microleft * distance)).start()
 
     def move_microscope_right(self):
         distance = self.get_distance(MainPage1.micro_distanceX, 0.5)
-        threading.Thread(target=ReturnZauxdll, args=(self.microX, self.microright*distance)).start()
+        threading.Thread(target=ReturnZauxdll, args=(self.microX, self.microright * distance)).start()
 
     def get_distance(self, input_distance, default_distance):
         try:
@@ -704,46 +628,36 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
     def move_probe_up(self):
         threading.Thread(target=WhileMove,
-                         args=(0,MainPage1.equipment,MainPage1.needle_distanceY)).start()
-        # WhileMove(0)
-        # distance = self.get_distance(MainPage1.needle_distanceY, 1000)
-        # threading.Thread(target=ReturnNeedleMove, args=(self.needleup, distance,self.indicator,False,True,MainPage1.equipment)).start()
+                         args=(0, MainPage1.equipment, MainPage1.needle_distanceY)).start()
         self.log_operation("探针往上移动了")
 
     def move_probe_down(self):
-        # distance = self.get_distance(MainPage1.needle_distanceY, 1000)
-        # threading.Thread(target=ReturnNeedleMove, args=(self.needledown, distance,self.indicator,False,True,MainPage1.equipment)).start()
-        # self.log_operation("探针往下移动了 {}".format(distance))
         threading.Thread(target=WhileMove,
-                         args=(1,MainPage1.equipment,MainPage1.needle_distanceY)).start()
+                         args=(1, MainPage1.equipment, MainPage1.needle_distanceY)).start()
         self.log_operation("探针往下移动了")
 
     def move_probe_left(self):
-        # distance = self.get_distance(MainPage1.needle_distanceX, 1000)
-        # threading.Thread(target=ReturnNeedleMove, args=(self.needleuleft, distance,self.indicator,False,True,MainPage1.equipment)).start()
-        # self.log_operation("探针往左移动了 {}".format(distance))
         threading.Thread(target=WhileMove,
-                         args=(2,MainPage1.equipment,MainPage1.needle_distanceX)).start()
+                         args=(2, MainPage1.equipment, MainPage1.needle_distanceX)).start()
         self.log_operation("探针往左移动了")
 
     def move_probe_right(self):
-        # distance = self.get_distance(MainPage1.needle_distanceX, 1000)
-        # threading.Thread(target=ReturnNeedleMove, args=(self.needleright, distance,self.indicator,False,True,MainPage1.equipment)).start()
-        # self.log_operation("探针往右移动了 {}".format(distance))
         threading.Thread(target=WhileMove,
-                         args=(3,MainPage1.equipment,MainPage1.needle_distanceX)).start()
+                         args=(3, MainPage1.equipment, MainPage1.needle_distanceX)).start()
         self.log_operation("探针往右移动了")
 
     # 主页面设置探针的移动距离
     def update_needle_distanceX(self):
-        MainPage1.needle_distanceX = min(2000,float(self.lineEdit_needle1Xdistance.text()))
+        MainPage1.needle_distanceX = min(2000, float(self.lineEdit_needle1Xdistance.text()))
+
     def update_needle_distanceY(self):
-        MainPage1.needle_distanceY = min(2000,float(self.lineEdit_needle1Ydistance.text()))
+        MainPage1.needle_distanceY = min(2000, float(self.lineEdit_needle1Ydistance.text()))
+
     def update_needle_distanceZ(self):
-        MainPage1.needle_distanceZ = min(100,float(self.lineEdit_needle1Zdistance.text()))
+        MainPage1.needle_distanceZ = min(100, float(self.lineEdit_needle1Zdistance.text()))
 
     def STOP_MOVE(self):
-        MainPage1.stop_num=1
+        MainPage1.stop_num = 1
 
         anc = NeedelConnectionThread.anc
         anc.write('[ch1:1]'.encode())
@@ -765,9 +679,6 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         anc.write('[ch2:0]'.encode())
         anc.write('[ch3:0]'.encode())
         time.sleep(0.2)
-
-
-
 
     def restart_program(self):
         python = sys.executable  # 当前 python 解释器路径
@@ -815,16 +726,16 @@ class MainPage1(QMainWindow, Ui_MainWindow):
             return
 
     # 计算距离并移动探针
-    def move_probe_to_target(self,target_x,target_y):
+    def move_probe_to_target(self, target_x, target_y):
         self.allow_alignment = False  # 禁用对齐
         self.indicator.setStyleSheet(MainPage1.get_stylesheet(True))
         while True:
-            if(StopClass.stop_num==1):
+            if (StopClass.stop_num == 1):
                 break
             # self.align_allowed = False  # 暂停对齐操作
             probe_x, probe_y = self.get_probe_position()
-            x= target_x
-            y= target_y
+            x = target_x
+            y = target_y
             if probe_x is None:
                 self.log_operation("模板匹配失败")
                 print("模板匹配失败，请先进行模板匹配")
@@ -836,22 +747,20 @@ class MainPage1(QMainWindow, Ui_MainWindow):
             # 低温情况下应该是乘以50
             distance = distance * 1
             if target_y < probe_y:
-                ReturnNeedleMove(self.needleup, distance,self.indicator,True,False,MainPage1.equipment)
-                self.log_operation("探针往上移动了 {}".format(round((distance/2),3)))
+                ReturnNeedleMove(self.needleup, distance, self.indicator, True, False, MainPage1.equipment)
+                self.log_operation("探针往上移动了 {}".format(round((distance / 2), 3)))
             elif target_y > probe_y:
-                ReturnNeedleMove(self.needledown, distance,self.indicator,True,False,MainPage1.equipment)
-                self.log_operation("探针往下移动了 {}".format(round((distance/2),3)))
+                ReturnNeedleMove(self.needledown, distance, self.indicator, True, False, MainPage1.equipment)
+                self.log_operation("探针往下移动了 {}".format(round((distance / 2), 3)))
             if target_x < probe_x:
-                ReturnNeedleMove(self.needleuleft, distance,self.indicator,True,False,MainPage1.equipment)
-                self.log_operation("探针往左移动了 {}".format(round((distance/2),3)))
+                ReturnNeedleMove(self.needleuleft, distance, self.indicator, True, False, MainPage1.equipment)
+                self.log_operation("探针往左移动了 {}".format(round((distance / 2), 3)))
             elif target_x > probe_x:
-                ReturnNeedleMove(self.needleright, distance,self.indicator,True,False,MainPage1.equipment)
-                self.log_operation("探针往右移动了 {}".format(round((distance/2),3)))
+                ReturnNeedleMove(self.needleright, distance, self.indicator, True, False, MainPage1.equipment)
+                self.log_operation("探针往右移动了 {}".format(round((distance / 2), 3)))
 
             # 低温情况下应该是0.5
             time.sleep(0.1)
-        # self.align_allowed = True  # 完成移动后重新允许对齐
-        # locationClass.locationX, locationClass.locationY, locationClass.locationZ = getPosition()
         self.allow_alignment = True  # 重新允许对齐
         self.indicator.setStyleSheet(MainPage1.get_stylesheet(False))
         MainPage1.stop_num = 0
@@ -889,47 +798,17 @@ class MainPage1(QMainWindow, Ui_MainWindow):
             except (AttributeError, ValueError):
                 print("keithley未正常连接")
 
-    def update_SIM_display(self):
-        '''
-            Funtion:
-                用于定时器绑定，更新探针的反馈电压
-            Args:
-                none
-            Return:
-                none
-        '''
-        # sim970 = SRSSIM970(7, 'GPIB4::2::INSTR')
-
-        sim970 = SIM970ConnectionThread.anc
-        if sim970 is None:
-            print("SIM970未正常连接")
-            self.lineEdit_SIM970.setText("SIM970未正常连接")
-        else:
-            try:
-                data, data_mean, data_std = sim970.read_n_return_mean_std('2', 1)
-                self.lineEdit_SIM970.setText(str(data))
-            except (AttributeError, ValueError):
-                print("SIM970未正常连接")
-                self.lineEdit_SIM970.setText("SIM970未正常连接")
-
-        # sim970.quit_vol()
-
-    # def set_status(self, status):
-    #     self.setStyleSheet(self.get_stylesheet(status))
 
     def Pushing(self):
-        ReturnNeedleMove(5, min(1000, MainPage1.needle_distanceZ), self.indicator,False,False,MainPage1.equipment)
+        ReturnNeedleMove(5, min(1000, MainPage1.needle_distanceZ), self.indicator, False, False, MainPage1.equipment)
         keithley = SIM928ConnectionThread.anc
         current = keithley.current
         print(current)
         self.log_operation("探针下压了 {}".format(MainPage1.needle_distanceZ))
 
     def Pulling(self):
-        ReturnNeedleMove(4,min(1000,MainPage1.needle_distanceZ),self.indicator,False,False,MainPage1.equipment)
+        ReturnNeedleMove(4, min(1000, MainPage1.needle_distanceZ), self.indicator, False, False, MainPage1.equipment)
         self.log_operation("探针抬升了 {}".format(MainPage1.needle_distanceZ))
-
-
-
 
 
 def Color_numpy(data, nWidth, nHeight):
