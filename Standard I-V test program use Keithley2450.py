@@ -16,7 +16,7 @@ from pymeasure.instruments.keithley import Keithley2450
 
 
 def main():
-    keithley = Keithley2450("GPIB1::18::INSTR") # keithley2450地址
+    keithley = Keithley2450("GPIB5::18::INSTR") # keithley2450地址
     keithley.reset() #keithley2450初始化sss
     time.sleep(0.1)
 
@@ -25,7 +25,6 @@ def main():
 
     # sample_number = 'walk_1'   # 样品批号
     sample_number = 'LB123'   # 样品批号
-    #Test_port     = 'walk'          # 测试口编号
     Device_no     = '1'           # 器件pad编号
 
     V_max  = 2# IV扫描最大电压，单位：V

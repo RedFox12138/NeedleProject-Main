@@ -149,21 +149,21 @@ class locationClass(QMainWindow, Ui_MainWindow):
 
 
         # 用户输入的参数
-        # top_left = (3.2726, -0.7094)
-        # top_right = (3.0408, -0.7096)
-        # bottom_right = (3.0408, -0.9634)
-        # row = 3
-        # col = 2
+        top_left = (-0.3835, -2.2729)
+        top_right = (-0.6593, -2.2734)
+        bottom_right = (-0.6587, -2.4062)
+        row = 2
+        col = 2
+        #
+        # row = int(self.lineEdit_row.text())
+        # col = int(self.lineEdit_col.text())
+        #
+        # if(row==0 or col==0 or self.location1==0 or self.location2==0 or self.location3==0):
+        #     print("参数配置未完成，无法生成MAP")
+        # else:
+        #     self.device_positions = self.calculate_device_positions(self.location1,self.location2,self.location3,row,col)
 
-        row = int(self.lineEdit_row.text())
-        col = int(self.lineEdit_col.text())
-
-        if(row==0 or col==0 or self.location1==0 or self.location2==0 or self.location3==0):
-            print("参数配置未完成，无法生成MAP")
-        else:
-            self.device_positions = self.calculate_device_positions(self.location1,self.location2,self.location3,row,col)
-
-        # self.device_positions = self.calculate_device_positions(top_left, top_right, bottom_right, row, col)
+        self.device_positions = self.calculate_device_positions(top_left, top_right, bottom_right, row, col)
 
         # 创建新的图形和坐标轴
         self.fig, self.ax = plt.subplots()
@@ -251,7 +251,6 @@ class locationClass(QMainWindow, Ui_MainWindow):
                 keithley.measure_current()  # 设置为测量电流
                 keithley.enable_source()  # 打开源表
                 keithley.source_voltage = 0.1
-                current = keithley.current
 
                 # keithley = SIM928ConnectionThread.anc
                 self.PushBack(True)
@@ -302,11 +301,19 @@ class locationClass(QMainWindow, Ui_MainWindow):
         test_event.clear()
         print(f"当前一个芯片测量结束后，会自动终止测试")
 
-    def calculate_device_positions(self,top_left, top_right, bottom_right, rows, cols):
+    # def calculate_device_positions(self,top_left, top_right, bottom_right, rows, cols):
+    #     x = np.linspace(top_left[0], top_right[0], cols)
+    #     y = np.linspace(top_left[1], bottom_right[1], rows)
+    #     xx, yy = np.meshgrid(x, y)
+    #     return list(zip(xx.flatten(), yy.flatten()))
+
+    def calculate_device_positions(self, top_left, top_right, bottom_right, rows, cols):
         x = np.linspace(top_left[0], top_right[0], cols)
         y = np.linspace(top_left[1], bottom_right[1], rows)
         xx, yy = np.meshgrid(x, y)
-        return list(zip(xx.flatten(), yy.flatten()))
+
+        # 转置网格点矩阵，然后展平，实现竖向编号
+        return list(zip(xx.T.flatten(), yy.T.flatten()))
 
 
     # 鼠标点击事件处理函数

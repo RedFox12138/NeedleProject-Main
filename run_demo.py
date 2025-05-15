@@ -46,7 +46,7 @@ class UsingTest(QMainWindow, Ui_MainWindow):
 
         self.stopclass = StopClass(self.Button_needle1Stop)
         self.mainpage1 = MainPage1(self.label_video, self.label_cameraLabel, self.Button_screenshot, self.lineEdit_savePath, self.Button_browse, self.Button_needleTemplate,
-                                   self.Button_padTemplate,self.Button_iuCalculate, self.plainTextEdit_log,log_file,self.Checkbox_microAutoTrace,self.Checkbox_ElecNeedle,self.Checkbox_Light,
+                                   self.Button_padTemplate,self.Button_iuCalculate, self.plainTextEdit_log,log_file,self.Checkbox_templateDevice,self.Checkbox_microAutoTrace,self.Checkbox_ElecNeedle,self.Checkbox_Light,
                                    self.Button_Micro_up, self.Button_Micro_down, self.Button_Micro_left,self.Button_Micro_right,
                                    self.Button_needle1Up, self.Button_needle1Down, self.Button_needle1Left, self.Button_needle1Right,
                                    self.lineEdit_needle1Xdistance,self.lineEdit_needle1Ydistance, self.lineEdit_needle1Zdistance,

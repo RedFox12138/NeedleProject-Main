@@ -39,8 +39,8 @@
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>110</x>
-      <y>90</y>
+      <x>30</x>
+      <y>70</y>
       <width>2131</width>
       <height>931</height>
      </rect>
@@ -3622,6 +3622,24 @@ QLineEdit:disabled {
      <font>
       <pointsize>15</pointsize>
      </font>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="Checkbox_templateDevice">
+    <property name="geometry">
+     <rect>
+      <x>1550</x>
+      <y>40</y>
+      <width>251</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>15</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>是否显示器件的模板匹配</string>
     </property>
    </widget>
   </widget>

@@ -30,7 +30,7 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
-        self.tabWidget.setGeometry(QtCore.QRect(110, 90, 2131, 931))
+        self.tabWidget.setGeometry(QtCore.QRect(30, 70, 2131, 931))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
@@ -2046,6 +2046,12 @@ class Ui_MainWindow(object):
         font.setPointSize(15)
         self.widget.setFont(font)
         self.widget.setObjectName("widget")
+        self.Checkbox_templateDevice = QtWidgets.QCheckBox(self.centralwidget)
+        self.Checkbox_templateDevice.setGeometry(QtCore.QRect(1550, 40, 251, 41))
+        font = QtGui.QFont()
+        font.setPointSize(15)
+        self.Checkbox_templateDevice.setFont(font)
+        self.Checkbox_templateDevice.setObjectName("Checkbox_templateDevice")
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -2163,4 +2169,5 @@ class Ui_MainWindow(object):
         self.Checkbox_microAutoTrace.setText(_translate("MainWindow", "显微镜是否自动跟随"))
         self.Button_padTemplate.setText(_translate("MainWindow", "器件模板匹配"))
         self.Button_iuCalculate.setText(_translate("MainWindow", "电学性能测试"))
+        self.Checkbox_templateDevice.setText(_translate("MainWindow", "是否显示器件的模板匹配"))
 

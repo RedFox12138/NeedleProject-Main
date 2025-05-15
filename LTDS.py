@@ -9,7 +9,7 @@ import math
 from QTneedle.QTneedle.Position import getPosition
 from QTneedle.QTneedle.SerialLock import SerialLock
 from QTneedle.QTneedle.locationClass import locationClass
-from SerialPage import NeedelConnectionThread
+from SerialPage import NeedelConnectionThread, SIM928ConnectionThread
 from StopClass import StopClass
 
 ax = {'x':1,'y':2,'z':3,'x2':4,'y2':5,'z2':6}
@@ -51,6 +51,7 @@ def ReturnNeedleMove(direction,distance,indicatorLight,isclick=False,flag=False,
                 else :
                     anc.write(('[+:0000' + str(distance) + '] ').encode())  # +-方向
 
+
             elif direction == 4 :
                 anc.write(('[ch'+ str(directionArray[equipment][2])+':1]').encode())
                 anc.write('[cap:013nF]'.encode())
@@ -75,7 +76,7 @@ def ReturnNeedleMove(direction,distance,indicatorLight,isclick=False,flag=False,
 
 
 def WhileMove(direction,equipment=0,distance=1000):
-    directionArray = [[2,3],[5,6]]
+    directionArray = [[2,3,1],[5,6,4]]
     with SerialLock.serial_lock:
         anc = NeedelConnectionThread.anc
         anc.write('[ch1:0]'.encode())
@@ -86,50 +87,46 @@ def WhileMove(direction,equipment=0,distance=1000):
         anc.write('[ch6:0]'.encode())
         time.sleep(0.2)
         distance = min(1000,distance)
-        if direction == 0:
+        if direction == 0 or direction == 1:
             anc.write( ('[ch'+ str(directionArray[equipment][0])+':1]').encode())
             anc.write('[cap:013nF]'.encode())
             anc.write('[volt:+200V] '.encode())
             anc.write('[freq:+01000Hz]'.encode())
             time.sleep(0.2)
+            num_str = '[-:0000' if direction ==0 else '[+:0000'
             while StopClass.stop_num == 0:
-                anc.write(('[-:0000' + str(distance) + '] ').encode())  # +-方向
+                anc.write((num_str + str(distance) + '] ').encode())  # +-方向
                 time.sleep(0.2)
-        elif direction == 1:
-            anc.write( ('[ch'+ str(directionArray[equipment][0])+':1]').encode())
-            anc.write('[cap:013nF]'.encode())
-            anc.write('[volt:+200V] '.encode())
-            anc.write('[freq:+01000Hz]'.encode())
-            time.sleep(0.2)
-            while StopClass.stop_num == 0:
-                anc.write(('[+:0000' + str(distance) + '] ').encode())  # +-方向
-                time.sleep(0.2)
-        elif direction == 2:
+        elif direction == 2 or direction == 3:
             anc.write( ('[ch'+ str(directionArray[equipment][1])+':1]').encode())
             anc.write('[cap:013nF]'.encode())
             anc.write('[volt:+200V] '.encode())
             anc.write('[freq:+01000Hz]'.encode())
             time.sleep(0.2)
+            num_str1 = '[+:0000' if direction == 2 else '[-:0000'
+            num_str2 = '[-:0000' if direction == 2 else '[+:0000'
             while StopClass.stop_num == 0:
                 if(equipment==1):
-                    anc.write(('[+:0000' + str(distance) + '] ').encode())  # +-方向
+                    anc.write((num_str1 + str(distance) + '] ').encode())  # +-方向
                 else :
-                    anc.write(('[-:0000' + str(distance) + '] ').encode())  # +-方向
-
+                    anc.write((num_str2 + str(distance) + '] ').encode())  # +-方向
                 time.sleep(0.2)
-        elif direction == 3:
-            anc.write( ('[ch'+ str(directionArray[equipment][1])+':1]').encode())
+        #Z轴, 4按压,5抬升
+        elif  direction == 4 or direction == 5:
+            anc.write(('[ch' + str(directionArray[equipment][2]) + ':1]').encode())
             anc.write('[cap:013nF]'.encode())
             anc.write('[volt:+200V] '.encode())
             anc.write('[freq:+01000Hz]'.encode())
             time.sleep(0.2)
+            num_str = '[+:0000' if direction == 4 else '[-:0000'
             while StopClass.stop_num == 0:
-                if (equipment == 1):
-                    anc.write(('[-:0000' + str(distance) + '] ').encode())  # +-方向
-                else:
-                    anc.write(('[+:0000' + str(distance) + '] ').encode())  # +-方向
-
+                anc.write((num_str + str(distance) + '] ').encode())  # +-方向
                 time.sleep(0.2)
+                keithley = SIM928ConnectionThread.anc
+                current = keithley.current
+                print(current)
+
+
         StopClass.stop_num = 0
         locationClass.locationX, locationClass.locationY, locationClass.locationZ = getPosition()
 

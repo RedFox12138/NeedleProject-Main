@@ -43,9 +43,9 @@ global red_dot_y
 class MainPage1(QMainWindow, Ui_MainWindow):
     micro_distanceY = 0.5
     micro_distanceX = 0.5
-    needle_distanceY = 500
-    needle_distanceX = 500
-    needle_distanceZ = 10
+    needle_distanceY = 300
+    needle_distanceX = 300
+    needle_distanceZ = 300
     obj_cam_operation = None
     equipment = 0  # 0代表电探针，1代表光纤
     stop_flag = False
@@ -68,8 +68,8 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
     def __init__(self, label_video, label_cameraLabel, Button_screenshot, lineEdit_savePath, Button_browse,
                  Button_needleTemplate,
-                 Button_padTemplate, Button_iuCalculate, plainTextEdit_log, log_file, Checkbox_microAutoTrace,
-                 Checkbox_ElecNeedle, Checkbox_Light,
+                 Button_padTemplate, Button_iuCalculate, plainTextEdit_log, log_file,Checkbox_templateDevice,
+                 Checkbox_microAutoTrace,Checkbox_ElecNeedle, Checkbox_Light,
                  Button_Micro_up, Button_Micro_down, Button_Micro_left, Button_Micro_right,
                  Button_needle1Up, Button_needle1Down, Button_needle1Left, Button_needle1Right,
                  lineEdit_needle1Xdistance, lineEdit_needle1Ydistance, lineEdit_needle1Zdistance,
@@ -80,6 +80,9 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                  Button_relay, label_needle1, lineEdit_SaveResult
                  ):
         super().__init__()
+
+        # 是否显示器件的模板匹配，True显示，False不显示
+        self.DeviceTemplate_view = False
 
         # 调用电学测量函数，传入保存路径
         self.lineEdit_SaveResult = lineEdit_SaveResult
@@ -151,9 +154,9 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         self.lineEdit_needle1Ydistance = lineEdit_needle1Ydistance
         self.lineEdit_needle1Zdistance = lineEdit_needle1Zdistance
 
-        self.lineEdit_needle1Xdistance.setText("30")
-        self.lineEdit_needle1Ydistance.setText("30")
-        self.lineEdit_needle1Zdistance.setText("30")
+        self.lineEdit_needle1Xdistance.setText(str(MainPage1.needle_distanceX))
+        self.lineEdit_needle1Ydistance.setText(str(MainPage1.needle_distanceY))
+        self.lineEdit_needle1Zdistance.setText(str(MainPage1.needle_distanceZ))
 
         # 928更新电压
         self.lineEdit_SIM928 = lineEdit_SIM928
@@ -172,6 +175,9 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
         # 显微镜是否跟随
         Checkbox_microAutoTrace.stateChanged.connect(self.checkbox_state_changed)
+
+        # 是否显示探针的模板匹配
+        Checkbox_templateDevice.stateChanged.connect(self.checkbox_template_changed)
 
         # 电探针和光的复选框
         self.Checkbox_ElecNeedle.toggled.connect(lambda: self.checkbox_ElecNeedle_changed(self.Checkbox_ElecNeedle))
@@ -194,7 +200,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         self.relay_flag = False
 
         Button_pushing.clicked.connect(lambda: threading.Thread(target=self.Pushing).start())
-        Button_pulling.clicked.connect(lambda: threading.Thread(target=self.Pulling()).start())
+        Button_pulling.clicked.connect(lambda: threading.Thread(target=self.Pulling).start())
 
         self.log_timer = QTimer(self)
         self.log_timer.timeout.connect(self.update_log_display)
@@ -270,6 +276,9 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                     red_dot_x, red_dot_y, self.board_height, self.board_width = template(self.frame_resized, xdia,
                                                                                          ydia, MainPage1.equipment)
 
+
+                    if(self.DeviceTemplate_view):
+                        match_device_templates(self.frame_resized)
                     self.frame_resized = self.align_frame_with_probe()
 
                     height, width, channel = self.frame_resized.shape
@@ -531,6 +540,13 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         except FileNotFoundError:
             self.plainTextEdit_log.setPlainText("No logs available.")
 
+    def checkbox_template_changed(self,state):
+        # 根据复选框的状态更新标志位
+        if state == Qt.Checked:
+            self.DeviceTemplate_view = True
+        else:
+            self.DeviceTemplate_view = False
+
     def checkbox_state_changed(self, state):
         # 根据复选框的状态更新标志位
         if state == Qt.Checked:
@@ -654,7 +670,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         MainPage1.needle_distanceY = min(2000, float(self.lineEdit_needle1Ydistance.text()))
 
     def update_needle_distanceZ(self):
-        MainPage1.needle_distanceZ = min(100, float(self.lineEdit_needle1Zdistance.text()))
+        MainPage1.needle_distanceZ = min(1000, float(self.lineEdit_needle1Zdistance.text()))
 
     def STOP_MOVE(self):
         MainPage1.stop_num = 1
@@ -727,40 +743,50 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
     # 计算距离并移动探针
     def move_probe_to_target(self, target_x, target_y):
+        distance_weight = 50 #低温50，常温1
         self.allow_alignment = False  # 禁用对齐
         self.indicator.setStyleSheet(MainPage1.get_stylesheet(True))
-        while True:
+        probe_x, probe_y = self.get_probe_position()
+        distance = np.sqrt((target_x - probe_x) ** 2) *distance_weight
+        while (distance>=2):
             if (StopClass.stop_num == 1):
                 break
-            # self.align_allowed = False  # 暂停对齐操作
-            probe_x, probe_y = self.get_probe_position()
-            x = target_x
-            y = target_y
             if probe_x is None:
                 self.log_operation("模板匹配失败")
                 print("模板匹配失败，请先进行模板匹配")
                 break
-            distance = np.sqrt((target_x - probe_x) ** 2 + (target_y - probe_y) ** 2)
-            if distance < 5:  # 设定一个阈值，比如10
-                break
-
-            # 低温情况下应该是乘以50
-            distance = distance * 1
-            if target_y < probe_y:
-                ReturnNeedleMove(self.needleup, distance, self.indicator, True, False, MainPage1.equipment)
-                self.log_operation("探针往上移动了 {}".format(round((distance / 2), 3)))
-            elif target_y > probe_y:
-                ReturnNeedleMove(self.needledown, distance, self.indicator, True, False, MainPage1.equipment)
-                self.log_operation("探针往下移动了 {}".format(round((distance / 2), 3)))
             if target_x < probe_x:
                 ReturnNeedleMove(self.needleuleft, distance, self.indicator, True, False, MainPage1.equipment)
                 self.log_operation("探针往左移动了 {}".format(round((distance / 2), 3)))
             elif target_x > probe_x:
                 ReturnNeedleMove(self.needleright, distance, self.indicator, True, False, MainPage1.equipment)
                 self.log_operation("探针往右移动了 {}".format(round((distance / 2), 3)))
+            # 低温情况下time.sleep应该是0.5，常温情况是0.1
+            time.sleep(0.5)
+            probe_x, probe_y = self.get_probe_position()
+            distance = np.sqrt((target_x - probe_x) ** 2)*distance_weight
 
-            # 低温情况下应该是0.5
-            time.sleep(0.1)
+        distance = np.sqrt((target_y - probe_y) ** 2)*distance_weight
+        while(distance>=2):
+            if (StopClass.stop_num == 1):
+                break
+            if probe_y is None:
+                self.log_operation("模板匹配失败")
+                print("模板匹配失败，请先进行模板匹配")
+                break
+            if target_y < probe_y:
+                ReturnNeedleMove(self.needleup, distance, self.indicator, True, False, MainPage1.equipment)
+                self.log_operation("探针往上移动了 {}".format(round((distance / 2), 3)))
+            elif target_y > probe_y:
+                ReturnNeedleMove(self.needledown, distance, self.indicator, True, False, MainPage1.equipment)
+                self.log_operation("探针往下移动了 {}".format(round((distance / 2), 3)))
+            # 低温情况下time.sleep应该是0.5，常温情况是0.1
+            time.sleep(0.5)
+            probe_x, probe_y = self.get_probe_position()
+            distance = np.sqrt((target_y - probe_y) ** 2)*distance_weight
+
+
+
         self.allow_alignment = True  # 重新允许对齐
         self.indicator.setStyleSheet(MainPage1.get_stylesheet(False))
         MainPage1.stop_num = 0
@@ -800,15 +826,13 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
 
     def Pushing(self):
-        ReturnNeedleMove(5, min(1000, MainPage1.needle_distanceZ), self.indicator, False, False, MainPage1.equipment)
-        keithley = SIM928ConnectionThread.anc
-        current = keithley.current
-        print(current)
-        self.log_operation("探针下压了 {}".format(MainPage1.needle_distanceZ))
-
+        # ReturnNeedleMove(5, min(5000, MainPage1.needle_distanceZ), self.indicator, False, False, MainPage1.equipment)
+        WhileMove(4,MainPage1.equipment,MainPage1.needle_distanceZ)
+        self.log_operation("探针下压了")
     def Pulling(self):
-        ReturnNeedleMove(4, min(1000, MainPage1.needle_distanceZ), self.indicator, False, False, MainPage1.equipment)
-        self.log_operation("探针抬升了 {}".format(MainPage1.needle_distanceZ))
+        # 常温下min的最大值是1000，低温下min的最大值是5000
+        WhileMove(5, MainPage1.equipment, MainPage1.needle_distanceZ)
+        self.log_operation("探针抬升了")
 
 
 def Color_numpy(data, nWidth, nHeight):
