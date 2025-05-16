@@ -27,9 +27,9 @@ def main():
     sample_number = 'LB123'   # 样品批号
     Device_no     = '1'           # 器件pad编号
 
-    V_max  = 2# IV扫描最大电压，单位：V
+    V_max  = 5# IV扫描最大电压，单位：V
     V_step = 0.3  # 电压步进
-    R_bias = 99800  # 偏置电阻大小
+    R_bias = 98500  # 偏置电阻大小
 
     #=================================================================================================
 
@@ -42,16 +42,16 @@ def main():
     #=================================================================================================
     # 获取扫描电压列表
     for i in range(4*int(V_max/V_step)):
-        if (i<int(V_max/V_step)):
+        if i<int(V_max / V_step):
             V_add = V_add+V_step
             V_set.append(V_add)
-        elif (i<2*int(V_max/V_step)):
+        elif i<2*int(V_max / V_step):
             V_add = V_add-V_step
             V_set.append(V_add)
-        elif (i<3*int(V_max/V_step)):
+        elif i<3*int(V_max / V_step):
             V_add = V_add-V_step
             V_set.append(V_add)
-        elif (i<4*int(V_max/V_step)):
+        elif i<4*int(V_max / V_step):
             V_add = V_add+V_step
             V_set.append(V_add)
     # print(V_set) # 用来检查设定电压列表是否正确
@@ -97,7 +97,6 @@ def main():
     #保存文件为matlab格式
     # if __name__ == "__main__":
 
-    last_time = time.time()
     time_str = datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')
 
     #datapath = 'D:\\lzg\\DATA\\20241129_walk\\IV\\'              # 数据文件夹目录

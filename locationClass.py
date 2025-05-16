@@ -2,18 +2,15 @@ import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
-
 import matplotlib
 import numpy as np
 from PyQt5.QtCore import QTimer
 from matplotlib import pyplot as plt, animation
-from matplotlib.widgets import Button
-
-
-#
+import cv2
+from PyQt5.QtCore import QTimer, Qt
+from QTneedle.QTneedle.DailyLogger import DailyLogger
 from QTneedle.QTneedle.Position import getPosition, move_to_target, move_to_Z
-from SerialPage import SIM928ConnectionThread
-
+from SerialPage import SIM928ConnectionThread, RelayConnectionThread
 from StopClass import StopClass
 
 custom_lib_path = "c:\\users\\administrator\\appdata\\local\\programs\\python\\python37\\lib\\site-packages"
@@ -33,7 +30,7 @@ plt.rcParams['font.family'] = 'SimHei'
 plt.rcParams['axes.unicode_minus'] = False
 # 全局变量，用于控制测试的启动和停止
 test_event = threading.Event()
-
+logger = DailyLogger()
 
 class locationClass(QMainWindow, Ui_MainWindow):
     locationX = 0
@@ -46,10 +43,26 @@ class locationClass(QMainWindow, Ui_MainWindow):
                  Button_ContinueTest,Button_StopTest,
                  lineEdit_Pushlocation, lineEdit_Pulllocation,
                  Button_PushLocation, Button_PullLocation,
-                 Button_PushBack, Button_PullBack,lineEdit_Scripts,lineEdit_SaveResult
+                 Button_PushBack, Button_PullBack,lineEdit_Scripts,lineEdit_SaveResult,lineEdit_savePath,
+                 lineEdit_leftTopX, lineEdit_leftTopY, lineEdit_rightTopX, lineEdit_rightTopY, lineEdit_rightBottomX, lineEdit_rightBottomY,
+                 Checkbox_DontTest
     ):
         super().__init__()
+
+        # 大规模测试的时候，不需要按压与电学性能测试
+        Checkbox_DontTest.stateChanged.connect(self.checkbox_DontTest_changed)
+        self.DontTest = False
+
+        #下面是内部矩阵三个坐标分别位于外部矩阵的什么位置
+        self.lineEdit_leftTopX=lineEdit_leftTopX
+        self.lineEdit_leftTopY=lineEdit_leftTopY
+        self.lineEdit_rightTopX=lineEdit_rightTopX
+        self.lineEdit_rightTopY=lineEdit_rightTopY
+        self.lineEdit_rightBottomX=lineEdit_rightBottomX
+        self.lineEdit_rightBottomY=lineEdit_rightBottomY
+
         self.lineEdit_SaveResult = lineEdit_SaveResult
+        self.lineEdit_savePath = lineEdit_savePath
         self.lineEdit_Scripts = lineEdit_Scripts
         self.device_positions = []
         self.ax = None
@@ -98,8 +111,12 @@ class locationClass(QMainWindow, Ui_MainWindow):
         self.log_timer.timeout.connect(self.update_location_display)
         self.log_timer.start(500)  # 每秒更新一次
 
-        # 开始测试按钮 从头开始自动化测试
-        # 创建按钮并调整布局
+    def checkbox_DontTest_changed(self,state):
+        # 根据复选框的状态更新标志位
+        if state == Qt.Checked:
+            self.DontTest = True
+        else:
+            self.DontTest = False
 
     def PushBack(self,flag=True):
         move_to_Z(self.Zlocation1,flag)
@@ -139,31 +156,45 @@ class locationClass(QMainWindow, Ui_MainWindow):
 
 
     def CreateMap(self):
-
-
-
         # 关闭之前打开的图形窗口（如果存在）
         if hasattr(self, 'fig') and self.fig is not None:
             plt.close(self.fig)
             self.fig = None  # 显式释放资源
-
-
         # 用户输入的参数
-        top_left = (-0.3835, -2.2729)
-        top_right = (-0.6593, -2.2734)
-        bottom_right = (-0.6587, -2.4062)
-        row = 2
-        col = 2
-        #
-        # row = int(self.lineEdit_row.text())
-        # col = int(self.lineEdit_col.text())
-        #
-        # if(row==0 or col==0 or self.location1==0 or self.location2==0 or self.location3==0):
-        #     print("参数配置未完成，无法生成MAP")
-        # else:
-        #     self.device_positions = self.calculate_device_positions(self.location1,self.location2,self.location3,row,col)
+        # top_left = (-0.3835, -2.2729)
+        # top_right = (-0.6593, -2.2734)
+        # bottom_right = (-0.6587, -2.4062)
+        # row = 4
+        # col = 4
 
-        self.device_positions = self.calculate_device_positions(top_left, top_right, bottom_right, row, col)
+        if (self.lineEdit_row.text() == '' or self.lineEdit_col.text() == '' or
+                self.location1 == '' or self.location2 == '' or self.location3 == '' or
+                self.lineEdit_rightTopX.text() == '' or self.lineEdit_rightTopY.text() == '' or
+                self.lineEdit_leftTopX.text() == '' or self.lineEdit_leftTopY.text() == '' or
+                self.lineEdit_rightBottomX.text() == '' or self.lineEdit_rightBottomY.text() == ''):
+            # 处理空值的情况
+            logger.log("参数配置未完成，无法生成MAP")
+            return
+        else:
+            row = int(self.lineEdit_row.text())
+            col = int(self.lineEdit_col.text())
+            x1 = int(self.lineEdit_leftTopX.text())
+            y1 = int(self.lineEdit_leftTopY.text())
+            x2 = int(self.lineEdit_rightTopX.text())
+            y2 = int(self.lineEdit_rightTopY.text())
+            x3 = int(self.lineEdit_rightBottomX.text())
+            y3 = int(self.lineEdit_rightBottomY.text())
+
+            self.device_positions = self.calculate_device_positions(self.location1,x1,y1,
+                                                                    self.location2,x2,y2,
+                                                                    self.location3,x3,y3,
+                                                                    row,col)
+
+        # self.device_positions = self.calculate_device_positions(top_left, top_right, bottom_right, row, col)
+
+        #
+        # self.device_positions = self.calculate_device_positions(top_left, 3, 3, top_right,
+        #                                                         3, 4, bottom_right, 4, 4, row, col)
 
         # 创建新的图形和坐标轴
         self.fig, self.ax = plt.subplots()
@@ -229,7 +260,7 @@ class locationClass(QMainWindow, Ui_MainWindow):
     #         move_thread.start()
 
     # 遍历设备位置，依次移动探针 从头开始测试所有的探针
-    def move_to_all_targets(self,start_index=0):
+    def move_to_all_targets(self, start_index=0):
         test_event.set()
         try:
             for i in range(start_index, len(self.device_positions)):
@@ -237,54 +268,66 @@ class locationClass(QMainWindow, Ui_MainWindow):
                     StopClass.stop_num=0
                     break
                 target_x, target_y = self.device_positions[i]
-                print(f'移动到目标点: x={target_x}, y={target_y}')
+                logger.log(f'探针已经移动移动到目标点: x={target_x}, y={target_y}，准备模板匹配移动')
                 move_to_target(target_x, target_y)
                 self.mainpage1.match_and_move()
                 locationClass.locationX, locationClass.locationY,_ = getPosition()
                 time.sleep(1)  # 等待 1 秒，确保探针稳定
-                keithley = SIM928ConnectionThread.anc
-                keithley.use_rear_terminals  # 使用仪器前面端子
-                keithley.wires
-                keithley.apply_voltage()  # 设置为电压源
-                keithley.compliance_current = 0.1  # 设置合规电流
-                keithley.auto_range_source()
-                keithley.measure_current()  # 设置为测量电流
-                keithley.enable_source()  # 打开源表
-                keithley.source_voltage = 0.1
 
-                # keithley = SIM928ConnectionThread.anc
-                self.PushBack(True)
-                time.sleep(0.5)  # 等待 1 秒，确保探针稳定
-                # try:
-                #     current = keithley.current
-                # except Exception as e:
-                #     current = 10e-11
-                current = keithley.current
-                print("按压完成后的电流是",current)
-                if current >= 9e-10:
-                    #执行IU计算
-                    run_script = self.lineEdit_Scripts.text()
-                    if (run_script == ''):
-                        run_script = "./jiaoben.py"
+                if self.DontTest is False:
+                    keithley = SIM928ConnectionThread.anc
+                    keithley.use_rear_terminals  # 使用仪器前面端子
+                    keithley.wires
+                    keithley.apply_voltage()  # 设置为电压源
+                    keithley.compliance_current = 0.1  # 设置合规电流
+                    keithley.auto_range_source()
+                    keithley.measure_current()  # 设置为测量电流
+                    keithley.enable_source()  # 打开源表
+                    keithley.source_voltage = 0.1
 
-                    save_script = self.lineEdit_SaveResult.text()
-                    if (save_script == ''):
-                        save_script = 'D:\\lzg\\data\\' + time.strftime("save_%Y-%m-%d_%H-%M-%S") + '\\IV\\'
+                    self.PushBack(True)
+                    self.mainpage1.match_and_move()
+                    time.sleep(0.5)  # 等待 1 秒，确保探针稳定
 
-                    result = subprocess.run(
-                        [sys.executable, run_script, save_script],
-                        capture_output=True,
-                        text=True,
-                        check=True,  # 如果返回非零会抛出异常
-                        encoding='utf-8',  # 明确指定编码
-                    )
-                    print(result.stdout)
-                self.PullBack()
+                    current = keithley.current
+                    logger.log("本次按压完成后的电流是",str(current))
 
+                    if current >= 9e-10:
+                        # 关闭继电器
+                        d = bytes.fromhex('A0 01 00 A1')  # 关闭
+                        RelayConnectionThread.anc.write(d)
+                        time.sleep(2)
 
+                        #执行IU计算
+                        run_script = self.lineEdit_Scripts.text()
+                        if run_script == '':
+                            run_script = "./jiaoben.py"
+
+                        save_script = self.lineEdit_SaveResult.text()
+                        if save_script == '':
+                            save_script = 'D:\\lzg\\data\\' + time.strftime("save_%Y-%m-%d_%H-%M-%S") + '\\IV\\'
+
+                        result = subprocess.run(
+                            [sys.executable, run_script, save_script],
+                            capture_output=True,
+                            text=True,
+                            check=True,  # 如果返回非零会抛出异常
+                            encoding='utf-8',  # 明确指定编码
+                        )
+                        logger.log("当前时刻测量成功")
+
+                        d = bytes.fromhex('A0 01 01 A2')  # 打开
+                        RelayConnectionThread.anc.write(d)
+                        time.sleep(2)
+                        self.mainpage1.save_image()
+
+                    else:
+                        logger.log("当前时刻测量失败")
+                    self.PullBack()
 
         except Exception as e:
-            print(f"移动线程出现异常: {e}")
+            logger.log(f"移动线程出现异常: {e}")
+            self.PullBack()
         finally:
             test_event.clear()
 
@@ -299,17 +342,81 @@ class locationClass(QMainWindow, Ui_MainWindow):
 
     def stop_test(self):
         test_event.clear()
-        print(f"当前一个芯片测量结束后，会自动终止测试")
+        logger.log(f"当前一个芯片测量结束后，会自动终止测试")
 
-    # def calculate_device_positions(self,top_left, top_right, bottom_right, rows, cols):
+
+
+    # def calculate_device_positions(self, top_left, top_right, bottom_right, rows, cols):
     #     x = np.linspace(top_left[0], top_right[0], cols)
     #     y = np.linspace(top_left[1], bottom_right[1], rows)
     #     xx, yy = np.meshgrid(x, y)
-    #     return list(zip(xx.flatten(), yy.flatten()))
+    #
+    #     # 转置网格点矩阵，然后展平，实现竖向编号
+    #     return list(zip(xx.T.flatten(), yy.T.flatten()))
 
-    def calculate_device_positions(self, top_left, top_right, bottom_right, rows, cols):
-        x = np.linspace(top_left[0], top_right[0], cols)
-        y = np.linspace(top_left[1], bottom_right[1], rows)
+    import numpy as np
+
+    def calculate_device_positions(self,
+                                   inner_top_left, inner_top_left_row, inner_top_left_col,
+                                   inner_top_right, inner_top_right_row, inner_top_right_col,
+                                   inner_bottom_right, inner_bottom_right_row, inner_bottom_right_col,
+                                   outer_rows, outer_cols):
+        """
+        计算扩展矩阵的点阵列（使用1-based行列索引）
+
+        参数:
+        - inner_top_left: 内部矩阵左上角坐标 (x, y)
+        - inner_top_left_row: 左上角在外部矩阵中的行号 (1-based)
+        - inner_top_left_col: 左上角在外部矩阵中的列号 (1-based)
+        - inner_top_right: 内部矩阵右上角坐标 (x, y)
+        - inner_top_right_row: 右上角在外部矩阵中的行号 (1-based)
+        - inner_top_right_col: 右上角在外部矩阵中的列号 (1-based)
+        - inner_bottom_right: 内部矩阵右下角坐标 (x, y)
+        - inner_bottom_right_row: 右下角在外部矩阵中的行号 (1-based)
+        - inner_bottom_right_col: 右下角在外部矩阵中的列号 (1-based)
+        - outer_rows: 外部矩阵总行数
+        - outer_cols: 外部矩阵总列数
+
+        返回:
+        - 扩展矩阵所有点的坐标列表 [(x1, y1), (x2, y2), ...]
+        """
+
+        # 将1-based索引转换为0-based（用于内部计算）
+        tl_row = inner_top_left_row - 1
+        tl_col = inner_top_left_col - 1
+        tr_row = inner_top_right_row - 1
+        tr_col = inner_top_right_col - 1
+        br_row = inner_bottom_right_row - 1
+        br_col = inner_bottom_right_col - 1
+
+        # 计算水平和垂直方向的单位间距
+        # 水平间距 (基于右上角和左上角的差异)
+        dx = (inner_top_right[0] - inner_top_left[0]) / (tr_col - tl_col) if (tr_col != tl_col) else 0
+        # 垂直间距 (基于右下角和右上角的差异)
+        dy = (inner_bottom_right[1] - inner_top_right[1]) / (br_row - tr_row) if (br_row != tr_row) else 0
+
+        # 计算外部矩阵四个角的坐标
+        # 左上角
+        outer_top_left = (
+            inner_top_left[0] - dx * tl_col,
+            inner_top_left[1] - dy * tl_row
+        )
+
+        # 右上角
+        outer_top_right = (
+            inner_top_right[0] + dx * (outer_cols - 1 - tr_col),
+            inner_top_right[1] - dy * tr_row
+        )
+
+        # 右下角
+        outer_bottom_right = (
+            inner_bottom_right[0] + dx * (outer_cols - 1 - br_col),
+            inner_bottom_right[1] + dy * (outer_rows - 1 - br_row)
+        )
+
+        # 生成扩展矩阵的点阵列
+        x = np.linspace(outer_top_left[0], outer_top_right[0], outer_cols)
+        y = np.linspace(outer_top_left[1], outer_bottom_right[1], outer_rows)
         xx, yy = np.meshgrid(x, y)
 
         # 转置网格点矩阵，然后展平，实现竖向编号

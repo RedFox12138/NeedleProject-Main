@@ -80,8 +80,10 @@ class UsingTest(QMainWindow, Ui_MainWindow):
                                    self.lineEdit_row,self.lineEdit_col,self.Button_CreateMap,self.mainpage1,
                                    self.Button_ContinueTest,self.Button_StopTest,
                                    self.lineEdit_Pushlocation,self.lineEdit_Pulllocation,
-                                            self.Button_PushLocation,self.Button_PullLocation,
-                                            self.Button_PushBack,self.Button_PullBack,self.lineEdit_Scripts,self.lineEdit_SaveResult)
+                                   self.Button_PushLocation,self.Button_PullLocation,
+                                   self.Button_PushBack,self.Button_PullBack,self.lineEdit_Scripts,self.lineEdit_SaveResult,self.lineEdit_savePath,
+                                   self.lineEdit_leftTopX,self.lineEdit_leftTopY,self.lineEdit_rightTopX,self.lineEdit_rightTopY,self.lineEdit_rightBottomX,self.lineEdit_rightBottomY,
+                                   self.Checkbox_DontTest)
 
 
 if __name__ == '__main__':

@@ -30,7 +30,7 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
-        self.tabWidget.setGeometry(QtCore.QRect(30, 70, 2131, 931))
+        self.tabWidget.setGeometry(QtCore.QRect(30, 70, 1931, 931))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
@@ -87,7 +87,7 @@ class Ui_MainWindow(object):
         self.label_video.setText("")
         self.label_video.setObjectName("label_video")
         self.frame_6 = QtWidgets.QFrame(self.tab)
-        self.frame_6.setGeometry(QtCore.QRect(1050, 80, 671, 281))
+        self.frame_6.setGeometry(QtCore.QRect(1050, 80, 621, 281))
         self.frame_6.setStyleSheet("#frame_6{\n"
 "border-width:2px;\n"
 "border:2px solid;\n"
@@ -354,7 +354,7 @@ class Ui_MainWindow(object):
         self.label_needle1_2.setFont(font)
         self.label_needle1_2.setObjectName("label_needle1_2")
         self.frame_7 = QtWidgets.QFrame(self.tab)
-        self.frame_7.setGeometry(QtCore.QRect(1050, 370, 331, 321))
+        self.frame_7.setGeometry(QtCore.QRect(1050, 370, 231, 321))
         self.frame_7.setStyleSheet("#frame_7{\n"
 "border-width:2px;\n"
 "border:2px solid;\n"
@@ -373,7 +373,7 @@ class Ui_MainWindow(object):
         self.label.setFont(font)
         self.label.setObjectName("label")
         self.gridLayoutWidget = QtWidgets.QWidget(self.frame_7)
-        self.gridLayoutWidget.setGeometry(QtCore.QRect(60, 70, 221, 221))
+        self.gridLayoutWidget.setGeometry(QtCore.QRect(10, 60, 221, 221))
         self.gridLayoutWidget.setObjectName("gridLayoutWidget")
         self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
@@ -408,7 +408,7 @@ class Ui_MainWindow(object):
         self.Button_Micro_left.setObjectName("Button_Micro_left")
         self.gridLayout.addWidget(self.Button_Micro_left, 1, 0, 1, 1)
         self.frame_9 = QtWidgets.QFrame(self.tab)
-        self.frame_9.setGeometry(QtCore.QRect(1390, 370, 331, 321))
+        self.frame_9.setGeometry(QtCore.QRect(1290, 370, 381, 321))
         self.frame_9.setStyleSheet("#frame_9{\n"
 "border-width:2px;\n"
 "border:2px solid;\n"
@@ -493,7 +493,7 @@ class Ui_MainWindow(object):
         self.label_32.setFont(font)
         self.label_32.setObjectName("label_32")
         self.lineEdit_Location1 = QtWidgets.QLineEdit(self.frame_9)
-        self.lineEdit_Location1.setGeometry(QtCore.QRect(100, 90, 101, 30))
+        self.lineEdit_Location1.setGeometry(QtCore.QRect(60, 90, 101, 30))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
@@ -524,7 +524,7 @@ class Ui_MainWindow(object):
 "}")
         self.lineEdit_Location1.setObjectName("lineEdit_Location1")
         self.lineEdit_Location2 = QtWidgets.QLineEdit(self.frame_9)
-        self.lineEdit_Location2.setGeometry(QtCore.QRect(100, 130, 101, 30))
+        self.lineEdit_Location2.setGeometry(QtCore.QRect(60, 130, 101, 30))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
@@ -555,7 +555,7 @@ class Ui_MainWindow(object):
 "}")
         self.lineEdit_Location2.setObjectName("lineEdit_Location2")
         self.lineEdit_Location3 = QtWidgets.QLineEdit(self.frame_9)
-        self.lineEdit_Location3.setGeometry(QtCore.QRect(100, 170, 101, 30))
+        self.lineEdit_Location3.setGeometry(QtCore.QRect(60, 170, 101, 30))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
@@ -586,21 +586,21 @@ class Ui_MainWindow(object):
 "}")
         self.lineEdit_Location3.setObjectName("lineEdit_Location3")
         self.Button_Location1 = QtWidgets.QPushButton(self.frame_9)
-        self.Button_Location1.setGeometry(QtCore.QRect(210, 90, 75, 32))
+        self.Button_Location1.setGeometry(QtCore.QRect(270, 90, 75, 32))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
         self.Button_Location1.setFont(font)
         self.Button_Location1.setObjectName("Button_Location1")
         self.Button_Location2 = QtWidgets.QPushButton(self.frame_9)
-        self.Button_Location2.setGeometry(QtCore.QRect(210, 130, 75, 32))
+        self.Button_Location2.setGeometry(QtCore.QRect(270, 130, 75, 32))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
         self.Button_Location2.setFont(font)
         self.Button_Location2.setObjectName("Button_Location2")
         self.Button_Location3 = QtWidgets.QPushButton(self.frame_9)
-        self.Button_Location3.setGeometry(QtCore.QRect(210, 170, 75, 32))
+        self.Button_Location3.setGeometry(QtCore.QRect(270, 170, 75, 32))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
@@ -703,6 +703,192 @@ class Ui_MainWindow(object):
         font.setPointSize(15)
         self.Button_StopTest.setFont(font)
         self.Button_StopTest.setObjectName("Button_StopTest")
+        self.lineEdit_leftTopX = QtWidgets.QLineEdit(self.frame_9)
+        self.lineEdit_leftTopX.setGeometry(QtCore.QRect(170, 90, 41, 30))
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(15)
+        self.lineEdit_leftTopX.setFont(font)
+        self.lineEdit_leftTopX.setStyleSheet("QLineEdit {\n"
+"    background-color: #f0f0f0;\n"
+"    border: 2px solid #a0a0a0;\n"
+"    border-radius: 5px;\n"
+"    padding: 5px;\n"
+"    color: #000000;\n"
+"    selection-background-color: #c0c0c0;\n"
+"    selection-color: #000000;\n"
+"}\n"
+"\n"
+"QLineEdit:focus {\n"
+"    border: 2px solid #606060;\n"
+"    background-color: #e0e0e0;\n"
+"}\n"
+"\n"
+"QLineEdit:hover {\n"
+"    border: 2px solid #808080;\n"
+"}\n"
+"\n"
+"QLineEdit:disabled {\n"
+"    background-color: #d0d0d0;\n"
+"    color: #808080;\n"
+"    border: 2px solid #c0c0c0;\n"
+"}")
+        self.lineEdit_leftTopX.setObjectName("lineEdit_leftTopX")
+        self.lineEdit_rightTopX = QtWidgets.QLineEdit(self.frame_9)
+        self.lineEdit_rightTopX.setGeometry(QtCore.QRect(170, 130, 41, 30))
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(15)
+        self.lineEdit_rightTopX.setFont(font)
+        self.lineEdit_rightTopX.setStyleSheet("QLineEdit {\n"
+"    background-color: #f0f0f0;\n"
+"    border: 2px solid #a0a0a0;\n"
+"    border-radius: 5px;\n"
+"    padding: 5px;\n"
+"    color: #000000;\n"
+"    selection-background-color: #c0c0c0;\n"
+"    selection-color: #000000;\n"
+"}\n"
+"\n"
+"QLineEdit:focus {\n"
+"    border: 2px solid #606060;\n"
+"    background-color: #e0e0e0;\n"
+"}\n"
+"\n"
+"QLineEdit:hover {\n"
+"    border: 2px solid #808080;\n"
+"}\n"
+"\n"
+"QLineEdit:disabled {\n"
+"    background-color: #d0d0d0;\n"
+"    color: #808080;\n"
+"    border: 2px solid #c0c0c0;\n"
+"}")
+        self.lineEdit_rightTopX.setObjectName("lineEdit_rightTopX")
+        self.lineEdit_rightBottomX = QtWidgets.QLineEdit(self.frame_9)
+        self.lineEdit_rightBottomX.setGeometry(QtCore.QRect(170, 170, 41, 30))
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(15)
+        self.lineEdit_rightBottomX.setFont(font)
+        self.lineEdit_rightBottomX.setStyleSheet("QLineEdit {\n"
+"    background-color: #f0f0f0;\n"
+"    border: 2px solid #a0a0a0;\n"
+"    border-radius: 5px;\n"
+"    padding: 5px;\n"
+"    color: #000000;\n"
+"    selection-background-color: #c0c0c0;\n"
+"    selection-color: #000000;\n"
+"}\n"
+"\n"
+"QLineEdit:focus {\n"
+"    border: 2px solid #606060;\n"
+"    background-color: #e0e0e0;\n"
+"}\n"
+"\n"
+"QLineEdit:hover {\n"
+"    border: 2px solid #808080;\n"
+"}\n"
+"\n"
+"QLineEdit:disabled {\n"
+"    background-color: #d0d0d0;\n"
+"    color: #808080;\n"
+"    border: 2px solid #c0c0c0;\n"
+"}")
+        self.lineEdit_rightBottomX.setObjectName("lineEdit_rightBottomX")
+        self.lineEdit_leftTopY = QtWidgets.QLineEdit(self.frame_9)
+        self.lineEdit_leftTopY.setGeometry(QtCore.QRect(220, 90, 41, 30))
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(15)
+        self.lineEdit_leftTopY.setFont(font)
+        self.lineEdit_leftTopY.setStyleSheet("QLineEdit {\n"
+"    background-color: #f0f0f0;\n"
+"    border: 2px solid #a0a0a0;\n"
+"    border-radius: 5px;\n"
+"    padding: 5px;\n"
+"    color: #000000;\n"
+"    selection-background-color: #c0c0c0;\n"
+"    selection-color: #000000;\n"
+"}\n"
+"\n"
+"QLineEdit:focus {\n"
+"    border: 2px solid #606060;\n"
+"    background-color: #e0e0e0;\n"
+"}\n"
+"\n"
+"QLineEdit:hover {\n"
+"    border: 2px solid #808080;\n"
+"}\n"
+"\n"
+"QLineEdit:disabled {\n"
+"    background-color: #d0d0d0;\n"
+"    color: #808080;\n"
+"    border: 2px solid #c0c0c0;\n"
+"}")
+        self.lineEdit_leftTopY.setObjectName("lineEdit_leftTopY")
+        self.lineEdit_rightTopY = QtWidgets.QLineEdit(self.frame_9)
+        self.lineEdit_rightTopY.setGeometry(QtCore.QRect(220, 130, 41, 30))
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(15)
+        self.lineEdit_rightTopY.setFont(font)
+        self.lineEdit_rightTopY.setStyleSheet("QLineEdit {\n"
+"    background-color: #f0f0f0;\n"
+"    border: 2px solid #a0a0a0;\n"
+"    border-radius: 5px;\n"
+"    padding: 5px;\n"
+"    color: #000000;\n"
+"    selection-background-color: #c0c0c0;\n"
+"    selection-color: #000000;\n"
+"}\n"
+"\n"
+"QLineEdit:focus {\n"
+"    border: 2px solid #606060;\n"
+"    background-color: #e0e0e0;\n"
+"}\n"
+"\n"
+"QLineEdit:hover {\n"
+"    border: 2px solid #808080;\n"
+"}\n"
+"\n"
+"QLineEdit:disabled {\n"
+"    background-color: #d0d0d0;\n"
+"    color: #808080;\n"
+"    border: 2px solid #c0c0c0;\n"
+"}")
+        self.lineEdit_rightTopY.setObjectName("lineEdit_rightTopY")
+        self.lineEdit_rightBottomY = QtWidgets.QLineEdit(self.frame_9)
+        self.lineEdit_rightBottomY.setGeometry(QtCore.QRect(220, 170, 41, 30))
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(15)
+        self.lineEdit_rightBottomY.setFont(font)
+        self.lineEdit_rightBottomY.setStyleSheet("QLineEdit {\n"
+"    background-color: #f0f0f0;\n"
+"    border: 2px solid #a0a0a0;\n"
+"    border-radius: 5px;\n"
+"    padding: 5px;\n"
+"    color: #000000;\n"
+"    selection-background-color: #c0c0c0;\n"
+"    selection-color: #000000;\n"
+"}\n"
+"\n"
+"QLineEdit:focus {\n"
+"    border: 2px solid #606060;\n"
+"    background-color: #e0e0e0;\n"
+"}\n"
+"\n"
+"QLineEdit:hover {\n"
+"    border: 2px solid #808080;\n"
+"}\n"
+"\n"
+"QLineEdit:disabled {\n"
+"    background-color: #d0d0d0;\n"
+"    color: #808080;\n"
+"    border: 2px solid #c0c0c0;\n"
+"}")
+        self.lineEdit_rightBottomY.setObjectName("lineEdit_rightBottomY")
         self.Button_relay = QtWidgets.QPushButton(self.tab)
         self.Button_relay.setGeometry(QtCore.QRect(1050, 30, 171, 41))
         font = QtGui.QFont()
@@ -711,7 +897,7 @@ class Ui_MainWindow(object):
         self.Button_relay.setFont(font)
         self.Button_relay.setObjectName("Button_relay")
         self.Checkbox_ElecNeedle = QtWidgets.QRadioButton(self.tab)
-        self.Checkbox_ElecNeedle.setGeometry(QtCore.QRect(1260, 30, 101, 41))
+        self.Checkbox_ElecNeedle.setGeometry(QtCore.QRect(1230, 30, 101, 41))
         font = QtGui.QFont()
         font.setPointSize(20)
         font.setBold(True)
@@ -720,7 +906,7 @@ class Ui_MainWindow(object):
         self.Checkbox_ElecNeedle.setChecked(True)
         self.Checkbox_ElecNeedle.setObjectName("Checkbox_ElecNeedle")
         self.Checkbox_Light = QtWidgets.QRadioButton(self.tab)
-        self.Checkbox_Light.setGeometry(QtCore.QRect(1340, 30, 101, 41))
+        self.Checkbox_Light.setGeometry(QtCore.QRect(1310, 30, 101, 41))
         font = QtGui.QFont()
         font.setPointSize(20)
         font.setBold(True)
@@ -728,7 +914,7 @@ class Ui_MainWindow(object):
         self.Checkbox_Light.setFont(font)
         self.Checkbox_Light.setObjectName("Checkbox_Light")
         self.lineEdit_Xlocation = QtWidgets.QLineEdit(self.tab)
-        self.lineEdit_Xlocation.setGeometry(QtCore.QRect(1910, 30, 161, 30))
+        self.lineEdit_Xlocation.setGeometry(QtCore.QRect(1680, 120, 161, 30))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
@@ -759,14 +945,14 @@ class Ui_MainWindow(object):
 "}")
         self.lineEdit_Xlocation.setObjectName("lineEdit_Xlocation")
         self.label_23 = QtWidgets.QLabel(self.tab)
-        self.label_23.setGeometry(QtCore.QRect(1830, 30, 81, 33))
+        self.label_23.setGeometry(QtCore.QRect(1680, 90, 81, 33))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
         self.label_23.setFont(font)
         self.label_23.setObjectName("label_23")
         self.lineEdit_Ylocation = QtWidgets.QLineEdit(self.tab)
-        self.lineEdit_Ylocation.setGeometry(QtCore.QRect(1910, 70, 161, 30))
+        self.lineEdit_Ylocation.setGeometry(QtCore.QRect(1680, 200, 161, 30))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
@@ -797,21 +983,21 @@ class Ui_MainWindow(object):
 "}")
         self.lineEdit_Ylocation.setObjectName("lineEdit_Ylocation")
         self.label_24 = QtWidgets.QLabel(self.tab)
-        self.label_24.setGeometry(QtCore.QRect(1830, 70, 81, 33))
+        self.label_24.setGeometry(QtCore.QRect(1680, 160, 81, 33))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
         self.label_24.setFont(font)
         self.label_24.setObjectName("label_24")
         self.label_38 = QtWidgets.QLabel(self.tab)
-        self.label_38.setGeometry(QtCore.QRect(1830, 110, 81, 33))
+        self.label_38.setGeometry(QtCore.QRect(1680, 250, 81, 33))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
         self.label_38.setFont(font)
         self.label_38.setObjectName("label_38")
         self.lineEdit_Zlocation = QtWidgets.QLineEdit(self.tab)
-        self.lineEdit_Zlocation.setGeometry(QtCore.QRect(1910, 120, 161, 30))
+        self.lineEdit_Zlocation.setGeometry(QtCore.QRect(1680, 280, 161, 30))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
@@ -842,7 +1028,7 @@ class Ui_MainWindow(object):
 "}")
         self.lineEdit_Zlocation.setObjectName("lineEdit_Zlocation")
         self.lineEdit_Pushlocation = QtWidgets.QLineEdit(self.tab)
-        self.lineEdit_Pushlocation.setGeometry(QtCore.QRect(1870, 170, 161, 30))
+        self.lineEdit_Pushlocation.setGeometry(QtCore.QRect(1750, 380, 81, 30))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
@@ -873,7 +1059,7 @@ class Ui_MainWindow(object):
 "}")
         self.lineEdit_Pushlocation.setObjectName("lineEdit_Pushlocation")
         self.lineEdit_Pulllocation = QtWidgets.QLineEdit(self.tab)
-        self.lineEdit_Pulllocation.setGeometry(QtCore.QRect(1870, 220, 161, 30))
+        self.lineEdit_Pulllocation.setGeometry(QtCore.QRect(1750, 420, 81, 30))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
@@ -904,47 +1090,53 @@ class Ui_MainWindow(object):
 "}")
         self.lineEdit_Pulllocation.setObjectName("lineEdit_Pulllocation")
         self.label_39 = QtWidgets.QLabel(self.tab)
-        self.label_39.setGeometry(QtCore.QRect(1810, 170, 81, 33))
+        self.label_39.setGeometry(QtCore.QRect(1690, 380, 81, 33))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
         self.label_39.setFont(font)
         self.label_39.setObjectName("label_39")
         self.label_41 = QtWidgets.QLabel(self.tab)
-        self.label_41.setGeometry(QtCore.QRect(1810, 220, 81, 33))
+        self.label_41.setGeometry(QtCore.QRect(1690, 420, 81, 33))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
         self.label_41.setFont(font)
         self.label_41.setObjectName("label_41")
         self.Button_PushLocation = QtWidgets.QPushButton(self.tab)
-        self.Button_PushLocation.setGeometry(QtCore.QRect(2040, 170, 75, 32))
+        self.Button_PushLocation.setGeometry(QtCore.QRect(1840, 380, 75, 32))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
         self.Button_PushLocation.setFont(font)
         self.Button_PushLocation.setObjectName("Button_PushLocation")
         self.Button_PullLocation = QtWidgets.QPushButton(self.tab)
-        self.Button_PullLocation.setGeometry(QtCore.QRect(2040, 220, 75, 32))
+        self.Button_PullLocation.setGeometry(QtCore.QRect(1840, 420, 75, 32))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
         self.Button_PullLocation.setFont(font)
         self.Button_PullLocation.setObjectName("Button_PullLocation")
         self.Button_PushBack = QtWidgets.QPushButton(self.tab)
-        self.Button_PushBack.setGeometry(QtCore.QRect(1810, 270, 111, 32))
+        self.Button_PushBack.setGeometry(QtCore.QRect(1730, 470, 111, 32))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
         self.Button_PushBack.setFont(font)
         self.Button_PushBack.setObjectName("Button_PushBack")
         self.Button_PullBack = QtWidgets.QPushButton(self.tab)
-        self.Button_PullBack.setGeometry(QtCore.QRect(1930, 270, 111, 32))
+        self.Button_PullBack.setGeometry(QtCore.QRect(1730, 510, 111, 32))
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
         self.Button_PullBack.setFont(font)
         self.Button_PullBack.setObjectName("Button_PullBack")
+        self.Checkbox_DontTest = QtWidgets.QCheckBox(self.tab)
+        self.Checkbox_DontTest.setGeometry(QtCore.QRect(1410, 30, 271, 41))
+        font = QtGui.QFont()
+        font.setPointSize(15)
+        self.Checkbox_DontTest.setFont(font)
+        self.Checkbox_DontTest.setObjectName("Checkbox_DontTest")
         self.tabWidget.addTab(self.tab, "")
         self.tab_2 = QtWidgets.QWidget()
         self.tab_2.setObjectName("tab_2")
@@ -2103,6 +2295,7 @@ class Ui_MainWindow(object):
         self.Button_PullLocation.setText(_translate("MainWindow", "确认"))
         self.Button_PushBack.setText(_translate("MainWindow", "回到按压点"))
         self.Button_PullBack.setText(_translate("MainWindow", "回到抬升点"))
+        self.Checkbox_DontTest.setText(_translate("MainWindow", "仅移动，不进行按压与测试"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "首页"))
         self.label_13.setText(_translate("MainWindow", "增益（初始为6.03）："))
         self.Button_cameraConfirm.setText(_translate("MainWindow", "确认"))

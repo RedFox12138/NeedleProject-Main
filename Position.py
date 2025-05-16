@@ -16,12 +16,14 @@ custom_lib_path = "c:\\users\\administrator\\appdata\\local\\programs\\python\\p
 if custom_lib_path not in sys.path:
     sys.path.append(custom_lib_path)
 
-def getPosition(Z_flag=False):
+def getPosition(Z_flag=False,Only_XY=False):
+
     anc = NeedelConnectionThread.anc
     x_distance = 0
     y_distance = 0
+    z_distance = 0
 
-    if(Z_flag is not True):
+    if Z_flag is not True:
         # X轴坐标
         anc.write('[ch3:1]'.encode())
         time.sleep(0.2)
@@ -49,18 +51,19 @@ def getPosition(Z_flag=False):
         y_distance = (1 - distance / 2.5) * 10.92 - 5
         time.sleep(0.1)
 
-    anc.write('[ch1:1]'.encode())
-    time.sleep(0.2)
-    anc.write('[v?]'.encode())
-    anc.write('[read:pulse?]'.encode())
-    ret = anc.readline()
-    ret_str = ret.decode()
-    start_index = ret_str.find('[+') + 2
-    end_index = ret_str.find('v]')
-    voltage_str = ret_str[start_index:end_index]
-    distance = float(voltage_str)  # 浮点型
-    z_distance = (1 - distance / 2.5) * 10.92 - 5
-    time.sleep(0.1)
+    if Only_XY is not True:
+        anc.write('[ch1:1]'.encode())
+        time.sleep(0.2)
+        anc.write('[v?]'.encode())
+        anc.write('[read:pulse?]'.encode())
+        ret = anc.readline()
+        ret_str = ret.decode()
+        start_index = ret_str.find('[+') + 2
+        end_index = ret_str.find('v]')
+        voltage_str = ret_str[start_index:end_index]
+        distance = float(voltage_str)  # 浮点型
+        z_distance = (1 - distance / 2.5) * 10.92 - 5
+        time.sleep(0.1)
 
     # anc.write('[ch1:0]'.encode())
     # anc.write('[ch2:0]'.encode())
@@ -70,7 +73,7 @@ def getPosition(Z_flag=False):
 
 def move_to_Z(z,Voltage_flag=False):
     with SerialLock.serial_lock:
-        _,_,z_current = getPosition(True)
+        _,_,z_current = getPosition(Z_flag=True)
 
     #低温情况下abs(z_current - z)应该是0.001，常温情况是0.005
     while (abs(z_current - z) > 0.001) :
@@ -94,7 +97,7 @@ def move_to_Z(z,Voltage_flag=False):
                 move('-Z', abs(z_diff) / step_per_unit * Z_k, flag)
             elif z_diff < 0:
                 move('Z', abs(z_diff) / step_per_unit * Z_k, flag)
-            _,_,z_current = getPosition(True)
+            _,_,z_current = getPosition(Z_flag=True)
     StopClass.stop_num =0
     return z_current
 
@@ -105,7 +108,7 @@ def move_to_target(x, y):
     XY_k_2 = 10000
     step_per_unit = 0.06  # 假设每 0.06 单位对应 100 步
     with SerialLock.serial_lock:
-        x_current, y_current,_ = getPosition()
+        x_current, y_current,_ = getPosition(Only_XY=True)
         x_diff = round((x - x_current), 3)
         y_diff = round((y - y_current), 3)
         flag = True
@@ -118,7 +121,7 @@ def move_to_target(x, y):
             move('Y', abs(y_diff) / 0.03 * XY_k, flag)
         elif (y_diff < 0):
             move('-Y', abs(y_diff) / 0.03 * XY_k, flag)
-        x_current, y_current,_ = getPosition()
+        x_current, y_current,_ = getPosition(Only_XY=True)
 
 
     while  abs(y_current - y) > 0.003 :
@@ -153,7 +156,7 @@ def move_to_target(x, y):
                     move('Y', abs(y_diff) / step_per_unit * XY_k_2, flag)
                 elif y_diff < 0:
                     move('-Y', abs(y_diff) / step_per_unit * XY_k_2, flag)
-                _, y_current,_ = getPosition()
+                _, y_current,_ = getPosition(Only_XY=True)
     while abs(x_current - x) > 0.003:
         if(StopClass.stop_num == 1):
             StopClass.stop_num = 0
@@ -186,7 +189,7 @@ def move_to_target(x, y):
                     move('X', abs(x_diff) / step_per_unit * XY_k_2, flag)
                 elif x_diff < 0:
                     move('-X', abs(x_diff) / step_per_unit * XY_k_2, flag)
-                x_current, _, _ = getPosition()
+                x_current, _, _ = getPosition(Only_XY=True)
 
     return x_current, y_current
 
@@ -200,25 +203,25 @@ def move(axis,distance,flag):
         ser4.write('[ch3:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
         ser4.write('[volt:+200V] '.encode())
-        ser4.write('[freq:+2000Hz]'.encode())
+        ser4.write('[freq:+5000Hz]'.encode())
         ser4.write(('[+:0000' + str(distance) + '] ').encode())  # +-方向
     elif(axis == 'X'):
         ser4.write('[ch3:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
         ser4.write('[volt:+200V] '.encode())
-        ser4.write('[freq:+2000Hz]'.encode())
+        ser4.write('[freq:+5000Hz]'.encode())
         ser4.write(('[-:0000' + str(distance) + '] ').encode())  # +-方向
     elif(axis == '-Y'):
         ser4.write('[ch2:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
         ser4.write('[volt:+200V] '.encode())
-        ser4.write('[freq:+2000Hz]'.encode())
+        ser4.write('[freq:+5000Hz]'.encode())
         ser4.write(('[+:0000' + str(distance) + '] ').encode())  # +-方向
     elif(axis == 'Y'):
         ser4.write('[ch2:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
         ser4.write('[volt:+200V] '.encode())
-        ser4.write('[freq:+2000Hz]'.encode())
+        ser4.write('[freq:+5000Hz]'.encode())
         ser4.write(('[-:0000' + str(distance) + '] ').encode())  # +-方向
     elif(axis == 'Z'):
         ser4.write('[ch1:1]'.encode())

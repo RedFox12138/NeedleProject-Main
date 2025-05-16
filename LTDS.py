@@ -23,20 +23,20 @@ def ReturnNeedleMove(direction,distance,indicatorLight,isclick=False,flag=False,
                 anc.write( ('[ch'+ str(directionArray[equipment][0])+':1]').encode())
                 anc.write('[cap:013nF]'.encode())
                 anc.write('[volt:+200V] '.encode())
-                anc.write('[freq:+01000Hz]'.encode())
+                anc.write('[freq:+05000Hz]'.encode())
                 anc.write(('[-:0000' + str(distance) + '] ').encode())  # +-方向
             elif direction == 1:
                 anc.write( ('[ch'+ str(directionArray[equipment][0])+':1]').encode())
                 anc.write('[cap:013nF]'.encode())
                 anc.write('[volt:+200V] '.encode())
-                anc.write('[freq:+01000Hz]'.encode())
+                anc.write('[freq:+05000Hz]'.encode())
                 anc.write(('[+:0000' + str(distance) + '] ').encode())  # +-方向
             elif direction == 2:
                 anc.write( ('[ch'+ str(directionArray[equipment][1])+':1]').encode())
                 anc.write('[cap:013nF]'.encode())
                 anc.write('[volt:+200V] '.encode())
-                anc.write('[freq:+01000Hz]'.encode())
-                if(equipment==1):
+                anc.write('[freq:+00500Hz]'.encode())
+                if equipment==1:
                     anc.write(('[+:0000' + str(distance) + '] ').encode())  # +-方向
                 else :
                     anc.write(('[-:0000' + str(distance) + '] ').encode())  # +-方向
@@ -45,18 +45,16 @@ def ReturnNeedleMove(direction,distance,indicatorLight,isclick=False,flag=False,
                 anc.write( ('[ch'+ str(directionArray[equipment][1])+':1]').encode())
                 anc.write('[cap:013nF]'.encode())
                 anc.write('[volt:+200V] '.encode())
-                anc.write('[freq:+01000Hz]'.encode())
-                if(equipment==1):
+                anc.write('[freq:+05000Hz]'.encode())
+                if equipment==1:
                     anc.write(('[-:0000' + str(distance) + '] ').encode())  # +-方向
                 else :
                     anc.write(('[+:0000' + str(distance) + '] ').encode())  # +-方向
-
-
             elif direction == 4 :
                 anc.write(('[ch'+ str(directionArray[equipment][2])+':1]').encode())
                 anc.write('[cap:013nF]'.encode())
                 anc.write('[volt:+200V] '.encode())
-                anc.write('[freq:+00500Hz]'.encode())
+                anc.write('[freq:+05000Hz]'.encode())
                 anc.write(('[-:0000' + str(distance) + '] ').encode())  # +-方向
             elif direction == 5:
                 anc.write( ('[ch'+ str(directionArray[equipment][2])+':1]').encode())
@@ -64,7 +62,7 @@ def ReturnNeedleMove(direction,distance,indicatorLight,isclick=False,flag=False,
                 anc.write('[volt:+200V] '.encode())
                 anc.write('[freq:+00500Hz]'.encode())
                 anc.write(('[+:0000' + str(distance) + '] ').encode())  # +-方向
-            if (flag):
+            if flag:
                 time.sleep((distance + 1) / 300)
             else:
                 time.sleep(0.8)
@@ -86,12 +84,12 @@ def WhileMove(direction,equipment=0,distance=1000):
         anc.write('[ch5:0]'.encode())
         anc.write('[ch6:0]'.encode())
         time.sleep(0.2)
-        distance = min(1000,distance)
+        # distance = min(1000,distance)
         if direction == 0 or direction == 1:
             anc.write( ('[ch'+ str(directionArray[equipment][0])+':1]').encode())
             anc.write('[cap:013nF]'.encode())
             anc.write('[volt:+200V] '.encode())
-            anc.write('[freq:+01000Hz]'.encode())
+            anc.write('[freq:+05000Hz]'.encode())
             time.sleep(0.2)
             num_str = '[-:0000' if direction ==0 else '[+:0000'
             while StopClass.stop_num == 0:
@@ -101,12 +99,12 @@ def WhileMove(direction,equipment=0,distance=1000):
             anc.write( ('[ch'+ str(directionArray[equipment][1])+':1]').encode())
             anc.write('[cap:013nF]'.encode())
             anc.write('[volt:+200V] '.encode())
-            anc.write('[freq:+01000Hz]'.encode())
+            anc.write('[freq:+05000Hz]'.encode())
             time.sleep(0.2)
             num_str1 = '[+:0000' if direction == 2 else '[-:0000'
             num_str2 = '[-:0000' if direction == 2 else '[+:0000'
             while StopClass.stop_num == 0:
-                if(equipment==1):
+                if equipment==1:
                     anc.write((num_str1 + str(distance) + '] ').encode())  # +-方向
                 else :
                     anc.write((num_str2 + str(distance) + '] ').encode())  # +-方向

@@ -41,7 +41,7 @@
      <rect>
       <x>30</x>
       <y>70</y>
-      <width>2131</width>
+      <width>1931</width>
       <height>931</height>
      </rect>
     </property>
@@ -140,7 +140,7 @@ border_color:rgb(255,255,127);
        <rect>
         <x>1050</x>
         <y>80</y>
-        <width>671</width>
+        <width>621</width>
         <height>281</height>
        </rect>
       </property>
@@ -650,7 +650,7 @@ QLineEdit:disabled {
        <rect>
         <x>1050</x>
         <y>370</y>
-        <width>331</width>
+        <width>231</width>
         <height>321</height>
        </rect>
       </property>
@@ -691,8 +691,8 @@ border_color:rgb(255,255,127);
       <widget class="QWidget" name="gridLayoutWidget">
        <property name="geometry">
         <rect>
-         <x>60</x>
-         <y>70</y>
+         <x>10</x>
+         <y>60</y>
          <width>221</width>
          <height>221</height>
         </rect>
@@ -787,9 +787,9 @@ border_color:rgb(255,255,127);
      <widget class="QFrame" name="frame_9">
       <property name="geometry">
        <rect>
-        <x>1390</x>
+        <x>1290</x>
         <y>370</y>
-        <width>331</width>
+        <width>381</width>
         <height>321</height>
        </rect>
       </property>
@@ -967,7 +967,7 @@ QLineEdit:disabled {
       <widget class="QLineEdit" name="lineEdit_Location1">
        <property name="geometry">
         <rect>
-         <x>100</x>
+         <x>60</x>
          <y>90</y>
          <width>101</width>
          <height>30</height>
@@ -1009,7 +1009,7 @@ QLineEdit:disabled {
       <widget class="QLineEdit" name="lineEdit_Location2">
        <property name="geometry">
         <rect>
-         <x>100</x>
+         <x>60</x>
          <y>130</y>
          <width>101</width>
          <height>30</height>
@@ -1051,7 +1051,7 @@ QLineEdit:disabled {
       <widget class="QLineEdit" name="lineEdit_Location3">
        <property name="geometry">
         <rect>
-         <x>100</x>
+         <x>60</x>
          <y>170</y>
          <width>101</width>
          <height>30</height>
@@ -1093,7 +1093,7 @@ QLineEdit:disabled {
       <widget class="QPushButton" name="Button_Location1">
        <property name="geometry">
         <rect>
-         <x>210</x>
+         <x>270</x>
          <y>90</y>
          <width>75</width>
          <height>32</height>
@@ -1112,7 +1112,7 @@ QLineEdit:disabled {
       <widget class="QPushButton" name="Button_Location2">
        <property name="geometry">
         <rect>
-         <x>210</x>
+         <x>270</x>
          <y>130</y>
          <width>75</width>
          <height>32</height>
@@ -1131,7 +1131,7 @@ QLineEdit:disabled {
       <widget class="QPushButton" name="Button_Location3">
        <property name="geometry">
         <rect>
-         <x>210</x>
+         <x>270</x>
          <y>170</y>
          <width>75</width>
          <height>32</height>
@@ -1326,6 +1326,258 @@ QLineEdit:disabled {
         <string>停止测试</string>
        </property>
       </widget>
+      <widget class="QLineEdit" name="lineEdit_leftTopX">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>90</y>
+         <width>41</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Calibri</family>
+         <pointsize>15</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QLineEdit {
+    background-color: #f0f0f0;
+    border: 2px solid #a0a0a0;
+    border-radius: 5px;
+    padding: 5px;
+    color: #000000;
+    selection-background-color: #c0c0c0;
+    selection-color: #000000;
+}
+
+QLineEdit:focus {
+    border: 2px solid #606060;
+    background-color: #e0e0e0;
+}
+
+QLineEdit:hover {
+    border: 2px solid #808080;
+}
+
+QLineEdit:disabled {
+    background-color: #d0d0d0;
+    color: #808080;
+    border: 2px solid #c0c0c0;
+}</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_rightTopX">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>130</y>
+         <width>41</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Calibri</family>
+         <pointsize>15</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QLineEdit {
+    background-color: #f0f0f0;
+    border: 2px solid #a0a0a0;
+    border-radius: 5px;
+    padding: 5px;
+    color: #000000;
+    selection-background-color: #c0c0c0;
+    selection-color: #000000;
+}
+
+QLineEdit:focus {
+    border: 2px solid #606060;
+    background-color: #e0e0e0;
+}
+
+QLineEdit:hover {
+    border: 2px solid #808080;
+}
+
+QLineEdit:disabled {
+    background-color: #d0d0d0;
+    color: #808080;
+    border: 2px solid #c0c0c0;
+}</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_rightBottomX">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>170</y>
+         <width>41</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Calibri</family>
+         <pointsize>15</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QLineEdit {
+    background-color: #f0f0f0;
+    border: 2px solid #a0a0a0;
+    border-radius: 5px;
+    padding: 5px;
+    color: #000000;
+    selection-background-color: #c0c0c0;
+    selection-color: #000000;
+}
+
+QLineEdit:focus {
+    border: 2px solid #606060;
+    background-color: #e0e0e0;
+}
+
+QLineEdit:hover {
+    border: 2px solid #808080;
+}
+
+QLineEdit:disabled {
+    background-color: #d0d0d0;
+    color: #808080;
+    border: 2px solid #c0c0c0;
+}</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_leftTopY">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>90</y>
+         <width>41</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Calibri</family>
+         <pointsize>15</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QLineEdit {
+    background-color: #f0f0f0;
+    border: 2px solid #a0a0a0;
+    border-radius: 5px;
+    padding: 5px;
+    color: #000000;
+    selection-background-color: #c0c0c0;
+    selection-color: #000000;
+}
+
+QLineEdit:focus {
+    border: 2px solid #606060;
+    background-color: #e0e0e0;
+}
+
+QLineEdit:hover {
+    border: 2px solid #808080;
+}
+
+QLineEdit:disabled {
+    background-color: #d0d0d0;
+    color: #808080;
+    border: 2px solid #c0c0c0;
+}</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_rightTopY">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>130</y>
+         <width>41</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Calibri</family>
+         <pointsize>15</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QLineEdit {
+    background-color: #f0f0f0;
+    border: 2px solid #a0a0a0;
+    border-radius: 5px;
+    padding: 5px;
+    color: #000000;
+    selection-background-color: #c0c0c0;
+    selection-color: #000000;
+}
+
+QLineEdit:focus {
+    border: 2px solid #606060;
+    background-color: #e0e0e0;
+}
+
+QLineEdit:hover {
+    border: 2px solid #808080;
+}
+
+QLineEdit:disabled {
+    background-color: #d0d0d0;
+    color: #808080;
+    border: 2px solid #c0c0c0;
+}</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_rightBottomY">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>170</y>
+         <width>41</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Calibri</family>
+         <pointsize>15</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QLineEdit {
+    background-color: #f0f0f0;
+    border: 2px solid #a0a0a0;
+    border-radius: 5px;
+    padding: 5px;
+    color: #000000;
+    selection-background-color: #c0c0c0;
+    selection-color: #000000;
+}
+
+QLineEdit:focus {
+    border: 2px solid #606060;
+    background-color: #e0e0e0;
+}
+
+QLineEdit:hover {
+    border: 2px solid #808080;
+}
+
+QLineEdit:disabled {
+    background-color: #d0d0d0;
+    color: #808080;
+    border: 2px solid #c0c0c0;
+}</string>
+       </property>
+      </widget>
      </widget>
      <widget class="QPushButton" name="Button_relay">
       <property name="geometry">
@@ -1349,7 +1601,7 @@ QLineEdit:disabled {
      <widget class="QRadioButton" name="Checkbox_ElecNeedle">
       <property name="geometry">
        <rect>
-        <x>1260</x>
+        <x>1230</x>
         <y>30</y>
         <width>101</width>
         <height>41</height>
@@ -1372,7 +1624,7 @@ QLineEdit:disabled {
      <widget class="QRadioButton" name="Checkbox_Light">
       <property name="geometry">
        <rect>
-        <x>1340</x>
+        <x>1310</x>
         <y>30</y>
         <width>101</width>
         <height>41</height>
@@ -1392,8 +1644,8 @@ QLineEdit:disabled {
      <widget class="QLineEdit" name="lineEdit_Xlocation">
       <property name="geometry">
        <rect>
-        <x>1910</x>
-        <y>30</y>
+        <x>1680</x>
+        <y>120</y>
         <width>161</width>
         <height>30</height>
        </rect>
@@ -1434,8 +1686,8 @@ QLineEdit:disabled {
      <widget class="QLabel" name="label_23">
       <property name="geometry">
        <rect>
-        <x>1830</x>
-        <y>30</y>
+        <x>1680</x>
+        <y>90</y>
         <width>81</width>
         <height>33</height>
        </rect>
@@ -1453,8 +1705,8 @@ QLineEdit:disabled {
      <widget class="QLineEdit" name="lineEdit_Ylocation">
       <property name="geometry">
        <rect>
-        <x>1910</x>
-        <y>70</y>
+        <x>1680</x>
+        <y>200</y>
         <width>161</width>
         <height>30</height>
        </rect>
@@ -1495,8 +1747,8 @@ QLineEdit:disabled {
      <widget class="QLabel" name="label_24">
       <property name="geometry">
        <rect>
-        <x>1830</x>
-        <y>70</y>
+        <x>1680</x>
+        <y>160</y>
         <width>81</width>
         <height>33</height>
        </rect>
@@ -1514,8 +1766,8 @@ QLineEdit:disabled {
      <widget class="QLabel" name="label_38">
       <property name="geometry">
        <rect>
-        <x>1830</x>
-        <y>110</y>
+        <x>1680</x>
+        <y>250</y>
         <width>81</width>
         <height>33</height>
        </rect>
@@ -1533,8 +1785,8 @@ QLineEdit:disabled {
      <widget class="QLineEdit" name="lineEdit_Zlocation">
       <property name="geometry">
        <rect>
-        <x>1910</x>
-        <y>120</y>
+        <x>1680</x>
+        <y>280</y>
         <width>161</width>
         <height>30</height>
        </rect>
@@ -1575,9 +1827,9 @@ QLineEdit:disabled {
      <widget class="QLineEdit" name="lineEdit_Pushlocation">
       <property name="geometry">
        <rect>
-        <x>1870</x>
-        <y>170</y>
-        <width>161</width>
+        <x>1750</x>
+        <y>380</y>
+        <width>81</width>
         <height>30</height>
        </rect>
       </property>
@@ -1617,9 +1869,9 @@ QLineEdit:disabled {
      <widget class="QLineEdit" name="lineEdit_Pulllocation">
       <property name="geometry">
        <rect>
-        <x>1870</x>
-        <y>220</y>
-        <width>161</width>
+        <x>1750</x>
+        <y>420</y>
+        <width>81</width>
         <height>30</height>
        </rect>
       </property>
@@ -1659,8 +1911,8 @@ QLineEdit:disabled {
      <widget class="QLabel" name="label_39">
       <property name="geometry">
        <rect>
-        <x>1810</x>
-        <y>170</y>
+        <x>1690</x>
+        <y>380</y>
         <width>81</width>
         <height>33</height>
        </rect>
@@ -1678,8 +1930,8 @@ QLineEdit:disabled {
      <widget class="QLabel" name="label_41">
       <property name="geometry">
        <rect>
-        <x>1810</x>
-        <y>220</y>
+        <x>1690</x>
+        <y>420</y>
         <width>81</width>
         <height>33</height>
        </rect>
@@ -1697,8 +1949,8 @@ QLineEdit:disabled {
      <widget class="QPushButton" name="Button_PushLocation">
       <property name="geometry">
        <rect>
-        <x>2040</x>
-        <y>170</y>
+        <x>1840</x>
+        <y>380</y>
         <width>75</width>
         <height>32</height>
        </rect>
@@ -1716,8 +1968,8 @@ QLineEdit:disabled {
      <widget class="QPushButton" name="Button_PullLocation">
       <property name="geometry">
        <rect>
-        <x>2040</x>
-        <y>220</y>
+        <x>1840</x>
+        <y>420</y>
         <width>75</width>
         <height>32</height>
        </rect>
@@ -1735,8 +1987,8 @@ QLineEdit:disabled {
      <widget class="QPushButton" name="Button_PushBack">
       <property name="geometry">
        <rect>
-        <x>1810</x>
-        <y>270</y>
+        <x>1730</x>
+        <y>470</y>
         <width>111</width>
         <height>32</height>
        </rect>
@@ -1754,8 +2006,8 @@ QLineEdit:disabled {
      <widget class="QPushButton" name="Button_PullBack">
       <property name="geometry">
        <rect>
-        <x>1930</x>
-        <y>270</y>
+        <x>1730</x>
+        <y>510</y>
         <width>111</width>
         <height>32</height>
        </rect>
@@ -1768,6 +2020,24 @@ QLineEdit:disabled {
       </property>
       <property name="text">
        <string>回到抬升点</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Checkbox_DontTest">
+      <property name="geometry">
+       <rect>
+        <x>1410</x>
+        <y>30</y>
+        <width>271</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>15</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>仅移动，不进行按压与测试</string>
       </property>
      </widget>
     </widget>

@@ -311,6 +311,7 @@ class SIM928ConnectionThread(QThread):
         try:
             # SIM928ConnectionThread.anc = Keithley2450(self.GBIO_number)
             SIM928ConnectionThread.anc = Keithley2450("GPIB5::18::INSTR")
+
             keithley = SIM928ConnectionThread.anc
             keithley.reset()
             time.sleep(0.1)

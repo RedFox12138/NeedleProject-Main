@@ -2,6 +2,7 @@ import os
 import subprocess
 import sys
 
+from QTneedle.QTneedle.DailyLogger import DailyLogger
 from StopClass import StopClass
 
 # 定义你要添加的库文件路径
@@ -18,11 +19,11 @@ from datetime import datetime
 import numpy as np
 from PyQt5 import QtCore
 from PyQt5.QtCore import QTimer, Qt
-from PyQt5.QtGui import QImage, QPixmap, QIcon
-from PyQt5.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QInputDialog
+from PyQt5.QtGui import QImage, QPixmap
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 
 from ANC300 import Positioner
-from CameraConfig.CamOperation_class import CameraOperation, To_hex_str, Is_color_data
+from CameraConfig.CamOperation_class import CameraOperation
 from CameraConfig.CameraParams_header import MV_CC_DEVICE_INFO_LIST
 from CameraConfig.ImagePro import load_templates, template, match_device_templates
 from CameraConfig.MvCameraControl_class import MV_GIGE_DEVICE, MV_USB_DEVICE, MvCamera
@@ -35,6 +36,8 @@ from demo import Ui_MainWindow
 def handle_coordinates(x, y):
     print(f"Received coordinates: x={x}, y={y}")
 
+# 获取日志器实例
+logger = DailyLogger()
 
 global red_dot_x
 global red_dot_y
@@ -54,6 +57,9 @@ class MainPage1(QMainWindow, Ui_MainWindow):
     import_script = "./jiaoben.py"
     # 默认的保存路径
     save_script = 'D:\\lzg\\data\\' + time.strftime("save_%Y-%m-%d_%H-%M-%S") + '\\IV\\'
+
+    #全局的视频帧，为了让其他类也能调用截图
+    global_frame = None
 
     # 给小灯设置颜色
     def get_stylesheet(status):
@@ -209,7 +215,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
     # 继电器的开关函数
     def relay_IO(self):
         try:
-            if (self.relay_flag):
+            if self.relay_flag:
                 d = bytes.fromhex('A0 01 00 A1')  # 关闭
                 RelayConnectionThread.anc.write(d)
                 self.relay_flag = False
@@ -245,7 +251,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         if ret != 0:
             return
 
-    # @staticmethod
+
     def update_frame(self):
         load_templates()
 
@@ -277,7 +283,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                                                                                          ydia, MainPage1.equipment)
 
 
-                    if(self.DeviceTemplate_view):
+                    if self.DeviceTemplate_view:
                         match_device_templates(self.frame_resized)
                     self.frame_resized = self.align_frame_with_probe()
 
@@ -293,6 +299,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                     q_image_zoom = q_image.copy(start_x, start_y, center_width, center_height)
                     self.label_cameraLabel.setPixmap(QPixmap.fromImage(q_image_zoom))
 
+                    MainPage1.global_frame = self.frame_resized
                     return self.frame_resized
 
                 except Exception as e:
@@ -373,7 +380,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         if r is not None:
             x, y, w, h = r
             cropped_image = param[y:y + h, x:x + w]
-            if (MainPage1.equipment):
+            if MainPage1.equipment:
                 cv2.imwrite("templateLight.png", cropped_image)
             else:
                 cv2.imwrite("templateNeedle.png", cropped_image)
@@ -476,10 +483,6 @@ class MainPage1(QMainWindow, Ui_MainWindow):
             f.write(f"{x_dia},{y_dia}")
         print(f"偏移量已保存: x_dia={x_dia}, y_dia={y_dia}")
 
-    # 用于写入日志，在每次操作后加入这个函数就可
-    def log_operation(self, action):
-        with open(self.log_file, 'a') as f:
-            f.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - {action}\n")
 
     def CalIU(self):
         '''
@@ -495,11 +498,11 @@ class MainPage1(QMainWindow, Ui_MainWindow):
             # 添加完整路径和检查
             script_path = os.path.abspath(MainPage1.import_script)
             if not os.path.exists(script_path):
-                self.log_operation(f"错误：脚本文件不存在 - {script_path}")
+                logger.log(f"错误：脚本文件不存在 - {script_path}")
                 return
 
             save_script = self.lineEdit_SaveResult.text()
-            if (save_script == ''):
+            if save_script == '':
                 save_script = 'D:\\lzg\\data\\' + time.strftime("save_%Y-%m-%d_%H-%M-%S") + '\\IV\\'
             # 使用完整路径执行，添加错误检查
             result = subprocess.run(
@@ -512,33 +515,61 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
             # 记录输出和错误（如果有）
             if result.stdout:
-                self.log_operation(f"脚本输出: {result.stdout}")
+                logger.log(f"脚本输出: {result.stdout}")
             if result.stderr:
-                self.log_operation(f"脚本错误: {result.stderr}")
+                logger.log(f"脚本错误: {result.stderr}")
 
-            self.log_operation("成功执行IU参数计算")
+            logger.log("成功执行IU参数计算")
 
         except Exception as e:
-            self.log_operation(f"执行过程中发生错误: {str(e)}")
+            logger.log(f"执行过程中发生错误: {str(e)}")
+
+    # def update_log_display(self):
+    #     '''
+    #         Funtion:
+    #             用于和定时器进行绑定，更新日志
+    #         Args:
+    #             none
+    #         Return:
+    #             none
+    #     '''
+    #     try:
+    #         with open(self.log_file, 'r') as f:
+    #             lines = f.readlines()
+    #             # 取最后三行日志
+    #             last_lines = lines[-10:]
+    #             # 更新日志显示内容
+    #             self.plainTextEdit_log.setPlainText("".join(last_lines))
+    #     except FileNotFoundError:
+    #         self.plainTextEdit_log.setPlainText("No logs available.")
 
     def update_log_display(self):
         '''
-            Funtion:
-                用于和定时器进行绑定，更新日志
-            Args:
-                none
-            Return:
-                none
+        Function:
+            用于和定时器进行绑定，更新日志显示
+        Args:
+            none
+        Return:
+            none
         '''
         try:
-            with open(self.log_file, 'r') as f:
-                lines = f.readlines()
-                # 取最后三行日志
-                last_lines = lines[-10:]
-                # 更新日志显示内容
-                self.plainTextEdit_log.setPlainText("".join(last_lines))
-        except FileNotFoundError:
-            self.plainTextEdit_log.setPlainText("No logs available.")
+            # 获取当天日志内容
+            log_content = logger.get_today_logs()
+
+            # 分割日志行并反转顺序（最新的在最前面）
+            lines = log_content.split('\n')
+            reversed_lines = lines[::-1]  # 反转列表
+
+            # 取前10行（最新的10条）
+            first_lines = reversed_lines[:10] if len(reversed_lines) >= 10 else reversed_lines
+
+            # 更新日志显示内容
+            self.plainTextEdit_log.setPlainText("\n".join(first_lines))
+
+        except Exception as e:
+            self.plainTextEdit_log.setPlainText(f"Log display error: {str(e)}")
+
+
 
     def checkbox_template_changed(self,state):
         # 根据复选框的状态更新标志位
@@ -645,29 +676,29 @@ class MainPage1(QMainWindow, Ui_MainWindow):
     def move_probe_up(self):
         threading.Thread(target=WhileMove,
                          args=(0, MainPage1.equipment, MainPage1.needle_distanceY)).start()
-        self.log_operation("探针往上移动了")
+        logger.log("探针往上移动了")
 
     def move_probe_down(self):
         threading.Thread(target=WhileMove,
                          args=(1, MainPage1.equipment, MainPage1.needle_distanceY)).start()
-        self.log_operation("探针往下移动了")
+        logger.log("探针往下移动了")
 
     def move_probe_left(self):
         threading.Thread(target=WhileMove,
                          args=(2, MainPage1.equipment, MainPage1.needle_distanceX)).start()
-        self.log_operation("探针往左移动了")
+        logger.log("探针往左移动了")
 
     def move_probe_right(self):
         threading.Thread(target=WhileMove,
                          args=(3, MainPage1.equipment, MainPage1.needle_distanceX)).start()
-        self.log_operation("探针往右移动了")
+        logger.log("探针往右移动了")
 
     # 主页面设置探针的移动距离
     def update_needle_distanceX(self):
-        MainPage1.needle_distanceX = min(2000, float(self.lineEdit_needle1Xdistance.text()))
+        MainPage1.needle_distanceX = min(3000, float(self.lineEdit_needle1Xdistance.text()))
 
     def update_needle_distanceY(self):
-        MainPage1.needle_distanceY = min(2000, float(self.lineEdit_needle1Ydistance.text()))
+        MainPage1.needle_distanceY = min(3000, float(self.lineEdit_needle1Ydistance.text()))
 
     def update_needle_distanceZ(self):
         MainPage1.needle_distanceZ = min(1000, float(self.lineEdit_needle1Zdistance.text()))
@@ -729,15 +760,15 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         self.target_y = relative_y
 
         # 检查目标坐标是否在有效区域内
-        if self.target_x >= self.board_width / 2 and self.target_x <= video_width - self.board_width / 2 and self.target_y >= self.board_height / 2 and self.target_y <= video_height - self.board_height / 2:
+        if self.board_width / 2 <= self.target_x <= video_width - self.board_width / 2 and self.board_height / 2 <= self.target_y <= video_height - self.board_height / 2:
             if event.button() == QtCore.Qt.LeftButton:
                 confirm = QMessageBox.question(self, '确认操作', '您确定要移动探针吗?',
                                                QMessageBox.Yes | QMessageBox.No)
                 if confirm == QMessageBox.Yes:
-                    self.log_operation("执行了一次探针鼠标点击运动")
+                    logger.log("执行了一次探针鼠标点击运动")
                     threading.Thread(target=self.move_probe_to_target, args=(self.target_x, self.target_y)).start()
                     self.indicator.setStyleSheet(MainPage1.get_stylesheet(False))
-        elif self.target_x >= 0 and self.target_x <= video_width and self.target_y >= 0 and self.target_y <= video_height:
+        elif 0 <= self.target_x <= video_width and 0 <= self.target_y <= video_height:
             QMessageBox.warning(self, '提示', '请在视频有效区域内点击！', QMessageBox.Ok)
             return
 
@@ -748,38 +779,32 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         self.indicator.setStyleSheet(MainPage1.get_stylesheet(True))
         probe_x, probe_y = self.get_probe_position()
         distance = np.sqrt((target_x - probe_x) ** 2) *distance_weight
-        while (distance>=2):
-            if (StopClass.stop_num == 1):
+        while distance>=3:
+            if StopClass.stop_num == 1:
                 break
             if probe_x is None:
-                self.log_operation("模板匹配失败")
-                print("模板匹配失败，请先进行模板匹配")
+                logger.log("模板匹配失败，请先进行模板匹配")
                 break
             if target_x < probe_x:
                 ReturnNeedleMove(self.needleuleft, distance, self.indicator, True, False, MainPage1.equipment)
-                self.log_operation("探针往左移动了 {}".format(round((distance / 2), 3)))
             elif target_x > probe_x:
                 ReturnNeedleMove(self.needleright, distance, self.indicator, True, False, MainPage1.equipment)
-                self.log_operation("探针往右移动了 {}".format(round((distance / 2), 3)))
             # 低温情况下time.sleep应该是0.5，常温情况是0.1
             time.sleep(0.5)
             probe_x, probe_y = self.get_probe_position()
             distance = np.sqrt((target_x - probe_x) ** 2)*distance_weight
 
         distance = np.sqrt((target_y - probe_y) ** 2)*distance_weight
-        while(distance>=2):
-            if (StopClass.stop_num == 1):
+        while distance>=3:
+            if StopClass.stop_num == 1:
                 break
             if probe_y is None:
-                self.log_operation("模板匹配失败")
-                print("模板匹配失败，请先进行模板匹配")
+                logger.log("模板匹配失败，请先进行模板匹配")
                 break
             if target_y < probe_y:
                 ReturnNeedleMove(self.needleup, distance, self.indicator, True, False, MainPage1.equipment)
-                self.log_operation("探针往上移动了 {}".format(round((distance / 2), 3)))
             elif target_y > probe_y:
                 ReturnNeedleMove(self.needledown, distance, self.indicator, True, False, MainPage1.equipment)
-                self.log_operation("探针往下移动了 {}".format(round((distance / 2), 3)))
             # 低温情况下time.sleep应该是0.5，常温情况是0.1
             time.sleep(0.5)
             probe_x, probe_y = self.get_probe_position()
@@ -828,11 +853,11 @@ class MainPage1(QMainWindow, Ui_MainWindow):
     def Pushing(self):
         # ReturnNeedleMove(5, min(5000, MainPage1.needle_distanceZ), self.indicator, False, False, MainPage1.equipment)
         WhileMove(4,MainPage1.equipment,MainPage1.needle_distanceZ)
-        self.log_operation("探针下压了")
+        logger.log("探针下压了")
     def Pulling(self):
         # 常温下min的最大值是1000，低温下min的最大值是5000
         WhileMove(5, MainPage1.equipment, MainPage1.needle_distanceZ)
-        self.log_operation("探针抬升了")
+        logger.log("探针抬升了")
 
 
 def Color_numpy(data, nWidth, nHeight):
