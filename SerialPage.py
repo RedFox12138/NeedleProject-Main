@@ -19,11 +19,12 @@ if custom_lib_path not in sys.path:
 class SerialPage(QMainWindow, Ui_MainWindow):
     def __init__(self, comboBox_micro, status_led_micro, connect_button_micro, disconnect_button_micro,
                  comboBox_needle, status_led_needle, connect_button_needle, disconnect_button_needle,
-                 comboBox1_SIM928, comboBox2_SIM928, status_led_SIM928, connect_button_SIM928, disconnect_button_SIM928,
+                 lineEdit_Keithley, status_led_SIM928, connect_button_SIM928, disconnect_button_SIM928,
                  comboBox1_SIM970, comboBox2_SIM970, status_led_SIM970, connect_button_SIM970, disconnect_button_SIM970,
                  GBIO_connect_button, comboBox_relay, status_led_relay, Button_relayConnect,
                  Button_relayDisConnect, Serial_connect_refresh):
         super().__init__()
+        self.lineEdit_Keithley = lineEdit_Keithley
 
         # 存储所有设备连接状态和UI组件
         self.devices = {
@@ -52,8 +53,7 @@ class SerialPage(QMainWindow, Ui_MainWindow):
                 'connected': False
             },
             'SIM928': {
-                'gbio_combo': comboBox1_SIM928,
-                'port_combo': comboBox2_SIM928,
+                'address_input': self.lineEdit_Keithley,  # 修改为直接使用地址输入框
                 'status_led': status_led_SIM928,
                 'connect_button': connect_button_SIM928,
                 'disconnect_button': disconnect_button_SIM928,
@@ -101,9 +101,10 @@ class SerialPage(QMainWindow, Ui_MainWindow):
 
         # 初始化GPIB设备
         for device in ['SIM928', 'SIM970']:
-            self.update_GBIO_ports(self.devices[device]['gbio_combo'])
-            for num in range(1, 11):
-                self.devices[device]['port_combo'].addItem(str(num))
+            if device == 'SIM970':
+                self.update_GBIO_ports(self.devices[device]['gbio_combo'])
+                for num in range(1, 11):
+                    self.devices[device]['port_combo'].addItem(str(num))
             self.devices[device]['status_led'].setStyleSheet("color: red; font-size: 20px;")
             self.devices[device]['disconnect_button'].setEnabled(False)
             self.devices[device]['connect_button'].clicked.connect(
@@ -114,8 +115,8 @@ class SerialPage(QMainWindow, Ui_MainWindow):
     def GBIO_clicked(self):
         """处理GBIO连接按钮点击事件"""
         GBIOConnect()  # 先执行
-        self.update_GBIO_ports(self.devices['SIM928']['gbio_combo'])  # 再执行
-        self.update_GBIO_ports(self.devices['SIM970']['gbio_combo'])  # 最后执行
+        if 'SIM970' in self.devices:
+            self.update_GBIO_ports(self.devices['SIM970']['gbio_combo'])  # 最后执行
 
     def Serial_clicked(self):
         """处理串口刷新按钮点击事件"""
@@ -149,15 +150,21 @@ class SerialPage(QMainWindow, Ui_MainWindow):
                 device['status_led'].setStyleSheet("color: red; font-size: 20px;")
                 return
             port_number = int(selected_port[3:])  # 假设串口为 COMx 格式，取 x
-        else:  # SIM928 或 SIM970
+        elif device_type == 'SIM970':
             selected_gbio = device['gbio_combo'].currentText()
             selected_port = device['port_combo'].currentText()
             if not selected_gbio or not selected_port:
                 device['status_led'].setText('连接状态: 无端口可用')
                 device['status_led'].setStyleSheet("color: red; font-size: 20px;")
                 return
-            port_number = int(selected_port[-1])
+            port_number = int(selected_port)
             gbio_number = selected_gbio
+        elif device_type == 'SIM928':
+            address = device['address_input'].text().strip()  # 直接获取输入的地址
+            if not address:
+                device['status_led'].setText('连接状态: 请输入设备地址')
+                device['status_led'].setStyleSheet("color: red; font-size: 20px;")
+                return
 
         # 启动超时计时器
         self.timer.start()
@@ -174,7 +181,7 @@ class SerialPage(QMainWindow, Ui_MainWindow):
         elif device_type == 'relay':
             device['connection_thread'] = RelayConnectionThread(port_number)
         elif device_type == 'SIM928':
-            device['connection_thread'] = SIM928ConnectionThread(port_number, gbio_number)
+            device['connection_thread'] = SIM928ConnectionThread(address, device['address_input'])
         elif device_type == 'SIM970':
             device['connection_thread'] = SIM970ConnectionThread(port_number, gbio_number)
 
@@ -303,19 +310,18 @@ class SIM928ConnectionThread(QThread):
     connected = pyqtSignal(bool, str)
     anc = None
 
-    def __init__(self, port_number, GBIO_number):
+    def __init__(self, address, address_input):
         super().__init__()
-        self.GBIO_number = GBIO_number
+        self.address = address
+        self.address_input = address_input
 
     def run(self):
         try:
-            # SIM928ConnectionThread.anc = Keithley2450(self.GBIO_number)
-            SIM928ConnectionThread.anc = Keithley2450("GPIB5::18::INSTR")
-
+            SIM928ConnectionThread.anc = Keithley2450(self.address)
             keithley = SIM928ConnectionThread.anc
             keithley.reset()
             time.sleep(0.1)
-            self.connected.emit(True, f"连接成功，端口 {self.GBIO_number}")
+            self.connected.emit(True, f"连接成功，地址 {self.address}")
         except Exception as e:
             if SIM928ConnectionThread.anc:
                 SIM928ConnectionThread.anc.shutdown()

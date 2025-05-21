@@ -16,7 +16,7 @@ from pymeasure.instruments.keithley import Keithley2450
 
 
 def main():
-    keithley = Keithley2450("GPIB5::18::INSTR") # keithley2450地址
+    keithley = Keithley2450("GPIB4::18::INSTR") # keithley2450地址
     keithley.reset() #keithley2450初始化sss
     time.sleep(0.1)
 
@@ -99,8 +99,9 @@ def main():
 
     time_str = datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')
 
-    #datapath = 'D:\\lzg\\DATA\\20241129_walk\\IV\\'              # 数据文件夹目录
-    datapath = sys.argv[1]
+    datapath = 'D:\\pyy\\date\\'              # 数据文件夹目录
+    # datapath = sys.argv[1]
+
     print("保存路径是",datapath)
     # datapath = sys.argv[0]
     if not os.path.exists(datapath) :

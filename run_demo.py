@@ -58,7 +58,7 @@ class UsingTest(QMainWindow, Ui_MainWindow):
                                     self.Button_microDisConnect,
                                     self.comboBox_needle, self.label_needleConnect, self.Button_needleConnect,
                                     self.Button_needleDisConnect,
-                                    self.comboBox_SIM928_port1, self.comboBox_SIM928_port2, self.label_SIM928Connect,
+                                    self.lineEdit_Keithley, self.label_SIM928Connect,
                                     self.Button_SIM928Connect, self.Button_SIM928DisConnect,
                                     self.comboBox_SIM970_port1, self.comboBox_SIM970_port2, self.label_SIM970Connect,
                                     self.Button_SIM970Connect, self.Button_SIM970DisConnect,

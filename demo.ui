@@ -87,7 +87,7 @@ QTabWidget::pane {
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>4</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -3025,7 +3025,7 @@ QLineEdit:disabled {
        <rect>
         <x>320</x>
         <y>50</y>
-        <width>1161</width>
+        <width>1175</width>
         <height>662</height>
        </rect>
       </property>
@@ -3036,7 +3036,62 @@ QLineEdit:disabled {
        </font>
       </property>
       <layout class="QGridLayout" name="gridLayout_9">
-       <item row="16" column="0">
+       <item row="9" column="2">
+        <widget class="QPushButton" name="Button_SIM970Connect">
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>15</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>连接</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="2">
+        <widget class="QPushButton" name="Button_SIM970DisConnect">
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>15</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>断开连接</string>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="0">
+        <widget class="QLabel" name="label_needleConnect">
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>15</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>连接状态：未连接</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QFrame" name="frame">
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>15</pointsize>
+          </font>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::HLine</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="15" column="0">
         <widget class="QPushButton" name="Button_relayConnect">
          <property name="font">
           <font>
@@ -3049,40 +3104,7 @@ QLineEdit:disabled {
          </property>
         </widget>
        </item>
-       <item row="15" column="0">
-        <widget class="QComboBox" name="comboBox_relay">
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>15</pointsize>
-          </font>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="label_microConnect">
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>15</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>连接状态：未连接</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QComboBox" name="comboBox_micro">
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>15</pointsize>
-          </font>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="2">
+       <item row="2" column="2">
         <widget class="QPushButton" name="Button_SIM928Connect">
          <property name="font">
           <font>
@@ -3095,20 +3117,7 @@ QLineEdit:disabled {
          </property>
         </widget>
        </item>
-       <item row="11" column="0">
-        <widget class="QPushButton" name="Button_needleDisConnect">
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>15</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>断开连接</string>
-         </property>
-        </widget>
-       </item>
-       <item row="13" column="2">
+       <item row="12" column="2">
         <widget class="QFrame" name="frame_12">
          <property name="font">
           <font>
@@ -3124,8 +3133,18 @@ QLineEdit:disabled {
          </property>
         </widget>
        </item>
-       <item row="5" column="2">
-        <widget class="QLabel" name="label_SIM928Connect">
+       <item row="14" column="0">
+        <widget class="QComboBox" name="comboBox_relay">
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>15</pointsize>
+          </font>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="label_33">
          <property name="font">
           <font>
            <family>Calibri</family>
@@ -3133,11 +3152,11 @@ QLineEdit:disabled {
           </font>
          </property>
          <property name="text">
-          <string>连接状态：未连接</string>
+          <string>请选择探针串口：</string>
          </property>
         </widget>
        </item>
-       <item row="18" column="0">
+       <item row="17" column="0">
         <widget class="QLabel" name="label_relayConnect">
          <property name="font">
           <font>
@@ -3147,120 +3166,6 @@ QLineEdit:disabled {
          </property>
          <property name="text">
           <string>连接状态：未连接</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="2">
-        <widget class="QPushButton" name="Button_SIM928DisConnect">
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>15</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>断开连接</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="2">
-        <widget class="QLabel" name="label_36">
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>15</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>请选择SIM970串口：</string>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="2">
-        <widget class="QComboBox" name="comboBox_SIM970_port2">
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>15</pointsize>
-          </font>
-         </property>
-        </widget>
-       </item>
-       <item row="12" column="2">
-        <widget class="QLabel" name="label_SIM970Connect">
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>15</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>连接状态：未连接</string>
-         </property>
-        </widget>
-       </item>
-       <item row="13" column="0">
-        <widget class="QFrame" name="frame_13">
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>15</pointsize>
-          </font>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::HLine</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="14" column="0">
-        <widget class="QLabel" name="label_62">
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>15</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>请选择继电器串口：</string>
-         </property>
-        </widget>
-       </item>
-       <item row="12" column="0">
-        <widget class="QLabel" name="label_needleConnect">
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>15</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>连接状态：未连接</string>
-         </property>
-        </widget>
-       </item>
-       <item row="10" column="0">
-        <widget class="QPushButton" name="Button_needleConnect">
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>15</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>连接</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2">
-        <widget class="QComboBox" name="comboBox_SIM928_port2">
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>15</pointsize>
-          </font>
          </property>
         </widget>
        </item>
@@ -3277,8 +3182,8 @@ QLineEdit:disabled {
          </property>
         </widget>
        </item>
-       <item row="8" column="2">
-        <widget class="QComboBox" name="comboBox_SIM970_port1">
+       <item row="7" column="0">
+        <widget class="QComboBox" name="comboBox_needle">
          <property name="font">
           <font>
            <family>Calibri</family>
@@ -3287,8 +3192,21 @@ QLineEdit:disabled {
          </property>
         </widget>
        </item>
-       <item row="17" column="0">
-        <widget class="QPushButton" name="Button_relayDisConnect">
+       <item row="13" column="0">
+        <widget class="QLabel" name="label_62">
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>15</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>请选择继电器串口：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QPushButton" name="Button_microDisConnect">
          <property name="font">
           <font>
            <family>Calibri</family>
@@ -3300,8 +3218,8 @@ QLineEdit:disabled {
          </property>
         </widget>
        </item>
-       <item row="10" column="2">
-        <widget class="QPushButton" name="Button_SIM970Connect">
+       <item row="6" column="2">
+        <widget class="QLabel" name="label_36">
          <property name="font">
           <font>
            <family>Calibri</family>
@@ -3309,7 +3227,43 @@ QLineEdit:disabled {
           </font>
          </property>
          <property name="text">
-          <string>连接</string>
+          <string>请选择SIM970串口：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QPushButton" name="Button_SIM928DisConnect">
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>15</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>断开连接</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="0">
+        <widget class="QPushButton" name="Button_needleDisConnect">
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>15</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>断开连接</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QComboBox" name="comboBox_micro">
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>15</pointsize>
+          </font>
          </property>
         </widget>
        </item>
@@ -3326,8 +3280,8 @@ QLineEdit:disabled {
          </property>
         </widget>
        </item>
-       <item row="4" column="0">
-        <widget class="QPushButton" name="Button_microDisConnect">
+       <item row="9" column="0">
+        <widget class="QPushButton" name="Button_needleConnect">
          <property name="font">
           <font>
            <family>Calibri</family>
@@ -3335,12 +3289,22 @@ QLineEdit:disabled {
           </font>
          </property>
          <property name="text">
-          <string>断开连接</string>
+          <string>连接</string>
          </property>
         </widget>
        </item>
-       <item row="7" column="0">
-        <widget class="QLabel" name="label_33">
+       <item row="8" column="2">
+        <widget class="QComboBox" name="comboBox_SIM970_port2">
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>15</pointsize>
+          </font>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QPushButton" name="Button_microConnect">
          <property name="font">
           <font>
            <family>Calibri</family>
@@ -3348,22 +3312,25 @@ QLineEdit:disabled {
           </font>
          </property>
          <property name="text">
-          <string>请选择探针串口：</string>
+          <string>连接</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="2">
-        <widget class="QComboBox" name="comboBox_SIM928_port1">
+       <item row="4" column="2">
+        <widget class="QLabel" name="label_SIM928Connect">
          <property name="font">
           <font>
            <family>Calibri</family>
            <pointsize>15</pointsize>
           </font>
          </property>
+         <property name="text">
+          <string>连接状态：未连接</string>
+         </property>
         </widget>
        </item>
-       <item row="6" column="0">
-        <widget class="QFrame" name="frame">
+       <item row="0" column="1" rowspan="18">
+        <widget class="QFrame" name="frame_3">
          <property name="font">
           <font>
            <family>Calibri</family>
@@ -3371,14 +3338,24 @@ QLineEdit:disabled {
           </font>
          </property>
          <property name="frameShape">
-          <enum>QFrame::HLine</enum>
+          <enum>QFrame::VLine</enum>
          </property>
          <property name="frameShadow">
           <enum>QFrame::Raised</enum>
          </property>
         </widget>
        </item>
-       <item row="6" column="2">
+       <item row="7" column="2">
+        <widget class="QComboBox" name="comboBox_SIM970_port1">
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>15</pointsize>
+          </font>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2">
         <widget class="QFrame" name="frame_2">
          <property name="font">
           <font>
@@ -3395,7 +3372,36 @@ QLineEdit:disabled {
         </widget>
        </item>
        <item row="11" column="2">
-        <widget class="QPushButton" name="Button_SIM970DisConnect">
+        <widget class="QLabel" name="label_SIM970Connect">
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>15</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>连接状态：未连接</string>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="0">
+        <widget class="QFrame" name="frame_13">
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>15</pointsize>
+          </font>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::HLine</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="16" column="0">
+        <widget class="QPushButton" name="Button_relayDisConnect">
          <property name="font">
           <font>
            <family>Calibri</family>
@@ -3407,8 +3413,8 @@ QLineEdit:disabled {
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
-        <widget class="QPushButton" name="Button_microConnect">
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_microConnect">
          <property name="font">
           <font>
            <family>Calibri</family>
@@ -3416,33 +3422,59 @@ QLineEdit:disabled {
           </font>
          </property>
          <property name="text">
-          <string>连接</string>
+          <string>连接状态：未连接</string>
          </property>
         </widget>
        </item>
-       <item row="8" column="0">
-        <widget class="QComboBox" name="comboBox_needle">
+       <item row="1" column="2">
+        <widget class="QLineEdit" name="lineEdit_Keithley">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="font">
           <font>
            <family>Calibri</family>
-           <pointsize>15</pointsize>
+           <pointsize>13</pointsize>
+           <kerning>true</kerning>
           </font>
          </property>
-        </widget>
-       </item>
-       <item row="0" column="1" rowspan="19">
-        <widget class="QFrame" name="frame_3">
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>15</pointsize>
-          </font>
+         <property name="styleSheet">
+          <string notr="true">QLineEdit {
+    background-color: #f0f0f0;
+    border: 2px solid #a0a0a0;
+    border-radius: 5px;
+    padding: 5px;
+    color: #000000;
+    selection-background-color: #c0c0c0;
+    selection-color: #000000;
+}
+
+QLineEdit:focus {
+    border: 2px solid #606060;
+    background-color: #e0e0e0;
+}
+
+QLineEdit:hover {
+    border: 2px solid #808080;
+}
+
+QLineEdit:disabled {
+    background-color: #d0d0d0;
+    color: #808080;
+    border: 2px solid #c0c0c0;
+}</string>
          </property>
-         <property name="frameShape">
-          <enum>QFrame::VLine</enum>
+         <property name="text">
+          <string>请输入串口的GPIO号或者com号，比如 GPIB4::18::INSTR 或者 COM10</string>
          </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
+         <property name="frame">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
