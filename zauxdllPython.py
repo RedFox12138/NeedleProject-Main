@@ -49,14 +49,14 @@ class ZMCWrapper:
         return ret
 
     def connectcom(self,comid):
-        '''
-        :Description:与控制器建立链接，串口方式。
+        """
+            :Description:与控制器建立链接，串口方式。
 
-        :param comid:串口号   type: uint32
-  
-        :Return:错误码。 type: int32   
+            :param comid:串口号   type: uint32
 
-       '''    
+            :Return:错误码。 type: int32
+
+       """
         ret = zauxdll.ZAux_OpenCom(ctypes.c_uint32(comid), ctypes.pointer(self.handle))
         return ret 
     # 断开连接   
@@ -114,7 +114,7 @@ class ZMCWrapper:
 ###############################轴参数读取################################################
     # 读取轴类型
     def get_atype(self, iaxis):
-        iValue = (ctypes.c_int)()
+        iValue = ctypes.c_int()
         ret = zauxdll.ZAux_Direct_GetAtype(self.handle, iaxis, ctypes.byref(iValue))
         if ret == 0:
             print("Get Axis (", iaxis, ") Atype:", iValue.value)
@@ -124,7 +124,7 @@ class ZMCWrapper:
 
     # 读取轴脉冲当量
     def get_untis(self, iaxis):
-        iValue = (ctypes.c_float)()
+        iValue = ctypes.c_float()
         ret = zauxdll.ZAux_Direct_GetUnits(self.handle, iaxis, ctypes.byref(iValue))
         if ret == 0:
             print("Get Axis (", iaxis, ") Units:", iValue.value)
@@ -134,7 +134,7 @@ class ZMCWrapper:
 
     # 读取轴加速度
     def get_accel(self, iaxis):
-        iValue = (ctypes.c_float)()
+        iValue = ctypes.c_float()
         ret = zauxdll.ZAux_Direct_GetAccel(self.handle, iaxis, ctypes.byref(iValue))
         if ret == 0:
             print("Get Axis (", iaxis, ") Accel:",  iValue.value)
@@ -144,7 +144,7 @@ class ZMCWrapper:
 
     # 读取轴减速度
     def get_decel(self, iaxis):
-        iValue = (ctypes.c_float)()
+        iValue = ctypes.c_float()
         ret = zauxdll.ZAux_Direct_GetDecel(self.handle, iaxis, ctypes.byref(iValue))
         if ret == 0:
             print("Get Axis (", iaxis, ") Decel:",  iValue.value)
@@ -154,7 +154,7 @@ class ZMCWrapper:
 
     # 读取轴运行速度
     def get_speed(self, iaxis):
-        iValue = (ctypes.c_float)()
+        iValue = ctypes.c_float()
         ret = zauxdll.ZAux_Direct_GetSpeed(self.handle, iaxis, ctypes.byref(iValue))
         if ret == 0:
             print("Get Axis (", iaxis, ") Speed:",  iValue.value)

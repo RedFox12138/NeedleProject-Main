@@ -14,7 +14,7 @@ if custom_lib_path not in sys.path:
 import cv2
 import threading
 import time
-import traceback
+
 from datetime import datetime
 import numpy as np
 from PyQt5 import QtCore
@@ -22,14 +22,13 @@ from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 
-from ANC300 import Positioner
 from CameraConfig.CamOperation_class import CameraOperation
 from CameraConfig.CameraParams_header import MV_CC_DEVICE_INFO_LIST
 from CameraConfig.ImagePro import load_templates, template, match_device_templates
 from CameraConfig.MvCameraControl_class import MV_GIGE_DEVICE, MV_USB_DEVICE, MvCamera
 from LTDS import ReturnNeedleMove, WhileMove
 from Microscope import ReturnZauxdll
-from SerialPage import SIM928ConnectionThread, SIM970ConnectionThread, RelayConnectionThread, NeedelConnectionThread
+from SerialPage import SIM928ConnectionThread, RelayConnectionThread, NeedelConnectionThread
 from demo import Ui_MainWindow
 
 
@@ -49,6 +48,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
     needle_distanceY = 300
     needle_distanceX = 300
     needle_distanceZ = 300
+
     obj_cam_operation = None
     equipment = 0  # 0代表电探针，1代表光纤
     stop_flag = False
@@ -83,9 +83,24 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                  label_light,
                  lineEdit_SIM928, Button_SIM928,
                  Button_pushing, Button_pulling,
-                 Button_relay, label_needle1, lineEdit_SaveResult
+                 Button_relay, label_needle1, lineEdit_SaveResult,
+                 lineEdit_needleSetXdis, lineEdit_needleSetYdis,lineEdit_needleSetZdis,
+                 lineEdit_microSetXdis, lineEdit_microSetYdis,lineEdit_Scripts
                  ):
         super().__init__()
+        self.lineEdit_Scripts = lineEdit_Scripts
+
+        self.lineEdit_needleSetXdis = lineEdit_needleSetXdis
+        self.lineEdit_needleSetYdis = lineEdit_needleSetYdis
+        self.lineEdit_needleSetZdis = lineEdit_needleSetZdis
+        self.lineEdit_microSetXdis = lineEdit_microSetXdis
+        self.lineEdit_microSetYdis = lineEdit_microSetYdis
+
+        MainPage1.micro_distanceX = float(self.lineEdit_microSetXdis.text())
+        MainPage1.micro_distanceY = float(self.lineEdit_microSetYdis.text())
+        MainPage1.needle_distanceY = float(self.lineEdit_needleSetYdis.text())
+        MainPage1.needle_distanceX = float(self.lineEdit_needleSetXdis.text())
+        MainPage1.needle_distanceZ = float(self.lineEdit_needleSetZdis.text())
 
         # 是否显示器件的模板匹配，True显示，False不显示
         self.DeviceTemplate_view = False
@@ -212,6 +227,8 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         self.log_timer.timeout.connect(self.update_log_display)
         self.log_timer.start(500)  # 每秒更新一次
 
+
+
     # 继电器的开关函数
     def relay_IO(self):
         try:
@@ -269,7 +286,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                     self.frame_resized = cv2.resize(self.frame_resized,
                                                     (stFrameInfo.nWidth // 4, stFrameInfo.nHeight // 4),
                                                     interpolation=cv2.INTER_LINEAR)
-                    self.frame_resized = cv2.resize(self.frame_resized, (1021, 851), interpolation=cv2.INTER_LINEAR)
+                    self.frame_resized = cv2.resize(self.frame_resized, (851, 851), interpolation=cv2.INTER_LINEAR)
 
                     with open('dia' + str(MainPage1.equipment) + '.txt', 'r') as file:
                         line = file.readline().strip()  # 读取第一行并去除首尾空白字符
@@ -385,7 +402,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
             else:
                 cv2.imwrite("templateNeedle.png", cropped_image)
             load_templates()
-            red_dot_x, red_dot_y, _, _ = template(self.frame_resized, MainPage1.equipment)
+            red_dot_x, red_dot_y, _, _ = template(self.frame_resized, equipment=MainPage1.equipment)
             self.x_dia = mouseX - red_dot_x
             self.y_dia = mouseY - red_dot_y
             cv2.destroyWindow("Select Needle Template")
@@ -411,6 +428,8 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         cv2.imwrite("screenshot.png", cropped_image)
         print("截图已保存为 screenshot.png")
         cv2.destroyWindow("Take Screenshot")
+
+
 
     def select_pad_template(self):
         # 先截图并让用户框选区域
@@ -485,48 +504,42 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
 
     def CalIU(self):
-        '''
-            Funtion:
+
+        """
+            Function:
               用于测量探针的IU性能，这里就是直接执行用户自己输入的JiaoBen文件
               执行后，强行将探针抬起来了，防止出现损坏
             Args:
               none
             Return:
               none
-        '''
+        """
         try:
-            # 添加完整路径和检查
-            script_path = os.path.abspath(MainPage1.import_script)
-            if not os.path.exists(script_path):
-                logger.log(f"错误：脚本文件不存在 - {script_path}")
-                return
+            self.save_image()
+            run_script = self.lineEdit_Scripts.text()
+            if run_script == '':
+                run_script = "./jiaoben.py"
 
             save_script = self.lineEdit_SaveResult.text()
             if save_script == '':
                 save_script = 'D:\\lzg\\data\\' + time.strftime("save_%Y-%m-%d_%H-%M-%S") + '\\IV\\'
-            # 使用完整路径执行，添加错误检查
+
             result = subprocess.run(
-                [sys.executable, script_path, save_script],
+                [sys.executable, run_script, save_script],
                 capture_output=True,
                 text=True,
                 check=True,  # 如果返回非零会抛出异常
                 encoding='utf-8',  # 明确指定编码
             )
-
-            # 记录输出和错误（如果有）
-            if result.stdout:
-                logger.log(f"脚本输出: {result.stdout}")
-            if result.stderr:
-                logger.log(f"脚本错误: {result.stderr}")
-
-            logger.log("成功执行IU参数计算")
+            logger.log(result.stdout)
+            logger.log("当前时刻测量成功")
 
         except Exception as e:
             logger.log(f"执行过程中发生错误: {str(e)}")
 
     # def update_log_display(self):
     #     '''
-    #         Funtion:
+    #         Function:
     #             用于和定时器进行绑定，更新日志
     #         Args:
     #             none
@@ -608,40 +621,47 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         if not self.allow_alignment:  # 检查是否允许对齐
             return self.frame_resized
 
+        # 新增线程状态检查（关键修改）
+        if hasattr(self, '_align_thread_running') and self._align_thread_running:
+            return self.frame_resized
+
         def align():
-            while self.align_allowed:
-                # 每次迭代时计算当前画面的中心点
-                frame_center_x = self.frame_resized.shape[1] // 2
-                frame_center_y = self.frame_resized.shape[0] // 2
+            self._align_thread_running = True  # 标记线程开始
+            try:
+                while self.align_allowed:
+                    # 原对齐逻辑保持不变...
+                    frame_center_x = self.frame_resized.shape[1] // 2
+                    frame_center_y = self.frame_resized.shape[0] // 2
 
-                probe_x, probe_y = self.get_probe_position()
-                if probe_x is None:
-                    print("模板匹配失败，请先进行模板匹配")
-                    break
+                    probe_x, probe_y = self.get_probe_position()
+                    if probe_x is None:
+                        print("模板匹配失败，请先进行模板匹配")
+                        break
 
-                distance_x = frame_center_x - probe_x
-                distance_y = frame_center_y - probe_y
-                distance = np.sqrt(distance_x ** 2 + distance_y ** 2)
+                    distance_x = frame_center_x - probe_x
+                    distance_y = frame_center_y - probe_y
+                    distance = np.sqrt(distance_x ** 2 + distance_y ** 2)
 
-                if distance < 5:  # 设定一个阈值，比如5
-                    break
+                    if distance < 5:
+                        break
 
-                # 调整摄像头向探针移动
-                if distance_y < 0:
-                    ReturnZauxdll(self.microY, self.microdown * abs(distance_y) / 500)
-                elif distance_y > 0:
-                    ReturnZauxdll(self.microY, self.microup * abs(distance_y) / 500)
-                if distance_x < 0:
-                    ReturnZauxdll(self.microX, self.microright * abs(distance_x) / 500)
-                elif distance_x > 0:
-                    ReturnZauxdll(self.microX, self.microleft * abs(distance_x) / 500)
+                    b = 1000
+                    if distance_y < 0:
+                        ReturnZauxdll(self.microY, self.microdown * abs(distance_y) / b)
+                    elif distance_y > 0:
+                        ReturnZauxdll(self.microY, self.microup * abs(distance_y) / b)
+                    if distance_x < 0:
+                        ReturnZauxdll(self.microX, self.microright * abs(distance_x) / b)
+                    elif distance_x > 0:
+                        ReturnZauxdll(self.microX, self.microleft * abs(distance_x) / b)
 
-                # 可选，为了视觉确认重绘画面的中心
-                cv2.circle(self.frame_resized, (frame_center_x, frame_center_y), 5, (255, 0, 0), -1)
+                    cv2.circle(self.frame_resized, (frame_center_x, frame_center_y), 5, (255, 0, 0), -1)
+                    time.sleep(0.2)  # 建议添加小延迟防止CPU占用过高
+            finally:
+                self._align_thread_running = False  # 确保线程结束标记
 
-        # 在单独的线程中运行对齐函数，保持界面响应
-        threading.Thread(target=align).start()
-
+        # 启动线程（保持原daemon=True设置）
+        threading.Thread(target=align, daemon=True).start()
         return self.frame_resized
 
     # 获得探针位置
@@ -693,15 +713,62 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                          args=(3, MainPage1.equipment, MainPage1.needle_distanceX)).start()
         logger.log("探针往右移动了")
 
-    # 主页面设置探针的移动距离
+    from PyQt5.QtWidgets import QMessageBox
+
     def update_needle_distanceX(self):
-        MainPage1.needle_distanceX = min(3000, float(self.lineEdit_needle1Xdistance.text()))
+        try:
+            input_value = float(self.lineEdit_needle1Xdistance.text())
+            if input_value > 3000:
+                QMessageBox.warning(
+                    self,  # 父窗口
+                    "输入超出范围",  # 窗口标题
+                    "X 轴移动距离不能超过 3000！"  # 提示信息
+                )
+                # 可以在这里重置输入框的值（可选）
+                self.lineEdit_needle1Xdistance.setText("3000")
+            MainPage1.needle_distanceX = min(3000, input_value)
+        except ValueError:
+            QMessageBox.warning(
+                self,
+                "输入错误",
+                "请输入有效的数字！"
+            )
 
     def update_needle_distanceY(self):
-        MainPage1.needle_distanceY = min(3000, float(self.lineEdit_needle1Ydistance.text()))
+        try:
+            input_value = float(self.lineEdit_needle1Ydistance.text())
+            if input_value > 3000:
+                QMessageBox.warning(
+                    self,
+                    "输入超出范围",
+                    "Y 轴移动距离不能超过 3000！"
+                )
+                self.lineEdit_needle1Ydistance.setText("3000")
+            MainPage1.needle_distanceY = min(3000, input_value)
+        except ValueError:
+            QMessageBox.warning(
+                self,
+                "输入错误",
+                "请输入有效的数字！"
+            )
 
     def update_needle_distanceZ(self):
-        MainPage1.needle_distanceZ = min(1000, float(self.lineEdit_needle1Zdistance.text()))
+        try:
+            input_value = float(self.lineEdit_needle1Zdistance.text())
+            if input_value > 1000:
+                QMessageBox.warning(
+                    self,
+                    "输入超出范围",
+                    "Z 轴移动距离不能超过 1000！"
+                )
+                self.lineEdit_needle1Zdistance.setText("1000")
+            MainPage1.needle_distanceZ = min(1000, input_value)
+        except ValueError:
+            QMessageBox.warning(
+                self,
+                "输入错误",
+                "请输入有效的数字！"
+            )
 
     def STOP_MOVE(self):
         MainPage1.stop_num = 1
@@ -733,14 +800,14 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
     # 鼠标点击运动
     def mousePressEvent(self, event):
-        '''
-            Funtion:
+        """
+            Function:
                 用户点击画面的一个位置，探针会移动到这个位置
             Args:
                 鼠标左键点击事件
             Return:
                 none
-        '''
+        """
         # 获取 label_video 在屏幕中的位置
         top_left_global = self.label_video.mapToGlobal(QtCore.QPoint(0, 0))
 
@@ -818,14 +885,14 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
     # 928更新电压的函数
     def update_voltage(self):
-        '''
-            Funtion:
+        """
+            Function:
                 用于和按钮事件绑定，更新赋予探针的电压
             Args:
                 none
             Return:
                 none
-        '''
+        """
         # sim928_2 = SIM928(5, 'GPIB4::2::INSTR')
         keithley = SIM928ConnectionThread.anc
         if keithley is None:
@@ -849,12 +916,17 @@ class MainPage1(QMainWindow, Ui_MainWindow):
             except (AttributeError, ValueError):
                 print("keithley未正常连接")
 
-
     def Pushing(self):
-        # ReturnNeedleMove(5, min(5000, MainPage1.needle_distanceZ), self.indicator, False, False, MainPage1.equipment)
-        WhileMove(4,MainPage1.equipment,MainPage1.needle_distanceZ)
+        if SIM928ConnectionThread.anc is None or not self.lineEdit_SIM928.text():
+            logger.log("警告：anc 是 None，无法执行 Pushing 操作")
+
+        WhileMove(4, MainPage1.equipment, MainPage1.needle_distanceZ)
         logger.log("探针下压了")
+
     def Pulling(self):
+        if SIM928ConnectionThread.anc is None or not self.lineEdit_SIM928.text():
+            logger.log("警告：anc 是 None，无法执行 Pulling 操作")
+
         # 常温下min的最大值是1000，低温下min的最大值是5000
         WhileMove(5, MainPage1.equipment, MainPage1.needle_distanceZ)
         logger.log("探针抬升了")

@@ -9,8 +9,9 @@ class MicroPage(QMainWindow, Ui_MainWindow):
         super().__init__()
         self.lineEdit_microSetXdis = lineEdit_microSetXdis
         self.lineEdit_microSetYdis = lineEdit_microSetYdis
-        self.lineEdit_microSetXdis.setText(str(MainPage1.micro_distanceX))
-        self.lineEdit_microSetYdis.setText(str(MainPage1.micro_distanceY))
+        MainPage1.micro_distanceX = float(self.lineEdit_microSetXdis.text())
+        MainPage1.micro_distanceY = float(self.lineEdit_microSetYdis.text())
+
         pushButton_MicroConfirm.clicked.connect(self.update_micro_parameters)
 
     def update_micro_parameters(self):
@@ -18,8 +19,6 @@ class MicroPage(QMainWindow, Ui_MainWindow):
             # 获取用户输入并转换为相应类型
             new_micro_Xmove = float(self.lineEdit_microSetXdis.text())
             new_micro_Ymove = float(self.lineEdit_microSetYdis.text())
-
-
             # 更新类属性
             MainPage1.micro_distanceX = new_micro_Xmove
             MainPage1.micro_distanceY = new_micro_Ymove

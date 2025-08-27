@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-import os
 from functools import lru_cache
 
 # 全局变量，用于存储预加载的模板
@@ -101,7 +100,7 @@ def template(video, x_dia=0, y_dia=0, equipment=0, sharpen_params=None):
     DEFAULT_SHARPEN_PARAMS = {
         'method': 'usm',
         'strength': 1.5,
-        'kernel_size': (3, 3)
+        'kernel_size': (5, 5)
     }
 
     # 合并参数
@@ -146,42 +145,80 @@ def template(video, x_dia=0, y_dia=0, equipment=0, sharpen_params=None):
 
     return red_dot_x, red_dot_y, template_height, template_width
 
-
-# def template(video, x_dia=0, y_dia=0, equipment=0):
+# def template(video, x_dia=0, y_dia=0, equipment=0,
+#              r_thresh=60, g_thresh=70, b_thresh=30,
+#              match_thresh=0.65):
+#     """
+#     RGB阈值法模板匹配 + 点击显示像素RGB值
+#     """
 #     global templateNeedle, templateLight
 #
+#     # --- 新增：鼠标回调函数 ---
+#     def show_pixel_value(event, x, y, flags, param):
+#         if event == cv2.EVENT_LBUTTONDOWN:
+#             b, g, r = video[y, x]
+#             print(f"Clicked at ({x}, {y}) - RGB: ({r}, {g}, {b})")
+#
+#             # 在图像上显示RGB值
+#             display_img = video.copy()
+#             text = f"({x},{y}) RGB:({r},{g},{b})"
+#             cv2.putText(display_img, text, (x + 10, y - 10),
+#                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
+#             cv2.circle(display_img, (x, y), 3, (0, 0, 255), -1)
+#             cv2.imshow("Original with Pixel Info", display_img)
+#
+#     # --- 原有模板匹配逻辑 ---
 #     template_img = templateLight if equipment else templateNeedle
 #     if template_img is None:
-#         print(f"模板 {'templateLight' if equipment else 'templateNeedle'} 未加载成功")
 #         return None, None, 0, 0
 #
-#     # 初始化特征检测器 (ORB是轻量级选择)
-#     orb = cv2.ORB_create()
+#     def rgb_threshold(img):
+#         b, g, r = cv2.split(img)
+#         _, b_bin = cv2.threshold(b, b_thresh, 255, cv2.THRESH_BINARY_INV)
+#         _, g_bin = cv2.threshold(g, g_thresh, 255, cv2.THRESH_BINARY_INV)
+#         _, r_bin = cv2.threshold(r, r_thresh, 255, cv2.THRESH_BINARY_INV)
+#         combined = cv2.bitwise_and(b_bin, cv2.bitwise_and(g_bin, r_bin))
+#         return cv2.cvtColor(combined, cv2.COLOR_GRAY2BGR)
 #
-#     # 检测关键点和描述符
-#     kp1, des1 = orb.detectAndCompute(template_img, None)
-#     kp2, des2 = orb.detectAndCompute(video, None)
+#     # --- 处理流程可视化（新增原图窗口）---
+#     cv2.namedWindow("Original with Pixel Info")
+#     cv2.setMouseCallback("Original with Pixel Info", show_pixel_value)
 #
-#     # 使用BFMatcher进行匹配
-#     bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
-#     matches = bf.match(des1, des2)
+#     thresholded = rgb_threshold(video)
+#     cv2.imshow("1. RGB Threshold", cv2.resize(thresholded, (400, 300)))
 #
-#     # 按距离排序
-#     matches = sorted(matches, key=lambda x: x.distance)
+#     result = cv2.matchTemplate(thresholded, template_img, cv2.TM_CCOEFF_NORMED)
+#     template_height, template_width = template_img.shape[:2]
 #
-#     # 获取匹配点坐标
-#     if len(matches) > 2:  # 至少有10个良好匹配
-#         src_pts = np.float32([kp1[m.queryIdx].pt for m in matches]).reshape(-1, 1, 2)
-#         dst_pts = np.float32([kp2[m.trainIdx].pt for m in matches]).reshape(-1, 1, 2)
+#     heatmap = cv2.normalize(result, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
+#     heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
+#     cv2.imshow("2. Heatmap", cv2.resize(heatmap, (400, 300)))
 #
-#         # 计算平均偏移量
-#         avg_x = int(np.mean([pt[0][0] for pt in dst_pts]) + x_dia)
-#         avg_y = int(np.mean([pt[0][1] for pt in dst_pts]) + y_dia)
+#     # --- 结果显示（保持原有逻辑）---
+#     _, max_val, _, max_loc = cv2.minMaxLoc(result)
+#     result_img = video.copy()
+#     red_dot_x, red_dot_y = None, None
 #
-#         cv2.circle(video, (avg_x, avg_y), 5, (0, 0, 255), -1)
-#         return avg_x, avg_y, template_img.shape[0], template_img.shape[1]
+#     if max_val >= match_thresh:
+#         red_dot_x = max_loc[0] + template_width // 2 + x_dia
+#         red_dot_y = max_loc[1] + template_height // 2 + y_dia
+#         cv2.rectangle(result_img,
+#                       max_loc,
+#                       (max_loc[0] + template_width, max_loc[1] + template_height),
+#                       (0, 255, 0), 2)
+#         cv2.circle(result_img, (red_dot_x, red_dot_y), 5, (0, 0, 255), -1)
+#         param_text = f"R:{r_thresh} G:{g_thresh} B:{b_thresh}"
+#         cv2.putText(result_img, param_text, (10, 30),
+#                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 1)
 #
-#     return None, None, 0, 0
+#     cv2.imshow("3. Result", cv2.resize(result_img, (600, 400)))
+#     cv2.imshow("Original with Pixel Info", video)  # 显示原图窗口
+#
+#     key = cv2.waitKey(1)
+#     if key == 27:  # ESC退出
+#         cv2.destroyAllWindows()
+#
+#     return red_dot_x, red_dot_y, template_height, template_width
 
 
 def match_device_templates(video):
@@ -205,13 +242,13 @@ def match_device_templates(video):
     xdia, ydia = get_paddia_values()
 
     # 降低分辨率
-    scale_factor = 0.5
+    scale_factor = 1
     video_resized = cv2.resize(video, None, fx=scale_factor, fy=scale_factor, interpolation=cv2.INTER_AREA)
     template_resized = cv2.resize(templateDevice, None, fx=scale_factor, fy=scale_factor, interpolation=cv2.INTER_AREA)
 
     # 执行模板匹配
     result = cv2.matchTemplate(video_resized, template_resized, cv2.TM_CCOEFF_NORMED)
-    threshold = 0.7
+    threshold = 0.8
     locations = np.where(result >= threshold)
 
     # 恢复原始坐标

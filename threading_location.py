@@ -17,7 +17,7 @@ class LocationUpdater:
     def update_location(self):
         if not self.running:
             return
-        if(self.anc is not None):
+        if self.anc is not None:
             with SerialLock.serial_lock:
                 self.getPosition()
                 print("Updating location...")
@@ -74,4 +74,3 @@ class LocationUpdater:
             LocationUpdater.y_distance = round(y_distance,4)
         except:
             print("位移器连接异常")
-

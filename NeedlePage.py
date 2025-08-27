@@ -12,12 +12,6 @@ class NeedlePage(QMainWindow, Ui_MainWindow):
                                     lineEdit_needleSetXvol,lineEdit_needleSetYvol,lineEdit_needleSetZvol,
                                     lineEdit_needleSetXfreq,lineEdit_needleSetYfreq,lineEdit_needleSetZfreq,Button_needleSetConfirm):
         super().__init__()
-        self.needle_voltageX = 100  # 探针X轴电压
-        self.needle_voltageY = 100
-        self.needle_voltageZ = 100
-        self.needle_frequencyX = 100  # 探针X轴频率
-        self.needle_frequencyY = 100
-        self.needle_frequencyZ = 100
 
         self.lineEdit_needleSetXdis = lineEdit_needleSetXdis
         self.lineEdit_needleSetYdis = lineEdit_needleSetYdis
@@ -30,17 +24,16 @@ class NeedlePage(QMainWindow, Ui_MainWindow):
         self.lineEdit_needleSetZfreq = lineEdit_needleSetZfreq
         self.Button_needleSetConfirm = Button_needleSetConfirm
 
-        self.lineEdit_needleSetXdis.setText(str(MainPage1.needle_distanceX))
-        self.lineEdit_needleSetYdis.setText(str(MainPage1.needle_distanceY))
-        self.lineEdit_needleSetZdis.setText(str(MainPage1.needle_distanceZ))
+        self.needle_voltageX = float(self.lineEdit_needleSetXvol.text())  # 探针X轴电压
+        self.needle_voltageY = float(self.lineEdit_needleSetYvol.text())
+        self.needle_voltageZ = float(self.lineEdit_needleSetZvol.text())
+        self.needle_frequencyX = float(self.lineEdit_needleSetXfreq.text())  # 探针X轴频率
+        self.needle_frequencyY = float(self.lineEdit_needleSetYfreq.text())
+        self.needle_frequencyZ = float(self.lineEdit_needleSetZfreq.text())
+        MainPage1.needle_distanceX = float(self.lineEdit_needleSetXdis.text())
+        MainPage1.needle_distanceY = float(self.lineEdit_needleSetYdis.text())
+        MainPage1.needle_distanceZ = float(self.lineEdit_needleSetZdis.text())
 
-        self.lineEdit_needleSetXvol.setText(str(self.needle_voltageX))
-        self.lineEdit_needleSetYvol.setText(str(self.needle_voltageY))
-        self.lineEdit_needleSetZvol.setText(str(self.needle_voltageZ))
-
-        self.lineEdit_needleSetXfreq.setText(str(self.needle_frequencyX))
-        self.lineEdit_needleSetYfreq.setText(str(self.needle_frequencyY))
-        self.lineEdit_needleSetZfreq.setText(str(self.needle_frequencyZ))
 
         Button_needleSetConfirm.clicked.connect(self.update_needle_parameters)
 
@@ -82,23 +75,9 @@ class NeedlePage(QMainWindow, Ui_MainWindow):
             anc.write(('[freq:+0' + str(self.needle_frequencyY) + 'Hz]').encode())
             anc.write('[ch3:0]'.encode())
             time.sleep(0.2)
-
-            # ax = {'x': 1, 'y': 2, 'z': 3, 'x2': 4, 'y2': 5, 'z2': 6}
-            # anc = NeedelConnectionThread.anc
-            # anc.setv(ax['x'], self.needle_voltageX)
-            # anc.setv(ax['y'], self.needle_voltageY)
-            # anc.setf(ax['x'], self.needle_frequencyX)
-            # anc.setf(ax['y'], self.needle_frequencyY)
-
             # 显示成功消息
             QMessageBox.information(self, "成功", "探针参数已成功更新！")
-
-            # 如果需要，可以在这里添加代码，将新参数应用到探针设备
-            # 例如：self.apply_probe_settings()
 
         except (AttributeError,ValueError):
             # 如果输入无效，显示错误消息
             QMessageBox.warning(self, "输入错误", "请确保所有参数输入正确，或者检查探针是否连接")
-
-
-

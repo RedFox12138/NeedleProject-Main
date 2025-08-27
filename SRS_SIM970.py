@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jul 24 13:32:31 2017
+    Created on Mon Jul 24 13:32:31 2017
 
-@author: rise
+    @author: rise
 """
 
 import pyvisa
@@ -11,8 +11,10 @@ import time
 
 
 class SRSSIM970(object):
-    """Python class for SRS SIM970 multimeters inside a SIM900
-    mainframe"""
+    """
+        Python class for SRS SIM970 multi-meters inside a SIM900
+        mainframe
+    """
     def __init__(self, sim900port, visa_name):
         rm = pyvisa.ResourceManager()
         self.pyvisa = rm.open_resource(visa_name)
@@ -61,7 +63,7 @@ class SRSSIM970(object):
 #        get_str = 'GETN' + str(self.sim900port) + '800'
         return self.query(write_str) # Format of 'SNDT 4,\"GAIN 10\"'
     
-#    def measrue(self, channel, i):
+#    def measure(self, channel, i):
         
     
     def reset(self):

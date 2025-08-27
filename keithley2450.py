@@ -40,7 +40,7 @@ class Keithley2450(Instrument, KeithleyBuffer):
     """ Represents the Keithely 2450 SourceMeter and provides a
     high-level interface for interacting with the instrument.
 
-    .. code-block:: python
+    . code-block:: python
 
         keithley = Keithley2450("GPIB::1")
 
@@ -499,7 +499,7 @@ class Keithley2450(Instrument, KeithleyBuffer):
             err = self.read()  # Try reading again
         code = err[0]
         message = err[1].replace('"', '')
-        return (code, message)
+        return code, message
 
     def check_errors(self):
         """ Logs any system errors reported by the instrument.

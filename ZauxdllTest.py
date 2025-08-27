@@ -1,5 +1,4 @@
 import pyvisa
-from PyQt5.QtWidgets import QMessageBox
 
 class GBIOConnect:
     # 全局变量，存储成功连接的 GPIB 设备

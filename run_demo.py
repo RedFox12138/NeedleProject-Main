@@ -1,6 +1,5 @@
 import sys
 
-from MoveClass import MoveClass
 from QTneedle.QTneedle.locationClass import locationClass
 from StopClass import StopClass
 
@@ -12,24 +11,18 @@ if custom_lib_path not in sys.path:
     sys.path.append(custom_lib_path)
 import ctypes
 
-
 from datetime import datetime
-
-import cv2
 
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QMainWindow
-
-
 
 from CameraPage import CameraPage
 from MainPage import MainPage1
 from MicroPage import MicroPage
 from NeedlePage import NeedlePage
 from ScriptPage import ScriptPage
-from SerialPage import SerialPage, NeedelConnectionThread
-from SelectPage import SelectPage
+from SerialPage import SerialPage
 from demo import Ui_MainWindow
 from full_screen import show_custom_fullscreen
 
@@ -53,7 +46,9 @@ class UsingTest(QMainWindow, Ui_MainWindow):
                                    self.Button_needle1SetXdisConfirm,self.Button_needle1SetYdisConfirm, self.Button_needle1SetZdisConfirm, self.label_light,
                                    self.lineEdit_SIM928, self.Button_SIM928,
                                    self.Button_pushing, self.Button_pulling, self.Button_relay,
-                                   self.label_needle1,self.lineEdit_SaveResult)
+                                   self.label_needle1,self.lineEdit_SaveResult,
+                                   self.lineEdit_needleSetXdis, self.lineEdit_needleSetYdis, self.lineEdit_needleSetZdis,
+                                   self.lineEdit_microSetXdis, self.lineEdit_microSetYdis,self.lineEdit_Scripts)
         self.mainpage2 = SerialPage(self.comboBox_micro, self.label_microConnect, self.Button_microConnect,
                                     self.Button_microDisConnect,
                                     self.comboBox_needle, self.label_needleConnect, self.Button_needleConnect,
@@ -73,7 +68,6 @@ class UsingTest(QMainWindow, Ui_MainWindow):
                                     self.lineEdit_needleSetXfreq, self.lineEdit_needleSetYfreq, self.lineEdit_needleSetZfreq, self.Button_needleSetConfirm)
         self.mainpage6 = ScriptPage(self.lineEdit_Scripts, self.Button_ScriptsBrowse, self.textEdit_Scripts, self.Button_scriptConfirm,
                                     self.lineEdit_SaveResult,self.Button_SaveResultBrowse,self.Button_scriptUpdate)
-        self.mainpage7 = SelectPage(self.pushButton_select, self.label_select)
         self.locationClass = locationClass( self.lineEdit_Xlocation,self.lineEdit_Ylocation,self.lineEdit_Zlocation,
                                    self.lineEdit_Location1,self.lineEdit_Location2,self.lineEdit_Location3,
                                    self.Button_Location1,self.Button_Location2,self.Button_Location3,
@@ -81,11 +75,11 @@ class UsingTest(QMainWindow, Ui_MainWindow):
                                    self.Button_ContinueTest,self.Button_StopTest,
                                    self.lineEdit_Pushlocation,self.lineEdit_Pulllocation,
                                    self.Button_PushLocation,self.Button_PullLocation,
-                                   self.Button_PushBack,self.Button_PullBack,self.lineEdit_Scripts,self.lineEdit_SaveResult,self.lineEdit_savePath,
+                                   self.Button_PushBack,self.Button_PullBack,
                                    self.lineEdit_leftTopX,self.lineEdit_leftTopY,self.lineEdit_rightTopX,self.lineEdit_rightTopY,self.lineEdit_rightBottomX,self.lineEdit_rightBottomY,
-                                   self.Checkbox_DontTest)
+                                   self.Checkbox_DontTest,self.widget_map,self.tabWidget)
 
-
+# 程序入口文件
 if __name__ == '__main__':
     app = QApplication(sys.argv)  # 创建窗口程序
     app.setWindowIcon(QIcon('kupai.png'))  # 设置应用程序图标

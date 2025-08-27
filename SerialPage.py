@@ -2,7 +2,7 @@ import time
 import sys
 from PyQt5.QtWidgets import QMainWindow
 import serial.tools.list_ports
-from PyQt5.QtCore import QTimer, QThread, pyqtSignal
+from PyQt5.QtCore import *
 from pymeasure.instruments.keithley import Keithley2450
 from SRS_SIM970 import SRSSIM970
 from ZauxdllTest import GBIOConnect
@@ -323,8 +323,8 @@ class SIM928ConnectionThread(QThread):
             time.sleep(0.1)
             self.connected.emit(True, f"连接成功，地址 {self.address}")
         except Exception as e:
-            if SIM928ConnectionThread.anc:
-                SIM928ConnectionThread.anc.shutdown()
+            # if SIM928ConnectionThread.anc:
+            #     SIM928ConnectionThread.anc.shutdown()
             self.connected.emit(False, f"连接失败: {str(e)}")
 
 

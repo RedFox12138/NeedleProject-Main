@@ -1,7 +1,4 @@
 import time
-from tkinter import messagebox
-import tkinter as tk
-
 
 from QTneedle.QTneedle.SerialLock import SerialLock
 from SerialPage import NeedelConnectionThread, SIM928ConnectionThread
@@ -76,16 +73,16 @@ def move_to_Z(z,Voltage_flag=False):
         _,_,z_current = getPosition(Z_flag=True)
 
     #低温情况下abs(z_current - z)应该是0.001，常温情况是0.005
-    while (abs(z_current - z) > 0.001) :
+    while abs(z_current - z) > 0.001:
         # 低温情况下Z_k应该是500，常温情况是0.1
         Z_k = 500
-        if(Voltage_flag==True):
+        if Voltage_flag:
             keithley = SIM928ConnectionThread.anc
             current = keithley.current
             print(current)
             if current>= 9e-10:
                 break
-        if (StopClass.stop_num == 1):
+        if StopClass.stop_num == 1:
             break
         flag = False
 
@@ -112,21 +109,21 @@ def move_to_target(x, y):
         x_diff = round((x - x_current), 3)
         y_diff = round((y - y_current), 3)
         flag = True
-        if (x_diff > 0):
+        if x_diff > 0:
             move('X', abs(x_diff) / 0.03 * XY_k, flag)
-        elif (x_diff < 0):
+        elif x_diff < 0:
             move('-X', abs(x_diff) / 0.03 * XY_k, flag)
 
-        if (y_diff > 0):
+        if y_diff > 0:
             move('Y', abs(y_diff) / 0.03 * XY_k, flag)
-        elif (y_diff < 0):
+        elif y_diff < 0:
             move('-Y', abs(y_diff) / 0.03 * XY_k, flag)
         x_current, y_current,_ = getPosition(Only_XY=True)
 
 
-    while  abs(y_current - y) > 0.003 :
-        if(StopClass.stop_num==1):
-            StopClass.stop_num=0
+    while  abs(y_current - y) > 0.01 :
+        if StopClass.stop_num == 1:
+            StopClass.stop_num = 0
             anc = NeedelConnectionThread.anc
             anc.write('[ch1:1]'.encode())
             anc.write('[cap:000nF]'.encode())
@@ -157,8 +154,8 @@ def move_to_target(x, y):
                 elif y_diff < 0:
                     move('-Y', abs(y_diff) / step_per_unit * XY_k_2, flag)
                 _, y_current,_ = getPosition(Only_XY=True)
-    while abs(x_current - x) > 0.003:
-        if(StopClass.stop_num == 1):
+    while abs(x_current - x) > 0.01:
+        if StopClass.stop_num == 1:
             StopClass.stop_num = 0
             anc = NeedelConnectionThread.anc
             anc.write('[ch1:1]'.encode())
@@ -199,44 +196,44 @@ def move(axis,distance,flag):
     # 移动时间，低温下是0.3，常温下是0.1
     move_time = 0.5
     ser4 = NeedelConnectionThread.anc
-    if(axis == '-X'):
+    if axis == '-X':
         ser4.write('[ch3:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
         ser4.write('[volt:+200V] '.encode())
-        ser4.write('[freq:+5000Hz]'.encode())
+        ser4.write('[freq:+1000Hz]'.encode())
         ser4.write(('[+:0000' + str(distance) + '] ').encode())  # +-方向
-    elif(axis == 'X'):
+    elif axis == 'X':
         ser4.write('[ch3:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
         ser4.write('[volt:+200V] '.encode())
-        ser4.write('[freq:+5000Hz]'.encode())
+        ser4.write('[freq:+1000Hz]'.encode())
         ser4.write(('[-:0000' + str(distance) + '] ').encode())  # +-方向
-    elif(axis == '-Y'):
+    elif axis == '-Y':
         ser4.write('[ch2:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
         ser4.write('[volt:+200V] '.encode())
-        ser4.write('[freq:+5000Hz]'.encode())
+        ser4.write('[freq:+1000Hz]'.encode())
         ser4.write(('[+:0000' + str(distance) + '] ').encode())  # +-方向
-    elif(axis == 'Y'):
+    elif axis == 'Y':
         ser4.write('[ch2:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
         ser4.write('[volt:+200V] '.encode())
-        ser4.write('[freq:+5000Hz]'.encode())
+        ser4.write('[freq:+1000Hz]'.encode())
         ser4.write(('[-:0000' + str(distance) + '] ').encode())  # +-方向
-    elif(axis == 'Z'):
+    elif axis == 'Z':
         ser4.write('[ch1:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
         ser4.write('[volt:+200V] '.encode())
         ser4.write('[freq:+0500Hz]'.encode())
         ser4.write(('[+:0000' + str(distance) + '] ').encode())  # +-方向
-    elif(axis == '-Z'):
+    elif axis == '-Z':
         ser4.write('[ch1:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
         ser4.write('[volt:+200V] '.encode())
         ser4.write('[freq:+0500Hz]'.encode())
         ser4.write(('[-:0000' + str(distance) + '] ').encode())  # +-方向
 
-    if(flag):
+    if flag:
         time.sleep((distance+1)/1000)
     else:
         time.sleep(move_time)

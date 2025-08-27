@@ -8,15 +8,13 @@ class CameraPage(QMainWindow, Ui_MainWindow):
     def __init__(self,lineEdit_cameraBao,lineEdit_cameraGain,lineEdit_cameraRate,Button_cameraConfirm):
         super().__init__()
         # 初始相机参数
-        self.baoGuang = 5000  # 初始曝光度
-        self.gain = 6.03  # 初始增益
-        self.rate = 59.8  # 初始帧率
         self.lineEdit_cameraBao = lineEdit_cameraBao
         self.lineEdit_cameraGain = lineEdit_cameraGain
         self.lineEdit_cameraRate = lineEdit_cameraRate
-        self.lineEdit_cameraBao.setText(str(self.baoGuang))
-        self.lineEdit_cameraGain.setText(str(self.gain))
-        self.lineEdit_cameraRate.setText(str(self.rate))
+        self.baoGuang = int(self.lineEdit_cameraBao.text())  # 初始曝光度
+        self.gain = float(self.lineEdit_cameraGain.text())  # 初始增益
+        self.rate = float(self.lineEdit_cameraRate.text())  # 初始帧率
+
         Button_cameraConfirm.clicked.connect(self.update_camera_parameters)
 
     def update_camera_parameters(self):

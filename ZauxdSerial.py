@@ -301,25 +301,25 @@ class SerialConnectionPage(QWidget):
         SIM970_GBIO_number = SIM970_selected_GBIO
         SIM970_prot_number = int(SIM970_selected_port[-1])
 
-        if(flag=="micro"):
+        if flag== "micro":
             self.connection_thread = SerialConnectionThread(port_number)
             self.connection_thread.connected.connect(self.handle_connection_result)
             self.connection_thread.start()
             self.connect_button.setEnabled(False)
             self.disconnect_button.setEnabled(False)
-        elif(flag=="needle"):
+        elif flag== "needle":
             self.connection_thread = NeedelConnectionThread(needle_prot_number)
             self.connection_thread.connected.connect(self.needle_handle_connection_result)
             self.connection_thread.start()
             self.needle_connect_button.setEnabled(False)
             self.needle_disconnect_button.setEnabled(False)
-        elif(flag=="SIM928"):
+        elif flag== "SIM928":
             self.connection_thread = SIM928ConnectionThread(SIM928_prot_number,SIM928_GBIO_number)
             self.connection_thread.connected.connect(self.SIM928_handle_connection_result)
             self.connection_thread.start()
             self.SIM928_connect_button.setEnabled(False)
             self.SIM928_disconnect_button.setEnabled(False)
-        elif(flag=="SIM970"):
+        elif flag== "SIM970":
             self.connection_thread = SIM970ConnectionThread(SIM970_prot_number, SIM970_GBIO_number)
             self.connection_thread.connected.connect(self.SIM970_handle_connection_result)
             self.connection_thread.start()
@@ -396,14 +396,14 @@ class SerialConnectionPage(QWidget):
     def disconnect_from_serial(self,flag,status_led,connect_button,disconnect_button):
         """ 断开串口连接 """
         try:
-            if (flag == "micro"):
+            if flag == "micro":
                 if SerialConnectionThread.zaux:
                     SerialConnectionThread.zaux.disconnect()
-            elif (flag == "needle"):
+            elif flag == "needle":
                 NeedelConnectionThread.anc = None
-            elif (flag == "SIM928"):
+            elif flag == "SIM928":
                 SIM928ConnectionThread.anc = None
-            elif (flag == "SIM970"):
+            elif flag == "SIM970":
                 SIM970ConnectionThread.anc.quit_vol()
                 SIM970ConnectionThread.anc = None
 
