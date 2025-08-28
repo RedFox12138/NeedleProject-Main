@@ -3,6 +3,7 @@ import subprocess
 import sys
 
 from QTneedle.QTneedle.DailyLogger import DailyLogger
+from QTneedle0618.QTneedle.QTneedle.Load_Mat import load_and_plot_mat_signals
 from StopClass import StopClass
 
 # 定义你要添加的库文件路径
@@ -85,9 +86,26 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                  Button_pushing, Button_pulling,
                  Button_relay, label_needle1, lineEdit_SaveResult,
                  lineEdit_needleSetXdis, lineEdit_needleSetYdis,lineEdit_needleSetZdis,
-                 lineEdit_microSetXdis, lineEdit_microSetYdis,lineEdit_Scripts
-                 ):
+                 lineEdit_microSetXdis, lineEdit_microSetYdis,lineEdit_Scripts,
+                 plot_Label):
         super().__init__()
+        #这个标签用于显示每一次测量的绘图结果，这里先放在这里，用于测试
+        self.plot_Label = plot_Label
+        pixmap = load_and_plot_mat_signals("D:\PyProject\QTneedle0618\QTneedle\QTneedle\LB123_1_Vmax_1.3_Vstep_0.05_R_bias_98500_2025-06-11_154131.mat")
+        if pixmap:
+            # 调整图像大小以适应label
+            scaled_pixmap = pixmap.scaled(
+                self.plot_Label.width() - 20,
+                self.plot_Label.height() - 20,
+                Qt.KeepAspectRatio,
+                Qt.SmoothTransformation
+            )
+            self.plot_Label.setPixmap(scaled_pixmap)
+        else:
+            self.plot_Label.setText("加载失败或未找到信号")
+
+
+
         self.lineEdit_Scripts = lineEdit_Scripts
 
         self.lineEdit_needleSetXdis = lineEdit_needleSetXdis
@@ -132,10 +150,10 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         self.indicator.setStyleSheet(MainPage1.get_stylesheet(self.status))
 
         # 显微镜移动方向
-        self.microY = 0
-        self.microX = 1
-        self.microup = -1
-        self.microdown = 1
+        self.microY = 1
+        self.microX = 0
+        self.microup = 1
+        self.microdown = -1
         self.microleft = 1
         self.microright = -1
 
@@ -762,49 +780,165 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
     # 自动跟随函数
     def align_frame_with_probe(self):
-        if not self.allow_alignment:  # 检查是否允许对齐
+        if not self.allow_alignment:
             return self.frame_resized
 
-        # 新增线程状态检查（关键修改）
-        if hasattr(self, '_align_thread_running') and self._align_thread_running:
+        # 初始化线程锁
+        if not hasattr(self, '_align_lock'):
+            self._align_lock = threading.Lock()
+
+        # 防抖机制：检查上次对齐时间
+        current_time = time.time()
+        if hasattr(self, '_last_align_time'):
+            if current_time - self._last_align_time < 0.5:  # 500ms内不重复启动
+                return self.frame_resized
+
+        # 尝试获取锁，如果已经有线程在运行则直接返回
+        if not self._align_lock.acquire(blocking=False):
             return self.frame_resized
+
+        # 更新上次对齐时间
+        self._last_align_time = current_time
 
         def align():
-            self._align_thread_running = True  # 标记线程开始
             try:
+                # PID控制参数
+                kp = 0.5  # 比例系数
+                ki = 0.02  # 积分系数
+                kd = 0.08  # 微分系数
+
+                # 控制限制
+                integral_limit = 40
+                output_limit = 70
+                dead_zone = 1.5  # 死区阈值
+                stop_threshold = 2.5  # 停止阈值（更小）
+
+                # PID状态变量
+                integral_x, integral_y = 0, 0
+                prev_error_x, prev_error_y = 0, 0
+                last_output_x, last_output_y = 0, 0
+
+                # 平滑移动参数
+                max_accel = 25
+                last_time = time.time()
+                move_count = 0
+                consecutive_small_moves = 0
+
                 while self.align_allowed:
-                    # 原对齐逻辑保持不变...
-                    frame_center_x = self.frame_resized.shape[1] // 2
-                    frame_center_y = self.frame_resized.shape[0] // 2
+                    current_time = time.time()
+                    dt = max(0.01, current_time - last_time)
+                    last_time = current_time
+
+                    # 获取当前帧（避免在循环中修改原始帧）
+                    current_frame = self.frame_resized.copy()
+                    frame_center_x = current_frame.shape[1] // 2
+                    frame_center_y = current_frame.shape[0] // 2
 
                     probe_x, probe_y = self.get_probe_position()
                     if probe_x is None:
-                        print("模板匹配失败，请先进行模板匹配")
+                        print("模板匹配失败，无法获取探针位置")
                         break
 
-                    distance_x = frame_center_x - probe_x
-                    distance_y = frame_center_y - probe_y
-                    distance = np.sqrt(distance_x ** 2 + distance_y ** 2)
+                    # 计算误差
+                    error_x = frame_center_x - probe_x
+                    error_y = frame_center_y - probe_y
+                    distance = np.sqrt(error_x ** 2 + error_y ** 2)
 
-                    if distance < 5:
+                    # 检查是否达到目标
+                    if distance < stop_threshold:
                         break
 
-                    b = 1000
-                    if distance_y < 0:
-                        ReturnZauxdll(self.microY, self.microdown * abs(distance_y) / b)
-                    elif distance_y > 0:
-                        ReturnZauxdll(self.microY, self.microup * abs(distance_y) / b)
-                    if distance_x < 0:
-                        ReturnZauxdll(self.microX, self.microright * abs(distance_x) / b)
-                    elif distance_x > 0:
-                        ReturnZauxdll(self.microX, self.microleft * abs(distance_x) / b)
+                    # PID计算
+                    # X轴
+                    integral_x += error_x * dt
+                    integral_x = np.clip(integral_x, -integral_limit, integral_limit)
+                    derivative_x = (error_x - prev_error_x) / dt
 
-                    cv2.circle(self.frame_resized, (frame_center_x, frame_center_y), 5, (255, 0, 0), -1)
-                    time.sleep(0.2)  # 建议添加小延迟防止CPU占用过高
+                    output_x = kp * error_x + ki * integral_x + kd * derivative_x
+                    output_x = np.clip(output_x, -output_limit, output_limit)
+
+                    # Y轴
+                    integral_y += error_y * dt
+                    integral_y = np.clip(integral_y, -integral_limit, integral_limit)
+                    derivative_y = (error_y - prev_error_y) / dt
+
+                    output_y = kp * error_y + ki * integral_y + kd * derivative_y
+                    output_y = np.clip(output_y, -output_limit, output_limit)
+
+                    # 应用死区
+                    if abs(output_x) < dead_zone:
+                        output_x = 0
+                    if abs(output_y) < dead_zone:
+                        output_y = 0
+
+                    # 加速度限制
+                    if abs(output_x - last_output_x) > max_accel:
+                        output_x = last_output_x + np.sign(output_x - last_output_x) * max_accel
+                    if abs(output_y - last_output_y) > max_accel:
+                        output_y = last_output_y + np.sign(output_y - last_output_y) * max_accel
+
+                    last_output_x, last_output_y = output_x, output_y
+
+                    # 动态速度调整（接近目标时减速）
+                    speed_factor = 1.0
+                    if distance < 15:
+                        speed_factor = 0.4
+                    elif distance < 30:
+                        speed_factor = 0.7
+
+                    output_x *= speed_factor
+                    output_y *= speed_factor
+
+                    # 检查是否需要移动
+                    if output_x == 0 and output_y == 0:
+                        consecutive_small_moves += 1
+                        if consecutive_small_moves > 3:  # 连续3次无需移动则认为稳定
+                            break
+                        time.sleep(0.1)
+                        continue
+                    else:
+                        consecutive_small_moves = 0
+
+                    # 执行移动（使用更平滑的移动方式）
+                    move_scale = 800  # 比原来的1000更保守
+
+                    if output_y < 0:
+                        ReturnZauxdll(self.microY, self.microdown * abs(output_y) / move_scale)
+                    elif output_y > 0:
+                        ReturnZauxdll(self.microY, self.microup * abs(output_y) / move_scale)
+
+                    if output_x < 0:
+                        ReturnZauxdll(self.microX, self.microright * abs(output_x) / move_scale)
+                    elif output_x > 0:
+                        ReturnZauxdll(self.microX, self.microleft * abs(output_x) / move_scale)
+
+                    # 更新历史误差
+                    prev_error_x = error_x
+                    prev_error_y = error_y
+
+                    # 调试信息（减少打印频率）
+                    move_count += 1
+                    # 自适应延迟
+                    sleep_time = 0.12  # 基础延迟
+                    if distance < 20:
+                        sleep_time = 0.08
+                    elif distance > 50:
+                        sleep_time = 0.15
+
+                    time.sleep(sleep_time)
+
+            except Exception as e:
+                print(f"对齐过程中出现错误: {str(e)}")
+                import traceback
+                traceback.print_exc()
             finally:
-                self._align_thread_running = False  # 确保线程结束标记
+                # 确保锁被释放
+                try:
+                    self._align_lock.release()
+                except:
+                    pass
 
-        # 启动线程（保持原daemon=True设置）
+        # 启动线程
         threading.Thread(target=align, daemon=True).start()
         return self.frame_resized
 

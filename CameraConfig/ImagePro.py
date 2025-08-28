@@ -174,7 +174,7 @@ def template(video, x_dia=0, y_dia=0, equipment=0, sharpen_params=None):
             best_loc = max_loc
 
     # 5. 局部精细化搜索
-    if best_val > 0.65:
+    if best_val > 0.9:
         x, y = best_loc
         h, w = template_gray.shape
 
@@ -309,7 +309,7 @@ def match_device_templates(video):
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
 
         # 动态阈值
-        threshold = max(0.6, max_val * 0.8)
+        threshold = max(0.8, max_val * 0.8)
         locs = np.where(res >= threshold)
 
         for pt in zip(*locs[::-1]):
@@ -351,7 +351,7 @@ def match_device_templates(video):
             final_locations.append((target_x, target_y, w, h))
 
             # 可视化
-            cv2.rectangle(video, pt, (pt[0] + w, pt[1] + h), (0, 255, 0), 2)
+            # cv2.rectangle(video, pt, (pt[0] + w, pt[1] + h), (0, 255, 0), 2)
             cv2.circle(video, (target_x, target_y), 4, (0, 255, 255), -1)
 
     return [(x, y) for x, y, _, _ in final_locations]
