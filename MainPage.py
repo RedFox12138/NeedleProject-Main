@@ -353,69 +353,91 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                     closet = [center_x, center_y]
             self.move_probe_to_target(closet[0], closet[1])
 
-    # 选择模板的函数
-    def select_template(self):
-        param = self.frame_resized
-        r = cv2.selectROI("Select Needle Template", param, showCrosshair=True, fromCenter=False)
 
-        # 检查用户是否取消选择或选择了无效的区域
-        if r[2] == 0 or r[3] == 0:
-            print("选择被取消或无效。")
-            cv2.destroyWindow("Select Needle Template")
-            return None
 
-        global mouseX, mouseY
-        mouseX = 0
-        mouseY = 0
+    def selectROIWithAdjust(self, window_name, img):
+        """自定义的ROI选择函数，支持通过关闭按钮取消"""
+        cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
+        cv2.imshow(window_name, img)
 
-        # 定义鼠标回调函数
-        def mouse_callback(event, X, Y, flags, userdata):
+        # 初始化ROI参数
+        rect = (0, 0, 0, 0)
+        drawing = False
+        roi_selected = False
+        start_x, start_y = -1, -1
+
+        def mouse_callback_roi(event, x, y, flags, param):
+            nonlocal rect, drawing, roi_selected, start_x, start_y
             if event == cv2.EVENT_LBUTTONDOWN:
-                print(f"鼠标点击坐标: ({X}, {Y})")
-                global mouseX, mouseY
-                mouseX = X
-                mouseY = Y
+                drawing = True
+                start_x, start_y = x, y
+                rect = (x, y, 0, 0)
+            elif event == cv2.EVENT_MOUSEMOVE:
+                if drawing:
+                    rect = (min(start_x, x), min(start_y, y), abs(x - start_x), abs(y - start_y))
+            elif event == cv2.EVENT_LBUTTONUP:
+                drawing = False
+                roi_selected = True
 
-                # 解除回调
-                cv2.setMouseCallback("Select Needle Template", lambda *args: None)  # 解除回调
+        cv2.setMouseCallback(window_name, mouse_callback_roi)
 
-        # 设置鼠标回调
-        cv2.setMouseCallback("Select Needle Template", mouse_callback)
-
-        # 使用一个小的等待时间，避免等待太长时间
+        start_time = time.time()
         while True:
-            # 以 1ms 的延迟等待键盘事件或鼠标点击
-            key = cv2.waitKey(1)  # 不阻塞，避免长时间卡住
-            if mouseX != 0 and mouseY != 0:  # 判断是否有鼠标点击
-                break
-            if key == 27:  # 监听 ESC 键退出
-                print("用户按下 ESC 键退出。")
-                cv2.destroyWindow("Select Needle Template")
+            # 显示当前图像和ROI
+            display_img = img.copy()
+            if drawing or roi_selected:
+                x, y, w, h = rect
+                cv2.rectangle(display_img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                cv2.putText(display_img, "Drag to select ROI, Enter to confirm", (10, 30),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+                cv2.putText(display_img, "ESC to cancel, Close window to exit", (10, 60),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+
+            cv2.imshow(window_name, display_img)
+
+            key = cv2.waitKey(1) & 0xFF
+
+            # 检查窗口是否被关闭
+            try:
+                if cv2.getWindowProperty(window_name, cv2.WND_PROP_VISIBLE) < 1:
+                    cv2.setMouseCallback(window_name, lambda *args: None)
+                    return None
+            except:
+                cv2.setMouseCallback(window_name, lambda *args: None)
                 return None
 
-        # 获取选中的矩形区域，并进行裁剪
-        if r is not None:
-            x, y, w, h = r
-            cropped_image = param[y:y + h, x:x + w]
-            if MainPage1.equipment:
-                cv2.imwrite("templateLight.png", cropped_image)
-            else:
-                cv2.imwrite("templateNeedle.png", cropped_image)
-            load_templates()
-            red_dot_x, red_dot_y, _, _ = template(self.frame_resized, equipment=MainPage1.equipment)
-            self.x_dia = mouseX - red_dot_x
-            self.y_dia = mouseY - red_dot_y
-            cv2.destroyWindow("Select Needle Template")
+            if key == 13:  # Enter键确认选择
+                if rect[2] > 0 and rect[3] > 0:
+                    break
+                else:
+                    print("请先选择一个有效的区域")
+            elif key == 27:  # ESC键取消
+                cv2.setMouseCallback(window_name, lambda *args: None)
+                return None
+            elif roi_selected:  # 鼠标选择完成
+                # 等待用户按Enter确认
+                pass
 
-            with open('dia' + str(MainPage1.equipment) + '.txt', 'w') as f:
-                f.write(f"{self.x_dia},{self.y_dia}")
+            # 超时检查
+            if time.time() - start_time > 60:  # 60秒超时
+                cv2.setMouseCallback(window_name, lambda *args: None)
+                return None
+
+        cv2.setMouseCallback(window_name, lambda *args: None)
+        return rect
 
     def take_screenshot(self):
-        # 截取当前帧并让用户框选区域
-        r = cv2.selectROI("Take Screenshot", self.frame_resized, showCrosshair=True, fromCenter=False)
+        # 确保窗口不存在
+        try:
+            cv2.destroyWindow("Take Screenshot")
+        except:
+            pass
+
+        # 使用自定义的ROI选择函数
+        r = self.selectROIWithAdjust("Take Screenshot", self.frame_resized)
 
         # 检查用户是否取消选择或选择了无效的区域
-        if r[2] == 0 or r[3] == 0:
+        if r is None or r[2] == 0 or r[3] == 0:
             print("框选被取消或无效。")
             cv2.destroyWindow("Take Screenshot")
             return None
@@ -428,79 +450,220 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         cv2.imwrite("screenshot.png", cropped_image)
         print("截图已保存为 screenshot.png")
         cv2.destroyWindow("Take Screenshot")
+        return cropped_image
 
+    def select_template(self):
+        param = self.frame_resized
 
+        # 确保窗口不存在
+        try:
+            cv2.destroyWindow("Select Needle Template")
+        except:
+            pass
 
-    def select_pad_template(self):
-        # 先截图并让用户框选区域
-        self.take_screenshot()
-
-        # 读取截图
-        screenshot = cv2.imread("screenshot.png")
-        if screenshot is None:
-            print("无法读取截图，请检查文件路径。")
-            return None
-
-        # 让用户在截图上再次框选区域
-        r = cv2.selectROI("Select Pad Template", screenshot, showCrosshair=True, fromCenter=False)
+        # 使用自定义的ROI选择函数
+        r = self.selectROIWithAdjust("Select Needle Template", param)
 
         # 检查用户是否取消选择或选择了无效的区域
-        if r[2] == 0 or r[3] == 0:
-            print("框选被取消或无效。")
-            cv2.destroyWindow("Select Pad Template")
+        if r is None or r[2] == 0 or r[3] == 0:
+            print("选择被取消或无效。")
+            cv2.destroyWindow("Select Needle Template")
+            return None
+
+        mouseX = 0
+        mouseY = 0
+        mouse_clicked = False
+        window_closed = False
+
+        # 定义鼠标回调函数
+        def mouse_callback(event, X, Y, flags, userdata):
+            nonlocal mouseX, mouseY, mouse_clicked
+            if event == cv2.EVENT_LBUTTONDOWN and not mouse_clicked:
+                print(f"鼠标点击坐标: ({X}, {Y})")
+                mouseX = X
+                mouseY = Y
+                mouse_clicked = True
+                # 解除回调
+                cv2.setMouseCallback("Select Needle Template", lambda *args: None)
+
+        # 设置鼠标回调
+        cv2.setMouseCallback("Select Needle Template", mouse_callback)
+
+        # 显示选中的区域和提示信息
+        x, y, w, h = r
+        temp_img = param.copy()
+        cv2.rectangle(temp_img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        cv2.putText(temp_img, "Click reference point in selected area", (10, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+        cv2.putText(temp_img, "Press ESC to cancel", (10, 60),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+        cv2.imshow("Select Needle Template", temp_img)
+
+        # 使用一个小的等待时间，避免等待太长时间
+        start_time = time.time()
+        while True:
+            # 以 1ms 的延迟等待键盘事件或鼠标点击
+            key = cv2.waitKey(1) & 0xFF
+
+            # 检查窗口是否被关闭
+            try:
+                if cv2.getWindowProperty("Select Needle Template", cv2.WND_PROP_VISIBLE) < 1:
+                    window_closed = True
+                    break
+            except:
+                window_closed = True
+                break
+
+            if mouse_clicked:  # 判断是否有鼠标点击
+                break
+            if key == 27:  # 监听 ESC 键退出
+                print("用户按下 ESC 键退出。")
+                break
+            # 超时检查，避免无限等待
+            if time.time() - start_time > 30:  # 30秒超时
+                print("操作超时。")
+                break
+
+        if window_closed or key == 27:
+            cv2.destroyWindow("Select Needle Template")
+            return None
+
+        if not mouse_clicked:
+            print("未检测到鼠标点击。")
+            cv2.destroyWindow("Select Needle Template")
             return None
 
         # 获取选中的矩形区域，并进行裁剪
         x, y, w, h = r
-        template_pad = screenshot[y:y + h, x:x + w]
+        cropped_image = param[y:y + h, x:x + w]
+        if MainPage1.equipment:
+            cv2.imwrite("templateLight.png", cropped_image)
+        else:
+            cv2.imwrite("templateNeedle.png", cropped_image)
 
-        # 保存框选的区域为 templatePad.png
-        cv2.imwrite("templatepad.png", template_pad)
-        print("框选区域已保存为 templatePad.png")
+        # 重新加载模板
+        load_templates()
 
-        global mouseX, mouseY
-        mouseX = 0
-        mouseY = 0
+        # 在当前帧中进行模板匹配
+        matched_points = template(self.frame_resized, equipment=MainPage1.equipment)
 
-        # 定义鼠标回调函数
+        if not matched_points:
+            print("模板匹配失败，无法找到目标")
+            cv2.destroyWindow("Select Needle Template")
+            return None
+
+        # 获取第一个匹配点的坐标（通常是最佳匹配）
+        # 注意：template函数返回的可能是多个点，我们需要确认其格式
+        if isinstance(matched_points, tuple) and len(matched_points) >= 2:
+            # 如果返回的是 (x, y, w, h) 格式
+            matched_x, matched_y = matched_points[0], matched_points[1]
+        elif isinstance(matched_points, list) and len(matched_points) > 0:
+            # 如果返回的是点列表 [(x1,y1), (x2,y2), ...]
+            matched_x, matched_y = matched_points[0]
+        else:
+            print("无法解析模板匹配结果")
+            cv2.destroyWindow("Select Needle Template")
+            return None
+
+        print(f"模板匹配坐标: ({matched_x}, {matched_y})")
+        print(f"鼠标点击坐标: ({mouseX}, {mouseY})")
+
+        # 获取选中的矩形区域，并进行裁剪
+        x, y, w, h = r
+        # 计算ROI中心点（固定基准）
+        roi_center_x = x + w // 2
+        roi_center_y = y + h // 2
+
+        # 计算偏移量：鼠标点击位置相对于ROI中心的偏移
+        self.x_dia = mouseX - roi_center_x
+        self.y_dia = mouseY - roi_center_y
+
+
+        cv2.destroyWindow("Select Needle Template")
+
+        with open('dia' + str(MainPage1.equipment) + '.txt', 'w') as f:
+            f.write(f"{self.x_dia},{self.y_dia}")
+
+        print(f"偏移量已保存: x_dia={self.x_dia}, y_dia={self.y_dia}")
+        return True
+
+    def select_pad_template(self):
+        """新版Pad模板选择：框选一个pad + 点击参考点，自动匹配所有pad"""
+        # 第一步：用户框选一个pad作为模板
+        print("请框选一个pad作为模板")
+        try:
+            cv2.destroyWindow("Select Pad Template")
+        except:
+            pass
+
+        # 使用摄像头当前帧
+        frame = self.frame_resized.copy()
+
+        # 框选单个pad
+        pad_roi = self.selectROIWithAdjust("Select Pad Template", frame)
+        if pad_roi is None or pad_roi[2] == 0 or pad_roi[3] == 0:
+            print("框选被取消或无效。")
+            cv2.destroyWindow("Select Pad Template")
+            return None
+
+        # 裁剪出选中的pad
+        x, y, w, h = pad_roi
+        pad_template = frame[y:y + h, x:x + w]
+        cv2.imwrite("templatepad.png", pad_template)
+        print("Pad模板已保存")
+
+        # 第二步：在原始图像中点击参考点
+        print("请在图像中点击参考点（相对于框选的pad）")
+        mouseX, mouseY = 0, 0
+        mouse_clicked = False
+
         def mouse_callback(event, X, Y, flags, userdata):
+            nonlocal mouseX, mouseY, mouse_clicked
             if event == cv2.EVENT_LBUTTONDOWN:
-                print(f"鼠标点击坐标: ({X}, {Y})")
-                global mouseX, mouseY
+                print(f"参考点坐标: ({X}, {Y})")
                 mouseX = X
                 mouseY = Y
+                mouse_clicked = True
+                cv2.setMouseCallback("Select Reference Point", lambda *args: None)
 
-                # 解除回调
-                cv2.setMouseCallback("Select Pad Template", lambda *args: None)  # 解除回调
+        cv2.namedWindow("Select Reference Point", cv2.WINDOW_NORMAL)
+        cv2.setMouseCallback("Select Reference Point", mouse_callback)
 
-        # 设置鼠标回调
-        cv2.setMouseCallback("Select Pad Template", mouse_callback)
+        # 显示原始图像和框选区域
+        display_img = frame.copy()
+        cv2.rectangle(display_img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        cv2.putText(display_img, "Click reference point", (10, 30),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+        cv2.putText(display_img, "Press ESC to cancel", (10, 60),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+        cv2.imshow("Select Reference Point", display_img)
 
-        # 使用一个小的等待时间，避免等待太长时间
-        while True:
-            # 以 1ms 的延迟等待键盘事件或鼠标点击
-            key = cv2.waitKey(1)  # 不阻塞，避免长时间卡住
-            if mouseX != 0 and mouseY != 0:  # 判断是否有鼠标点击
-                break
-            if key == 27:  # 监听 ESC 键退出
-                print("用户按下 ESC 键退出。")
-                cv2.destroyWindow("Select Pad Template")
+        start_time = time.time()
+        while not mouse_clicked:
+            key = cv2.waitKey(1) & 0xFF
+            if key == 27:  # ESC
+                print("用户取消操作")
+                cv2.destroyWindow("Select Reference Point")
+                return None
+            if time.time() - start_time > 30:  # 超时
+                print("操作超时")
+                cv2.destroyWindow("Select Reference Point")
                 return None
 
-        # 进行模板匹配
-        load_templates()
-        with open('Paddia.txt', 'w') as f:
-            f.write(f"{0},{0}")
-        point = match_device_templates(screenshot)
-        x_dia = mouseX - point[0][0]
-        y_dia = mouseY + point[0][1]
-
-        cv2.destroyWindow("Select Pad Template")
+        cv2.destroyWindow("Select Reference Point")
+        # 第三步：计算偏移量（相对于框选pad的中心）
+        pad_center_x = x + w // 2
+        pad_center_y = y + h // 2
+        x_dia = mouseX - pad_center_x
+        y_dia = mouseY - pad_center_y
+        print(f"偏移量计算：pad中心({pad_center_x},{pad_center_y}) -> 参考点({mouseX},{mouseY}) = ({x_dia},{y_dia})")
 
         # 保存偏移量
         with open('Paddia.txt', 'w') as f:
             f.write(f"{x_dia},{y_dia}")
-        print(f"偏移量已保存: x_dia={x_dia}, y_dia={y_dia}")
+            f.flush()  # 强制刷新缓冲区
+            os.fsync(f.fileno())  # 强制同步到磁盘
+        return True
 
 
     def CalIU(self):
@@ -536,25 +699,6 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             logger.log(f"执行过程中发生错误: {str(e)}")
-
-    # def update_log_display(self):
-    #     '''
-    #         Function:
-    #             用于和定时器进行绑定，更新日志
-    #         Args:
-    #             none
-    #         Return:
-    #             none
-    #     '''
-    #     try:
-    #         with open(self.log_file, 'r') as f:
-    #             lines = f.readlines()
-    #             # 取最后三行日志
-    #             last_lines = lines[-10:]
-    #             # 更新日志显示内容
-    #             self.plainTextEdit_log.setPlainText("".join(last_lines))
-    #     except FileNotFoundError:
-    #         self.plainTextEdit_log.setPlainText("No logs available.")
 
     def update_log_display(self):
         '''
@@ -695,22 +839,22 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
     def move_probe_up(self):
         threading.Thread(target=WhileMove,
-                         args=(0, MainPage1.equipment, MainPage1.needle_distanceY)).start()
+                         args=(0, self.indicator,MainPage1.equipment, MainPage1.needle_distanceY)).start()
         logger.log("探针往上移动了")
 
     def move_probe_down(self):
         threading.Thread(target=WhileMove,
-                         args=(1, MainPage1.equipment, MainPage1.needle_distanceY)).start()
+                         args=(1, self.indicator,MainPage1.equipment, MainPage1.needle_distanceY)).start()
         logger.log("探针往下移动了")
 
     def move_probe_left(self):
         threading.Thread(target=WhileMove,
-                         args=(2, MainPage1.equipment, MainPage1.needle_distanceX)).start()
+                         args=(2, self.indicator,MainPage1.equipment, MainPage1.needle_distanceX)).start()
         logger.log("探针往左移动了")
 
     def move_probe_right(self):
         threading.Thread(target=WhileMove,
-                         args=(3, MainPage1.equipment, MainPage1.needle_distanceX)).start()
+                         args=(3, self.indicator,MainPage1.equipment, MainPage1.needle_distanceX)).start()
         logger.log("探针往右移动了")
 
     from PyQt5.QtWidgets import QMessageBox
@@ -770,29 +914,6 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                 "请输入有效的数字！"
             )
 
-    def STOP_MOVE(self):
-        MainPage1.stop_num = 1
-
-        anc = NeedelConnectionThread.anc
-        anc.write('[ch1:1]'.encode())
-        anc.write('[cap:000nF]'.encode())
-        anc.write('[volt:+000V] '.encode())
-        anc.write('[freq:+00000Hz]'.encode())
-        time.sleep(0.2)
-        anc.write('[ch2:1]'.encode())
-        anc.write('[cap:000nF]'.encode())
-        anc.write('[volt:+000V] '.encode())
-        anc.write('[freq:+00000Hz]'.encode())
-        time.sleep(0.2)
-        anc.write('[ch3:1]'.encode())
-        anc.write('[cap:000nF]'.encode())
-        anc.write('[volt:+000V] '.encode())
-        anc.write('[freq:+00000Hz]'.encode())
-        time.sleep(0.2)
-        anc.write('[ch1:0]'.encode())
-        anc.write('[ch2:0]'.encode())
-        anc.write('[ch3:0]'.encode())
-        time.sleep(0.2)
 
     def restart_program(self):
         python = sys.executable  # 当前 python 解释器路径
@@ -857,7 +978,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
             elif target_x > probe_x:
                 ReturnNeedleMove(self.needleright, distance, self.indicator, True, False, MainPage1.equipment)
             # 低温情况下time.sleep应该是0.5，常温情况是0.1
-            time.sleep(0.5)
+            time.sleep(0.1)
             probe_x, probe_y = self.get_probe_position()
             distance = np.sqrt((target_x - probe_x) ** 2)*distance_weight
 
@@ -873,15 +994,13 @@ class MainPage1(QMainWindow, Ui_MainWindow):
             elif target_y > probe_y:
                 ReturnNeedleMove(self.needledown, distance, self.indicator, True, False, MainPage1.equipment)
             # 低温情况下time.sleep应该是0.5，常温情况是0.1
-            time.sleep(0.5)
+            time.sleep(0.1)
             probe_x, probe_y = self.get_probe_position()
             distance = np.sqrt((target_y - probe_y) ** 2)*distance_weight
 
-
-
         self.allow_alignment = True  # 重新允许对齐
         self.indicator.setStyleSheet(MainPage1.get_stylesheet(False))
-        MainPage1.stop_num = 0
+        StopClass.stop_num = 0
 
     # 928更新电压的函数
     def update_voltage(self):
@@ -919,17 +1038,17 @@ class MainPage1(QMainWindow, Ui_MainWindow):
     def Pushing(self):
         if SIM928ConnectionThread.anc is None or not self.lineEdit_SIM928.text():
             logger.log("警告：anc 是 None，无法执行 Pushing 操作")
-
-        WhileMove(4, MainPage1.equipment, MainPage1.needle_distanceZ)
-        logger.log("探针下压了")
+        else:
+            WhileMove(4, self.indicator,MainPage1.equipment, MainPage1.needle_distanceZ)
+            logger.log("探针下压了")
 
     def Pulling(self):
         if SIM928ConnectionThread.anc is None or not self.lineEdit_SIM928.text():
             logger.log("警告：anc 是 None，无法执行 Pulling 操作")
-
-        # 常温下min的最大值是1000，低温下min的最大值是5000
-        WhileMove(5, MainPage1.equipment, MainPage1.needle_distanceZ)
-        logger.log("探针抬升了")
+        else:
+            # 常温下min的最大值是1000，低温下min的最大值是5000
+            WhileMove(5, self.indicator,MainPage1.equipment, MainPage1.needle_distanceZ)
+            logger.log("探针抬升了")
 
 
 def Color_numpy(data, nWidth, nHeight):

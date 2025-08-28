@@ -12,7 +12,6 @@ templateLight_size = (0, 0)
 
 
 # 缓存模板加载结果
-@lru_cache(maxsize=1)
 def load_templates():
     """
     预加载模板图像，避免在每次匹配时重复读取。
@@ -57,214 +56,302 @@ def is_nearby_vectorized(centers_np, x, y, min_distance):
     return np.any(squared_distances < min_distance ** 2)
 
 
-def sharpen_image(image, method='usm', kernel_size=(3, 3), strength=1.5):
-    """
-    图像锐化处理（多种方法可选）
-    优化: 提前定义常用kernel，减少重复计算
-    """
-    # 预定义常用kernel
-    LAPLACIAN_KERNEL = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
-
-    if method == 'usm':
-        # 非锐化掩蔽 (Unsharp Masking)
-        blurred = cv2.GaussianBlur(image, kernel_size, 0)
-        sharpened = cv2.addWeighted(image, 1.0 + strength, blurred, -strength, 0)
-    elif method == 'laplacian':
-        # 使用预定义的kernel
-        sharpened = cv2.filter2D(image, -1, LAPLACIAN_KERNEL)
-    elif method == 'sobel':
-        # Sobel边缘增强
-        sobelx = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=3)
-        sobely = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=3)
-        edges = cv2.magnitude(sobelx, sobely)
-        sharpened = cv2.addWeighted(image, 1.0, edges, strength / 255.0, 0)
-    elif method == 'gaussian':
-        # 高斯差分锐化
-        blur1 = cv2.GaussianBlur(image, kernel_size, 0)
-        blur2 = cv2.GaussianBlur(image, (kernel_size[0] + 2, kernel_size[1] + 2), 0)
-        sharpened = cv2.addWeighted(blur1, 1.5, blur2, -0.5, 0)
-    else:
-        sharpened = image.copy()
-
-    return np.clip(sharpened, 0, 255).astype(np.uint8)
-
-
-def template(video, x_dia=0, y_dia=0, equipment=0, sharpen_params=None):
-    """
-    改进版模板匹配函数（带锐化预处理）
-    优化: 使用默认参数避免每次创建新字典
-    """
-    global templateNeedle, templateLight
-
-    # 默认锐化参数
-    DEFAULT_SHARPEN_PARAMS = {
-        'method': 'usm',
-        'strength': 1.5,
-        'kernel_size': (5, 5)
-    }
-
-    # 合并参数
-    if sharpen_params is None:
-        sharpen_params = DEFAULT_SHARPEN_PARAMS
-    else:
-        sharpen_params = {**DEFAULT_SHARPEN_PARAMS, **sharpen_params}
-
-    # 获取模板图像
-    template_img = templateLight if equipment else templateNeedle
-
-    if template_img is None:
-        print(f"模板 {'templateLight' if equipment else 'templateNeedle'} 未加载成功")
-        return None, None, 0, 0
-
-    # 锐化预处理
-    sharpened_video = sharpen_image(video, **sharpen_params)
-    sharpened_template = sharpen_image(template_img, **sharpen_params)
-    # cv2.imshow("sss", sharpened_template)
-    # 执行模板匹配
-    result = cv2.matchTemplate(sharpened_video, sharpened_template, cv2.TM_CCOEFF_NORMED)
-    template_height, template_width = template_img.shape[:2]
-
-    # 找到最佳匹配位置
-    _, max_val, _, max_loc = cv2.minMaxLoc(result)
-
-    # 动态阈值设置（根据锐化强度自动调整）
-    dynamic_threshold = 0.6
-    red_dot_x, red_dot_y = None, None
-
-    if max_val >= dynamic_threshold:
-        red_dot_x = max_loc[0] + x_dia
-        red_dot_y = max_loc[1] + y_dia
-        cv2.circle(video, (red_dot_x, red_dot_y), 5, (0, 0, 255), -1)
-
-    # 绘制操作区域（保持原逻辑）
-    top_left_corner = (template_width // 2, template_height // 2)
-    bottom_right_corner = (video.shape[1] - template_width // 2, video.shape[0] - template_height // 2)
-    cv2.rectangle(video, top_left_corner, bottom_right_corner, (0, 0, 0), 2)
-    cv2.putText(video, "Operation Zone", (top_left_corner[0], top_left_corner[1] - 10),
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 1)
-
-    return red_dot_x, red_dot_y, template_height, template_width
-
-# def template(video, x_dia=0, y_dia=0, equipment=0,
-#              r_thresh=60, g_thresh=70, b_thresh=30,
-#              match_thresh=0.65):
+# def sharpen_image(image, method='usm', kernel_size=(3, 3), strength=1.5):
 #     """
-#     RGB阈值法模板匹配 + 点击显示像素RGB值
+#     图像锐化处理（多种方法可选）
+#     优化: 提前定义常用kernel，减少重复计算
+#     """
+#     # 预定义常用kernel
+#     LAPLACIAN_KERNEL = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
+#
+#     if method == 'usm':
+#         # 非锐化掩蔽 (Unsharp Masking)
+#         blurred = cv2.GaussianBlur(image, kernel_size, 0)
+#         sharpened = cv2.addWeighted(image, 1.0 + strength, blurred, -strength, 0)
+#     elif method == 'laplacian':
+#         # 使用预定义的kernel
+#         sharpened = cv2.filter2D(image, -1, LAPLACIAN_KERNEL)
+#     elif method == 'sobel':
+#         # Sobel边缘增强
+#         sobelx = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=3)
+#         sobely = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=3)
+#         edges = cv2.magnitude(sobelx, sobely)
+#         sharpened = cv2.addWeighted(image, 1.0, edges, strength / 255.0, 0)
+#     elif method == 'gaussian':
+#         # 高斯差分锐化
+#         blur1 = cv2.GaussianBlur(image, kernel_size, 0)
+#         blur2 = cv2.GaussianBlur(image, (kernel_size[0] + 2, kernel_size[1] + 2), 0)
+#         sharpened = cv2.addWeighted(blur1, 1.5, blur2, -0.5, 0)
+#     else:
+#         sharpened = image.copy()
+#
+#     return np.clip(sharpened, 0, 255).astype(np.uint8)
+
+
+# def template(video, x_dia=0, y_dia=0, equipment=0, sharpen_params=None):
+#     """
+#     高性能模板匹配函数（强制灰度处理）
+#     返回值保持: (red_dot_x, red_dot_y, template_height, template_width)
 #     """
 #     global templateNeedle, templateLight
 #
-#     # --- 新增：鼠标回调函数 ---
-#     def show_pixel_value(event, x, y, flags, param):
-#         if event == cv2.EVENT_LBUTTONDOWN:
-#             b, g, r = video[y, x]
-#             print(f"Clicked at ({x}, {y}) - RGB: ({r}, {g}, {b})")
+#     # 1. 强制转换为灰度图像（性能关键！）
+#     if len(video.shape) == 3:
+#         video_gray = cv2.cvtColor(video, cv2.COLOR_BGR2GRAY)
+#     else:
+#         video_gray = video
 #
-#             # 在图像上显示RGB值
-#             display_img = video.copy()
-#             text = f"({x},{y}) RGB:({r},{g},{b})"
-#             cv2.putText(display_img, text, (x + 10, y - 10),
-#                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
-#             cv2.circle(display_img, (x, y), 3, (0, 0, 255), -1)
-#             cv2.imshow("Original with Pixel Info", display_img)
-#
-#     # --- 原有模板匹配逻辑 ---
+#     # 2. 获取模板并灰度化
 #     template_img = templateLight if equipment else templateNeedle
 #     if template_img is None:
 #         return None, None, 0, 0
 #
-#     def rgb_threshold(img):
-#         b, g, r = cv2.split(img)
-#         _, b_bin = cv2.threshold(b, b_thresh, 255, cv2.THRESH_BINARY_INV)
-#         _, g_bin = cv2.threshold(g, g_thresh, 255, cv2.THRESH_BINARY_INV)
-#         _, r_bin = cv2.threshold(r, r_thresh, 255, cv2.THRESH_BINARY_INV)
-#         combined = cv2.bitwise_and(b_bin, cv2.bitwise_and(g_bin, r_bin))
-#         return cv2.cvtColor(combined, cv2.COLOR_GRAY2BGR)
+#     if len(template_img.shape) == 3:
+#         template_gray = cv2.cvtColor(template_img, cv2.COLOR_BGR2GRAY)
+#     else:
+#         template_gray = template_img
 #
-#     # --- 处理流程可视化（新增原图窗口）---
-#     cv2.namedWindow("Original with Pixel Info")
-#     cv2.setMouseCallback("Original with Pixel Info", show_pixel_value)
+#     # 3. 锐化预处理（可选）
+#     if sharpen_params:
+#         video_gray = sharpen_image(video_gray, **sharpen_params)
+#         template_gray = sharpen_image(template_gray, **sharpen_params)
 #
-#     thresholded = rgb_threshold(video)
-#     cv2.imshow("1. RGB Threshold", cv2.resize(thresholded, (400, 300)))
+#     # 4. 单次匹配（平衡精度和性能）
+#     res = cv2.matchTemplate(video_gray, template_gray, cv2.TM_CCOEFF_NORMED)
+#     _, max_val, _, max_loc = cv2.minMaxLoc(res)
 #
-#     result = cv2.matchTemplate(thresholded, template_img, cv2.TM_CCOEFF_NORMED)
-#     template_height, template_width = template_img.shape[:2]
+#     # 5. 结果处理（保持原返回值格式）
+#     if max_val < 0.6:  # 置信度阈值
+#         return None, None, template_img.shape[0], template_img.shape[1]
 #
-#     heatmap = cv2.normalize(result, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
-#     heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
-#     cv2.imshow("2. Heatmap", cv2.resize(heatmap, (400, 300)))
+#     # 计算红点位置（保持原有逻辑）
+#     h, w = template_gray.shape
+#     red_dot_x = max_loc[0] + w // 2 + x_dia
+#     red_dot_y = max_loc[1] + h // 2 + y_dia
 #
-#     # --- 结果显示（保持原有逻辑）---
-#     _, max_val, _, max_loc = cv2.minMaxLoc(result)
-#     result_img = video.copy()
-#     red_dot_x, red_dot_y = None, None
-#
-#     if max_val >= match_thresh:
-#         red_dot_x = max_loc[0] + template_width // 2 + x_dia
-#         red_dot_y = max_loc[1] + template_height // 2 + y_dia
-#         cv2.rectangle(result_img,
-#                       max_loc,
-#                       (max_loc[0] + template_width, max_loc[1] + template_height),
-#                       (0, 255, 0), 2)
-#         cv2.circle(result_img, (red_dot_x, red_dot_y), 5, (0, 0, 255), -1)
-#         param_text = f"R:{r_thresh} G:{g_thresh} B:{b_thresh}"
-#         cv2.putText(result_img, param_text, (10, 30),
-#                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 1)
-#
-#     cv2.imshow("3. Result", cv2.resize(result_img, (600, 400)))
-#     cv2.imshow("Original with Pixel Info", video)  # 显示原图窗口
-#
-#     key = cv2.waitKey(1)
-#     if key == 27:  # ESC退出
-#         cv2.destroyAllWindows()
-#
-#     return red_dot_x, red_dot_y, template_height, template_width
+#     cv2.circle(video, (red_dot_x, red_dot_y), 5, (0, 0, 255), -1)  # 绘制红点
+#     return red_dot_x, red_dot_y, template_img.shape[0], template_img.shape[1]
+
+
+import cv2
+import numpy as np
+
+
+def template(video, x_dia=0, y_dia=0, equipment=0, sharpen_params=None):
+    """快速稳定的模板匹配版本（增强预处理）"""
+    global templateNeedle, templateLight
+
+    # 1. 强制转换为灰度图像
+    if len(video.shape) == 3:
+        video_gray = cv2.cvtColor(video, cv2.COLOR_BGR2GRAY)
+    else:
+        video_gray = video
+
+    # 2. 获取模板并灰度化
+    template_img = templateLight if equipment else templateNeedle
+    if template_img is None:
+        return None, None, 0, 0
+
+    if len(template_img.shape) == 3:
+        template_gray = cv2.cvtColor(template_img, cv2.COLOR_BGR2GRAY)
+    else:
+        template_gray = template_img
+
+    # 3. 图像预处理（关键改进！）
+    video_gray, template_gray = preprocess_images(video_gray, template_gray, sharpen_params)
+
+    # 4. 使用多方法验证
+    methods = [cv2.TM_CCOEFF_NORMED, cv2.TM_CCORR_NORMED]
+    best_val = -1
+    best_loc = None
+
+    for method in methods:
+        res = cv2.matchTemplate(video_gray, template_gray, method)
+        _, max_val, _, max_loc = cv2.minMaxLoc(res)
+
+        if max_val > best_val:
+            best_val = max_val
+            best_loc = max_loc
+
+    # 5. 局部精细化搜索
+    if best_val > 0.65:
+        x, y = best_loc
+        h, w = template_gray.shape
+
+        # 在匹配区域周围进行精细化搜索
+        if x > 5 and y > 5 and x + w < video_gray.shape[1] - 5 and y + h < video_gray.shape[0] - 5:
+            roi = video_gray[y - 5:y + h + 5, x - 5:x + w + 5]
+            refined_res = cv2.matchTemplate(roi, template_gray, cv2.TM_CCOEFF_NORMED)
+            _, refined_val, _, refined_loc = cv2.minMaxLoc(refined_res)
+
+            if refined_val > best_val:
+                x = x - 5 + refined_loc[0]
+                y = y - 5 + refined_loc[1]
+                best_val = refined_val
+
+        red_dot_x = x + w // 2 + x_dia
+        red_dot_y = y + h // 2 + y_dia
+        cv2.circle(video, (red_dot_x, red_dot_y), 5, (0, 0, 255), -1)  # 绘制红点
+        return red_dot_x, red_dot_y, template_img.shape[0], template_img.shape[1]
+
+    return None, None, 0, 0
+
+
+def preprocess_images(video_gray, template_gray, sharpen_params=None):
+    """综合图像预处理函数"""
+    # 默认锐化参数
+    if sharpen_params is None:
+        sharpen_params = {'kernel_size': 3, 'sigma': 1.0, 'amount': 1.5, 'threshold': 10}
+
+    # 1. 直方图均衡化（增强对比度）
+    video_gray = cv2.equalizeHist(video_gray)
+    template_gray = cv2.equalizeHist(template_gray)
+
+    # 2. 高斯模糊去噪（轻微）
+    video_gray = cv2.GaussianBlur(video_gray, (3, 3), 0)
+    template_gray = cv2.GaussianBlur(template_gray, (3, 3), 0)
+
+    # 3. 锐化处理
+    video_gray = sharpen_image(video_gray, **sharpen_params)
+    template_gray = sharpen_image(template_gray, **sharpen_params)
+
+    # 4. 边缘增强（可选，对于边缘明显的探针很有效）
+    video_gray = enhance_edges(video_gray)
+    template_gray = enhance_edges(template_gray)
+
+    return video_gray, template_gray
+
+
+def sharpen_image(image, kernel_size=3, sigma=1.0, amount=1.5, threshold=5):
+    """USM锐化算法"""
+    # 高斯模糊
+    blurred = cv2.GaussianBlur(image, (kernel_size, kernel_size), sigma)
+
+    # 非锐化掩蔽
+    sharpened = cv2.addWeighted(image, 1.0 + amount, blurred, -amount, 0)
+
+    # 阈值处理，避免过度锐化平滑区域
+    if threshold > 0:
+        low_contrast_mask = np.abs(image - blurred) < threshold
+        sharpened[low_contrast_mask] = image[low_contrast_mask]
+
+    return sharpened
+
+
+def enhance_edges(image, low_threshold=50, high_threshold=150):
+    """边缘增强"""
+    # Canny边缘检测
+    edges = cv2.Canny(image, low_threshold, high_threshold)
+
+    # 将边缘叠加到原图
+    enhanced = cv2.addWeighted(image, 0.8, edges, 0.2, 0)
+
+    return enhanced
+
+
+# 可选：自适应预处理（根据图像特性自动调整）
+def adaptive_preprocess(image):
+    """自适应预处理"""
+    # 计算图像对比度
+    mean, std = cv2.meanStdDev(image)
+    contrast = std[0][0]
+
+    if contrast < 25:  # 低对比度图像
+        image = cv2.equalizeHist(image)
+        image = sharpen_image(image, amount=2.0)
+    elif contrast > 60:  # 高对比度图像
+        image = cv2.GaussianBlur(image, (3, 3), 0)
+    else:  # 中等对比度
+        image = sharpen_image(image, amount=1.5)
+
+    return image
 
 
 def match_device_templates(video):
-    """
-    模板匹配函数，用于匹配 Device 模板，并在匹配到的位置绘制绿色点。
-    优化: 缓存Paddia.txt读取结果，减少IO操作
-    """
     global templateDevice, templateDevice_size
 
     if templateDevice is None:
+        print("模板未加载，无法进行匹配")
         return []
 
-    # 缓存Paddia.txt读取结果
-    @lru_cache(maxsize=1)
-    def get_paddia_values():
-        with open('Paddia.txt', 'r') as file:
-            line = file.readline().strip()
-            numbers = line.split(',')
-            return int(numbers[0]), int(numbers[1])
+    try:
+        with open('Paddia.txt', 'r') as f:
+            xdia, ydia = map(int, f.read().strip().split(','))
+    except:
+        xdia, ydia = 0, 0
 
-    xdia, ydia = get_paddia_values()
 
-    # 降低分辨率
-    scale_factor = 1
-    video_resized = cv2.resize(video, None, fx=scale_factor, fy=scale_factor, interpolation=cv2.INTER_AREA)
-    template_resized = cv2.resize(templateDevice, None, fx=scale_factor, fy=scale_factor, interpolation=cv2.INTER_AREA)
 
-    # 执行模板匹配
-    result = cv2.matchTemplate(video_resized, template_resized, cv2.TM_CCOEFF_NORMED)
-    threshold = 0.8
-    locations = np.where(result >= threshold)
+    # 灰度转换
+    video_gray = cv2.cvtColor(video, cv2.COLOR_BGR2GRAY) if len(video.shape) == 3 else video
+    template_gray = cv2.cvtColor(templateDevice, cv2.COLOR_BGR2GRAY) if len(
+        templateDevice.shape) == 3 else templateDevice
 
-    # 恢复原始坐标
-    matched_locations = [(int(x / scale_factor), int(y / scale_factor)) for x, y in zip(*locations[::-1])]
+    # 记录原始模板尺寸（用于后续偏移量计算）
+    original_template_h, original_template_w = template_gray.shape
 
-    height, width = templateDevice_size
-    matched_centers = []
-    matched_centers_np = np.empty((0, 2), dtype=int)
+    # 多尺度匹配
+    scales = [0.8, 0.9, 1.0, 1.1, 1.2]
+    all_matches = []
 
-    for loc in matched_locations:
-        center_x = loc[0] + xdia
-        center_y = loc[1] + ydia
+    for scale in scales:
+        # 缩放模板
+        if scale != 1.0:
+            new_w = int(original_template_w * scale)
+            new_h = int(original_template_h * scale)
+            if new_w < 10 or new_h < 10: continue
+            template_resized = cv2.resize(template_gray, (new_w, new_h))
+        else:
+            template_resized = template_gray
 
-        if not is_nearby_vectorized(matched_centers_np, center_x, center_y, min_distance=width // 2):
-            matched_centers.append((center_x, center_y))
-            cv2.circle(video, (center_x, center_y), 5, (0, 255, 0), -1)
-            matched_centers_np = np.vstack([matched_centers_np, [center_x, center_y]])
+        # 执行匹配
+        res = cv2.matchTemplate(video_gray, template_resized, cv2.TM_CCOEFF_NORMED)
+        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
 
-    return matched_centers
+        # 动态阈值
+        threshold = max(0.6, max_val * 0.8)
+        locs = np.where(res >= threshold)
+
+        for pt in zip(*locs[::-1]):
+            all_matches.append({
+                'pt': pt,
+                'size': (template_resized.shape[1], template_resized.shape[0]),
+                'score': res[pt[1], pt[0]],
+                'scale': scale
+            })
+
+    # 非极大值抑制
+    all_matches.sort(key=lambda x: x['score'], reverse=True)
+    final_locations = []
+
+    for match in all_matches:
+        pt = match['pt']
+        w, h = match['size']
+
+        # 计算当前匹配的中心点（未加偏移）
+        center_x = pt[0] + w // 2
+        center_y = pt[1] + h // 2
+
+        # 检查是否与已选区域重叠
+        overlap = False
+        for selected in final_locations:
+            s_center_x, s_center_y, s_w, s_h = selected
+            if (abs(center_x - s_center_x) < (w + s_w) // 2 and
+                    abs(center_y - s_center_y) < (h + s_h) // 2):
+                overlap = True
+                break
+
+        if not overlap:
+            # 计算缩放后的实际偏移量（按比例缩放）
+
+            # 最终目标点 = 匹配中心 + 缩放后的偏移量
+            target_x = center_x + xdia
+            target_y = center_y + ydia
+
+            final_locations.append((target_x, target_y, w, h))
+
+            # 可视化
+            cv2.rectangle(video, pt, (pt[0] + w, pt[1] + h), (0, 255, 0), 2)
+            cv2.circle(video, (target_x, target_y), 4, (0, 255, 255), -1)
+
+    return [(x, y) for x, y, _, _ in final_locations]

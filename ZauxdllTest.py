@@ -13,7 +13,7 @@ class GBIOConnect:
 
         # 创建资源管理器
         self.rm = pyvisa.ResourceManager()
-
+        self.rm.visa_timeout = 3000  # 全局默认3秒超时（单位：毫秒）
         # 列出所有连接的设备
         all_resources = self.rm.list_resources()
 
@@ -38,11 +38,3 @@ class GBIOConnect:
 
         # 打印成功连接的 GPIB 设备
         print("Connected GPIB devices:", GBIOConnect.connected_gpib_devices)
-
-# # 示例：使用该类
-# if __name__ == "__main__":
-#     # 初始化类并扫描设备
-#     serial_thread = GBIOConnect()
-#
-#     # 其他类可以通过 SerialConnectionThread.connected_gpib_devices 访问全局变量
-#     print("Global connected GPIB devices:", GBIOConnect.connected_gpib_devices)

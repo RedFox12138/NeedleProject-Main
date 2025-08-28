@@ -14,7 +14,7 @@ from StopClass import StopClass
 
 ax = {'x':1,'y':2,'z':3,'x2':4,'y2':5,'z2':6}
 def ReturnNeedleMove(direction,distance,indicatorLight,isclick=False,flag=False,equipment=0):
-    directionArray = [ [2,3,1],[6,5,4] ]
+    directionArray = [[2,3,1],[6,5,4]]
     with SerialLock.serial_lock:
         try:
             anc = NeedelConnectionThread.anc
@@ -22,13 +22,13 @@ def ReturnNeedleMove(direction,distance,indicatorLight,isclick=False,flag=False,
             if direction == 0:
                 anc.write( ('[ch'+ str(directionArray[equipment][0])+':1]').encode())
                 anc.write('[cap:013nF]'.encode())
-                anc.write('[volt:+150V] '.encode())
+                anc.write('[volt:+200V] '.encode())
                 anc.write('[freq:+02000Hz]'.encode())
                 anc.write(('[-:0000' + str(distance) + '] ').encode())  # +-方向
             elif direction == 1:
                 anc.write( ('[ch'+ str(directionArray[equipment][0])+':1]').encode())
                 anc.write('[cap:013nF]'.encode())
-                anc.write('[volt:+150V] '.encode())
+                anc.write('[volt:+200V] '.encode())
                 anc.write('[freq:+02000Hz]'.encode())
                 anc.write(('[+:0000' + str(distance) + '] ').encode())  # +-方向
             elif direction == 2:
@@ -73,9 +73,10 @@ def ReturnNeedleMove(direction,distance,indicatorLight,isclick=False,flag=False,
             print("请检查探针是否连接")
 
 
-def WhileMove(direction,equipment=0,distance=1000):
+def WhileMove(direction,indicatorLight,equipment=0,distance=1000):
     directionArray = [[2,3,1],[6,5,4]]
     with SerialLock.serial_lock:
+        indicatorLight.setStyleSheet(MainPage.MainPage1.get_stylesheet(True))
         anc = NeedelConnectionThread.anc
         anc.write('[ch1:0]'.encode())
         anc.write('[ch2:0]'.encode())
@@ -127,7 +128,7 @@ def WhileMove(direction,equipment=0,distance=1000):
 
         StopClass.stop_num = 0
         locationClass.locationX, locationClass.locationY, locationClass.locationZ = getPosition()
-
+        indicatorLight.setStyleSheet(MainPage.MainPage1.get_stylesheet(False))
 
 def voltage_and_frequency(xv,yv,xf,yf):
     anc = NeedelConnectionThread.anc
