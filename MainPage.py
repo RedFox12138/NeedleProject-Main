@@ -352,7 +352,6 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
         min_distance = float('inf')
         probe_x, probe_y = self.get_probe_position()
-        closest = None  # 显式初始化closest变量
 
         for center_x, center_y in matched_centers:
             distance = pow(abs(center_x - probe_x), 2) + pow(abs(center_y - probe_y), 2)
@@ -360,11 +359,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                 min_distance = distance
                 closest = [center_x, center_y]
 
-        # 确保closest已经被赋值
-        if closest is None:
-            return True
-
-        if min_distance <= 100:
+        if min_distance <= 500:
             self.move_probe_to_target(closest[0], closest[1])
             return False
         else:
