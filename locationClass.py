@@ -1,18 +1,16 @@
-import math
-import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 import matplotlib
 import numpy as np
-from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtCore import QTimer
 
 from matplotlib import pyplot as plt, animation
-import cv2
 from PyQt5.QtCore import QTimer, Qt
-from QTneedle.QTneedle.DailyLogger import DailyLogger
-from QTneedle.QTneedle.Position import getPosition, move_to_target, move_to_Z
+
+from QTneedle.QTneedle.QTneedle.DailyLogger import DailyLogger
+from QTneedle.QTneedle.QTneedle.Position import move_to_Z, getPosition, move_to_target
+from QTneedle.QTneedle.QTneedle.SerialLock import SerialLock
+from QTneedle.QTneedle.QTneedle.demo import Ui_MainWindow
 from SerialPage import SIM928ConnectionThread, RelayConnectionThread
 from StopClass import StopClass
 
@@ -26,10 +24,6 @@ if custom_lib_path not in sys.path:
 import threading
 import time
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
-from QTneedle.QTneedle.SerialLock import SerialLock
-from QTneedle.QTneedle.demo import Ui_MainWindow
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
 
 matplotlib.use('TkAgg')
 
@@ -54,9 +48,12 @@ class locationClass(QMainWindow, Ui_MainWindow):
                  Button_PushLocation, Button_PullLocation,
                  Button_PushBack, Button_PullBack,
                  lineEdit_leftTopX, lineEdit_leftTopY, lineEdit_rightTopX, lineEdit_rightTopY, lineEdit_rightBottomX, lineEdit_rightBottomY,
-                 Checkbox_DontTest,widget_map,tabWidget
+                 Checkbox_DontTest,widget_map,tabWidget,label_light
     ):
         super().__init__()
+
+        # 初始化指示灯
+        self.indicator = label_light
 
         #widget_map 用于把地图嵌入到界面中
         self.mapWidget = widget_map
@@ -129,20 +126,13 @@ class locationClass(QMainWindow, Ui_MainWindow):
             self.DontTest = False
 
     def PushBack(self,flag=True):
-        move_to_Z(self.Zlocation1,flag)
+        move_to_Z(self.Zlocation1,self.indicator,flag)
         locationClass.locationX, locationClass.locationY, locationClass.locationZ = getPosition()
 
     def PullBack(self):
-        move_to_Z(self.Zlocation2)
+        move_to_Z(self.Zlocation2,self.indicator)
         locationClass.locationX, locationClass.locationY, locationClass.locationZ = getPosition()
 
-        # # 创建窗口
-        # root = tk.Tk()
-        # root.withdraw()
-        # # 显示信息弹窗
-        # messagebox.showwarning("移动完成", "已经移动到抬升点!")
-        # # 销毁主窗口
-        # root.destroy()
 
     def update_location_display(self):
         self.lineEdit_Xlocation.setText(str(locationClass.locationX))
@@ -208,11 +198,9 @@ class locationClass(QMainWindow, Ui_MainWindow):
                                                                     self.location3,x3,y3,
                                                                     row,col)
 
-        # self.device_positions = self.calculate_device_positions(top_left, top_right, bottom_right, row, col)
-
         #
-        # self.device_positions = self.calculate_device_positions(top_left, 3, 3, top_right,
-        #                                                         3, 4, bottom_right, 4, 4, row, col)
+        # self.device_positions = self.calculate_device_positions((1.4804, 1.7833), 1, 1, (1.2179, 1.7833),
+        #                                                         1, 2, (1.2178, 1.6482), 2, 2, row, col)
 
         # 创建新的图形和坐标轴
         self.fig, self.ax = plt.subplots()
@@ -272,93 +260,6 @@ class locationClass(QMainWindow, Ui_MainWindow):
 
         plt.show()
 
-    #
-    #
-    # def CreateMap(self):
-    #     # 关闭之前打开的图形窗口（如果存在）
-    #     if hasattr(self, 'fig') and self.fig is not None:
-    #         plt.close(self.fig)
-    #         self.fig = None  # 显式释放资源
-    #
-    #     # 用户输入的参数
-    #     top_left = (-0.3835, -2.2729)
-    #     top_right = (-0.6593, -2.2734)
-    #     bottom_right = (-0.6587, -2.4062)
-    #     row = 4
-    #     col = 4
-    #
-    #     self.device_positions = self.calculate_device_positions(top_left, 3, 3, top_right,
-    #                                                             3, 4, bottom_right, 4, 4, row, col)
-    #
-    #     # 创建新的图形和坐标轴 - 使用Qt兼容的方式
-    #     self.fig = Figure()
-    #     self.ax = self.fig.add_subplot(111)
-    #
-    #     # 修改后（将标签移到坐标轴外）
-    #     info_text = self.ax.text(
-    #         -0.36, 1.05,  # x负方向偏移25%，y正方向偏移5%
-    #         'Status: Ready\n(0.00, 0.00)',
-    #         transform=self.ax.transAxes,  # 保持坐标轴坐标系
-    #         verticalalignment='top',
-    #         bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8),
-    #         fontsize=9,
-    #         clip_on=False  # 关键！关闭裁剪限制
-    #     )
-    #     self.ax.set_xlim(4, -4)
-    #     self.ax.set_ylim(-4, 4)
-    #     self.ax.set_aspect('equal')
-    #
-    #     # 绘制设备点
-    #     device_scatter = self.ax.scatter(
-    #         [pos[0] for pos in self.device_positions],
-    #         [pos[1] for pos in self.device_positions],
-    #         color='blue', label='设备'
-    #     )
-    #
-    #     # 绘制探针点
-    #     probe_point, = self.ax.plot([], [], 'ro', label='探针')
-    #
-    #     # 创建Qt画布并嵌入到QWidget中
-    #     if hasattr(self, 'canvas'):
-    #         # 如果已有画布，先移除
-    #         self.canvas.setParent(None)
-    #
-    #     self.canvas = FigureCanvas(self.fig)
-    #
-    #     # 假设你的QWidget叫mapWidget（请根据实际情况修改）
-    #     self.mapWidget.layout().addWidget(self.canvas)
-    #     self.canvas.draw()
-    #
-    #     # 使用动画API替代线程
-    #     def animate(_):
-    #         try:
-    #             # 更新探针位置
-    #             probe_point.set_data([locationClass.locationX], [locationClass.locationY])
-    #
-    #             # 更新信息文本
-    #             info_text.set_text('Time: %s\nX: %.4f\nY: %.4f' % (
-    #                 datetime.now().strftime("%H:%M:%S"),
-    #                 locationClass.locationX,
-    #                 locationClass.locationY
-    #             ))
-    #
-    #             # 请求重绘
-    #             self.canvas.draw_idle()
-    #         except Exception as e:
-    #             print(f"更新异常: {e}")
-    #             return
-    #
-    #     # 创建动画对象
-    #     self.ani = animation.FuncAnimation(
-    #         self.fig,
-    #         animate,
-    #         interval=2000,  # 2秒间隔
-    #         cache_frame_data=False
-    #     )
-    #
-    #     # 绑定鼠标点击事件
-    #     self.canvas.mpl_connect('button_press_event', self.on_click)
-
 
 
     # 遍历设备位置，依次移动探针 从头开始测试所有的探针
@@ -373,9 +274,16 @@ class locationClass(QMainWindow, Ui_MainWindow):
 
                 target_x, target_y = self.device_positions[i]
                 logger.log(f'探针已经移动移动到目标点: x={target_x}, y={target_y}，准备模板匹配移动')
-                move_to_target(target_x, target_y)
+                move_to_target(target_x, target_y,self.indicator)
                 time.sleep(2)
-                self.mainpage1.match_and_move()
+
+                #这里的template_error如果是true，说明模板匹配有问题，这个点就直接跳过，不匹配了
+                template_error = self.mainpage1.match_and_move()
+                if template_error:
+                    logger.log(f'该点模板匹配失败: x={target_x}, y={target_y}，跳过当前点的处理')
+                    continue
+
+
                 locationClass.locationX, locationClass.locationY,_ = getPosition()
                 time.sleep(1)  # 等待 1 秒，确保探针稳定
 
@@ -391,7 +299,12 @@ class locationClass(QMainWindow, Ui_MainWindow):
                     keithley.source_voltage = 0.1
 
                     self.PushBack(True)
-                    self.mainpage1.match_and_move()
+                    template_error = self.mainpage1.match_and_move()
+                    if template_error:
+                        logger.log(f'该点模板匹配失败: x={target_x}, y={target_y}，跳过当前点的处理')
+                        self.PullBack()
+                        continue
+
                     time.sleep(0.5)  # 等待 1 秒，确保探针稳定
 
                     current = keithley.current
@@ -405,23 +318,6 @@ class locationClass(QMainWindow, Ui_MainWindow):
 
                         #执行IU计算
                         self.mainpage1.CalIU()
-                        # run_script = self.lineEdit_Scripts.text()
-                        # if run_script == '':
-                        #     run_script = "./jiaoben.py"
-                        #
-                        # save_script = self.lineEdit_SaveResult.text()
-                        # if save_script == '':
-                        #     save_script = 'D:\\lzg\\data\\' + time.strftime("save_%Y-%m-%d_%H-%M-%S") + '\\IV\\'
-                        #
-                        # result = subprocess.run(
-                        #     [sys.executable, run_script, save_script],
-                        #     capture_output=True,
-                        #     text=True,
-                        #     check=True,  # 如果返回非零会抛出异常
-                        #     encoding='utf-8',  # 明确指定编码
-                        # )
-                        # logger.log("当前时刻测量成功")
-
                         d = bytes.fromhex('A0 01 01 A2')  # 打开
                         RelayConnectionThread.anc.write(d)
                         time.sleep(1)
@@ -611,7 +507,7 @@ class locationClass(QMainWindow, Ui_MainWindow):
         nearest_index = self.find_nearest_index(click_x, click_y)
         target_x, target_y = self.device_positions[nearest_index]
         with ThreadPoolExecutor() as executor:
-            future = executor.submit(move_to_target, target_x, target_y)
+            future = executor.submit(move_to_target, target_x, target_y,self.indicator)
             locationClass.locationX,locationClass.locationY = future.result()  # 获取运行结果
             future.add_done_callback(self.on_move_complete)
 

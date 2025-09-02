@@ -280,14 +280,11 @@ def match_device_templates(video):
     except:
         xdia, ydia = 0, 0
 
-
-
     # 灰度转换
     video_gray = cv2.cvtColor(video, cv2.COLOR_BGR2GRAY) if len(video.shape) == 3 else video
     template_gray = cv2.cvtColor(templateDevice, cv2.COLOR_BGR2GRAY) if len(
         templateDevice.shape) == 3 else templateDevice
 
-    # 记录原始模板尺寸（用于后续偏移量计算）
     original_template_h, original_template_w = template_gray.shape
 
     # 多尺度匹配
@@ -306,52 +303,74 @@ def match_device_templates(video):
 
         # 执行匹配
         res = cv2.matchTemplate(video_gray, template_resized, cv2.TM_CCOEFF_NORMED)
-        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
 
-        # 动态阈值
-        threshold = max(0.8, max_val * 0.8)
+        # 更严格的阈值设置
+        threshold = max(0.85, 0.8)  # 使用固定高阈值或更智能的动态阈值
         locs = np.where(res >= threshold)
 
+        # 只保留每个局部区域的最佳匹配
+        temp_matches = []
         for pt in zip(*locs[::-1]):
-            all_matches.append({
+            temp_matches.append({
                 'pt': pt,
                 'size': (template_resized.shape[1], template_resized.shape[0]),
                 'score': res[pt[1], pt[0]],
                 'scale': scale
             })
 
-    # 非极大值抑制
+        # 对当前尺度的匹配进行局部NMS
+        temp_matches.sort(key=lambda x: x['score'], reverse=True)
+        filtered_matches = []
+        for match in temp_matches:
+            pt = match['pt']
+            w, h = match['size']
+            center_x = pt[0] + w // 2
+            center_y = pt[1] + h // 2
+
+            # 更严格的重叠检查
+            overlap = False
+            for selected in filtered_matches:
+                s_pt = selected['pt']
+                s_w, s_h = selected['size']
+                s_center_x = s_pt[0] + s_w // 2
+                s_center_y = s_pt[1] + s_h // 2
+
+                # 检查中心点距离和区域重叠
+                if (abs(center_x - s_center_x) < max(w, s_w) // 2 and
+                        abs(center_y - s_center_y) < max(h, s_h) // 2):
+                    overlap = True
+                    break
+
+            if not overlap:
+                filtered_matches.append(match)
+
+        all_matches.extend(filtered_matches)
+
+    # 全局非极大值抑制
     all_matches.sort(key=lambda x: x['score'], reverse=True)
     final_locations = []
 
     for match in all_matches:
         pt = match['pt']
         w, h = match['size']
+        center_x = pt[0] + w // 2 + xdia
+        center_y = pt[1] + h // 2 + ydia
 
-        # 计算当前匹配的中心点（未加偏移）
-        center_x = pt[0] + w // 2
-        center_y = pt[1] + h // 2
-
-        # 检查是否与已选区域重叠
+        # 更严格的重叠检查
         overlap = False
         for selected in final_locations:
-            s_center_x, s_center_y, s_w, s_h = selected
-            if (abs(center_x - s_center_x) < (w + s_w) // 2 and
-                    abs(center_y - s_center_y) < (h + s_h) // 2):
+            s_x, s_y, s_w, s_h = selected
+            s_center_x = s_x + s_w // 2
+            s_center_y = s_y + s_h // 2
+
+            # 使用更小的重叠阈值
+            if (abs(center_x - s_center_x) < min(w, s_w) // 2 and
+                    abs(center_y - s_center_y) < min(h, s_h) // 2):
                 overlap = True
                 break
 
         if not overlap:
-            # 计算缩放后的实际偏移量（按比例缩放）
-
-            # 最终目标点 = 匹配中心 + 缩放后的偏移量
-            target_x = center_x + xdia
-            target_y = center_y + ydia
-
-            final_locations.append((target_x, target_y, w, h))
-
-            # 可视化
-            # cv2.rectangle(video, pt, (pt[0] + w, pt[1] + h), (0, 255, 0), 2)
-            cv2.circle(video, (target_x, target_y), 4, (0, 255, 255), -1)
+            final_locations.append((center_x, center_y, w, h))
+            cv2.circle(video, (center_x, center_y), 4, (0, 255, 255), -1)
 
     return [(x, y) for x, y, _, _ in final_locations]

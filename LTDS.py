@@ -6,9 +6,9 @@ import MainPage
 from ANC300 import Positioner
 import math
 
-from QTneedle.QTneedle.Position import getPosition
-from QTneedle.QTneedle.SerialLock import SerialLock
-from QTneedle.QTneedle.locationClass import locationClass
+from QTneedle.QTneedle.QTneedle.Position import getPosition
+from QTneedle.QTneedle.QTneedle.SerialLock import SerialLock
+from QTneedle.QTneedle.QTneedle.locationClass import locationClass
 from SerialPage import NeedelConnectionThread, SIM928ConnectionThread
 from StopClass import StopClass
 

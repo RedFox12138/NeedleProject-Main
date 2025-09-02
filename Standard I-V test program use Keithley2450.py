@@ -16,7 +16,7 @@ from pymeasure.instruments.keithley import Keithley2450
 
 
 def main():
-    keithley = Keithley2450("USB0::0x05E6::0x2450::04595034::0::INSTR") # keithley2450地址
+    keithley = Keithley2450("USB0::0x05E6::0x2450::04595032::0::INSTR") # keithley2450地址
     keithley.reset() #keithley2450初始化sss
     time.sleep(0.1)
 
@@ -28,7 +28,7 @@ def main():
     Device_no     = '1'           # 器件pad编号
 
     V_max  = 1.3# IV扫描最大电压，单位：V
-    V_step = 0.05  # 电压步进
+    V_step = 0.3  # 电压步进
     R_bias = 98500  # 偏置电阻大小
 
     #=================================================================================================
@@ -82,27 +82,8 @@ def main():
         print("已停止实时观测，关闭源表...")
         keithley.shutdown()
 
-        # plt.plot(V, I, 'b.')
-        # plt.grid(True)
-        # plt.xlabel('Voltage / V')
-        # plt.ylabel('Current / uA')
-        # plt.show()
-        # time.sleep(0.1)
-
-                     # Ramps the current to 0 mA and disables output
-
-
-
-    #=================================================================================================================
-    #保存文件为matlab格式
-    # if __name__ == "__main__":
 
     time_str = datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')
-
-    # datapath = 'D:\\pyy\\date\\'              # 数据文件夹目录
-    # datapath = sys.argv[1]
-
-
     datapath = sys.argv[1]
     if not os.path.exists(datapath) :
         os.makedirs (datapath)

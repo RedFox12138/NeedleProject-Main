@@ -1,6 +1,6 @@
 import sys
 
-from QTneedle.QTneedle.locationClass import locationClass
+from QTneedle.QTneedle.QTneedle.locationClass import locationClass
 from StopClass import StopClass
 
 # 定义你要添加的库文件路径
@@ -77,7 +77,7 @@ class UsingTest(QMainWindow, Ui_MainWindow):
                                    self.Button_PushLocation,self.Button_PullLocation,
                                    self.Button_PushBack,self.Button_PullBack,
                                    self.lineEdit_leftTopX,self.lineEdit_leftTopY,self.lineEdit_rightTopX,self.lineEdit_rightTopY,self.lineEdit_rightBottomX,self.lineEdit_rightBottomY,
-                                   self.Checkbox_DontTest,self.widget_map,self.tabWidget)
+                                   self.Checkbox_DontTest,self.widget_map,self.tabWidget,self.label_light)
 
 # 程序入口文件
 if __name__ == '__main__':

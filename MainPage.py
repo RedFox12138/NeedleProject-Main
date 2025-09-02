@@ -2,8 +2,8 @@ import os
 import subprocess
 import sys
 
-from QTneedle.QTneedle.DailyLogger import DailyLogger
-from QTneedle0618.QTneedle.QTneedle.Load_Mat import load_and_plot_mat_signals
+from QTneedle.QTneedle.QTneedle.DailyLogger import DailyLogger
+from QTneedle.QTneedle.QTneedle.Load_Mat import load_and_plot_latest_mat_signals
 from StopClass import StopClass
 
 # 定义你要添加的库文件路径
@@ -89,22 +89,8 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                  lineEdit_microSetXdis, lineEdit_microSetYdis,lineEdit_Scripts,
                  plot_Label):
         super().__init__()
-        #这个标签用于显示每一次测量的绘图结果，这里先放在这里，用于测试
+
         self.plot_Label = plot_Label
-        pixmap = load_and_plot_mat_signals("D:\PyProject\QTneedle0618\QTneedle\QTneedle\LB123_1_Vmax_1.3_Vstep_0.05_R_bias_98500_2025-06-11_154131.mat")
-        if pixmap:
-            # 调整图像大小以适应label
-            scaled_pixmap = pixmap.scaled(
-                self.plot_Label.width() - 20,
-                self.plot_Label.height() - 20,
-                Qt.KeepAspectRatio,
-                Qt.SmoothTransformation
-            )
-            self.plot_Label.setPixmap(scaled_pixmap)
-        else:
-            self.plot_Label.setText("加载失败或未找到信号")
-
-
 
         self.lineEdit_Scripts = lineEdit_Scripts
 
@@ -357,19 +343,32 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
     def match_and_move(self):
         # 获取当前帧并进行模板匹配
-        video = self.update_frame()  # 这是一个假设函数，你需要从摄像头获取当前帧
+        video = self.update_frame()
         matched_centers = match_device_templates(video)
 
-        if matched_centers:
-            min_distance = float('inf')
-            matched_centers = match_device_templates(video)
-            probe_x, probe_y = self.get_probe_position()
-            for center_x, center_y in matched_centers:
-                distance = pow(abs(center_x - probe_x), 2) + pow(abs(center_y - probe_y), 2)
-                if distance < min_distance:
-                    min_distance = distance
-                    closet = [center_x, center_y]
-            self.move_probe_to_target(closet[0], closet[1])
+        # 如果没有匹配点，直接返回True
+        if not matched_centers:
+            return True
+
+        min_distance = float('inf')
+        probe_x, probe_y = self.get_probe_position()
+        closest = None  # 显式初始化closest变量
+
+        for center_x, center_y in matched_centers:
+            distance = pow(abs(center_x - probe_x), 2) + pow(abs(center_y - probe_y), 2)
+            if distance < min_distance:
+                min_distance = distance
+                closest = [center_x, center_y]
+
+        # 确保closest已经被赋值
+        if closest is None:
+            return True
+
+        if min_distance <= 100:
+            self.move_probe_to_target(closest[0], closest[1])
+            return False
+        else:
+            return True
 
 
 
@@ -712,6 +711,21 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                 check=True,  # 如果返回非零会抛出异常
                 encoding='utf-8',  # 明确指定编码
             )
+
+            pixmap = load_and_plot_latest_mat_signals(save_script)
+            if pixmap:
+                # 调整图像大小以适应label
+                scaled_pixmap = pixmap.scaled(
+                    self.plot_Label.width() - 20,
+                    self.plot_Label.height() - 20,
+                    Qt.KeepAspectRatio,
+                    Qt.SmoothTransformation
+                )
+                self.plot_Label.setPixmap(scaled_pixmap)
+            else:
+                self.plot_Label.setText("加载失败或未找到信号")
+
+
             logger.log(result.stdout)
             logger.log("当前时刻测量成功")
 

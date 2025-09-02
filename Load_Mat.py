@@ -3,11 +3,33 @@ from PyQt5.QtGui import QImage, QPixmap
 from scipy.io import loadmat
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg
+import os
+import glob
 
 
-def load_and_plot_mat_signals(file_path):
-    """加载MAT文件并绘制四个信号的波形图"""
+def find_latest_mat_file(folder_path):
+    """查找指定文件夹中最新的.mat文件"""
+    # 获取所有.mat文件
+    mat_files = glob.glob(os.path.join(folder_path, '*.mat'))
+
+    if not mat_files:
+        print("文件夹中没有找到.mat文件")
+        return None
+
+    # 按修改时间排序，获取最新的文件
+    latest_file = max(mat_files, key=os.path.getmtime)
+    print(f"找到最新的MAT文件: {latest_file}")
+    return latest_file
+
+
+def load_and_plot_latest_mat_signals(folder_path):
+    """加载最新MAT文件并绘制四个信号的波形图"""
     try:
+        # 查找最新的.mat文件
+        file_path = find_latest_mat_file(folder_path)
+        if file_path is None:
+            return None
+
         # 加载MAT文件
         data = loadmat(file_path)
 
@@ -62,7 +84,7 @@ def load_and_plot_mat_signals(file_path):
         if num_signals == 1:
             axes = [axes]  # 确保axes是列表形式
 
-        fig.suptitle(f'MAT文件信号波形 - {file_path.split("/")[-1]}', fontsize=12)
+        fig.suptitle(f'MAT文件信号波形 - {os.path.basename(file_path)}', fontsize=12)
 
         # 绘制每个信号
         for i, (name, signal) in enumerate(signals.items()):

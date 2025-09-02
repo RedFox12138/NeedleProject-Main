@@ -93,7 +93,7 @@ QTabWidget::pane {
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <property name="iconSize">
      <size>
@@ -1042,19 +1042,6 @@ QLineEdit:disabled {
       </property>
       <property name="text">
        <string>探针电压</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="plot_Label">
-      <property name="geometry">
-       <rect>
-        <x>540</x>
-        <y>80</y>
-        <width>351</width>
-        <height>421</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>TextLabel</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_needle1_3">
@@ -2137,6 +2124,19 @@ QLineEdit:disabled {
         <height>731</height>
        </rect>
       </property>
+      <widget class="QLabel" name="plot_Label">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>30</y>
+         <width>351</width>
+         <height>421</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_2">
