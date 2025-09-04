@@ -129,6 +129,7 @@ def move_to_Z(z,indicatorLight,Voltage_flag=False):
 
 def move(axis, distance, flag,Z_adjust=False):
     ser4 = NeedelConnectionThread.anc
+    move_time = distance/4000 #初始为0.3
 
     # X/Y轴保持原始代码（固定频率1000Hz，固定时间0.3秒）
     if axis == '-X':
@@ -137,28 +138,25 @@ def move(axis, distance, flag,Z_adjust=False):
         ser4.write('[volt:+200V] '.encode())
         ser4.write('[freq:+1000Hz]'.encode())
         ser4.write(('[+:0000' + str(distance) + '] ').encode())
-        move_time = 0.3
+
     elif axis == 'X':
         ser4.write('[ch3:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
         ser4.write('[volt:+200V] '.encode())
         ser4.write('[freq:+1000Hz]'.encode())
         ser4.write(('[-:0000' + str(distance) + '] ').encode())
-        move_time = 0.3
     elif axis == '-Y':
         ser4.write('[ch2:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
         ser4.write('[volt:+200V] '.encode())
         ser4.write('[freq:+1000Hz]'.encode())
         ser4.write(('[+:0000' + str(distance) + '] ').encode())
-        move_time = 0.3
     elif axis == 'Y':
         ser4.write('[ch2:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
         ser4.write('[volt:+200V] '.encode())
         ser4.write('[freq:+1000Hz]'.encode())
         ser4.write(('[-:0000' + str(distance) + '] ').encode())
-        move_time = 0.3
 
     # Z轴保持微调和非微调功能
     elif axis == 'Z':

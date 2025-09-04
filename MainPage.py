@@ -359,7 +359,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                 min_distance = distance
                 closest = [center_x, center_y]
 
-        if min_distance <= 500:
+        if min_distance <= 2000:
             self.move_probe_to_target(closest[0], closest[1])
             return False
         else:
@@ -820,7 +820,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                 integral_limit = 40
                 output_limit = 70
                 dead_zone = 1.5  # 死区阈值
-                stop_threshold = 2.5  # 停止阈值（更小）
+                stop_threshold = 50  # 停止阈值（更小）
 
                 # PID状态变量
                 integral_x, integral_y = 0, 0

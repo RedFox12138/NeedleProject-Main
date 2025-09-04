@@ -193,72 +193,84 @@ class locationClass(QMainWindow, Ui_MainWindow):
             x3 = int(self.lineEdit_rightBottomX.text())
             y3 = int(self.lineEdit_rightBottomY.text())
 
-            self.device_positions = self.calculate_device_positions(self.location1,x1,y1,
-                                                                    self.location2,x2,y2,
-                                                                    self.location3,x3,y3,
-                                                                    row,col)
+            self.device_positions = self.calculate_device_positions(
+                self.location1, x1, y1,
+                self.location2, x2, y2,
+                self.location3, x3, y3,
+                row, col
+            )
 
-        #
-        # self.device_positions = self.calculate_device_positions((1.4804, 1.7833), 1, 1, (1.2179, 1.7833),
-        #                                                         1, 2, (1.2178, 1.6482), 2, 2, row, col)
+            # 创建新的图形和坐标轴
+            self.fig, self.ax = plt.subplots()
 
-        # 创建新的图形和坐标轴
-        self.fig, self.ax = plt.subplots()
+            # 获取所有设备的坐标
+            x_coords = [pos[0] for pos in self.device_positions]
+            y_coords = [pos[1] for pos in self.device_positions]
 
-        # 修改后（将标签移到坐标轴外）
-        info_text = self.ax.text(
-            -0.36, 1.05,  # x负方向偏移25%，y正方向偏移5%
-            'Status: Ready\n(0.00, 0.00)',
-            transform=self.ax.transAxes,  # 保持坐标轴坐标系
-            verticalalignment='top',
-            bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8),
-            fontsize=9,
-            clip_on=False  # 关键！关闭裁剪限制
-        )
-        self.ax.set_xlim(4, -4)
-        self.ax.set_ylim(-4, 4)
-        self.ax.set_aspect('equal')
+            # 计算坐标范围（自适应）
+            x_min, x_max = min(x_coords), max(x_coords)
+            y_min, y_max = min(y_coords), max(y_coords)
 
-        # 绘制设备点
-        device_scatter = self.ax.scatter(
-            [pos[0] for pos in self.device_positions],
-            [pos[1] for pos in self.device_positions],
-            color='blue', label='设备'
-        )
+            # 添加一些边距（例如10%的额外空间）
+            margin_x = (x_max - x_min) * 0.1
+            margin_y = (y_max - y_min) * 0.1
 
-        # 绘制探针点
-        probe_point, = self.ax.plot([], [], 'ro', label='探针')
+            # 设置坐标轴范围（自适应）
+            self.ax.set_xlim(x_min - margin_x, x_max + margin_x)
+            self.ax.set_ylim(y_min - margin_y, y_max + margin_y)
+            self.ax.set_aspect('equal')  # 保持比例一致
+            self.ax.invert_xaxis()
+            # 修改后（将标签移到坐标轴外）
+            info_text = self.ax.text(
+                -0.36, 1.05,  # x负方向偏移25%，y正方向偏移5%
+                'Status: Ready\n(0.00, 0.00)',
+                transform=self.ax.transAxes,  # 保持坐标轴坐标系
+                verticalalignment='top',
+                bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8),
+                fontsize=9,
+                clip_on=False  # 关键！关闭裁剪限制
+            )
 
-        # 使用动画API替代线程
-        def animate(_):
-            try:
-                # 更新探针位置
-                probe_point.set_data([locationClass.locationX], [locationClass.locationY])
+            # 绘制设备点
+            device_scatter = self.ax.scatter(
+                x_coords, y_coords,
+                color='blue', label='设备'
+            )
 
-                # 更新信息文本
-                info_text.set_text('Time: %s\nX: %.4f\nY: %.4f' % (
-                    datetime.now().strftime("%H:%M:%S"),
-                    locationClass.locationX,
-                    locationClass.locationY
-                ))
+            # 绘制探针点
+            probe_point, = self.ax.plot([], [], 'ro', label='探针')
 
-                # 请求重绘（线程安全方式）
-                self.fig.canvas.draw_idle()
-            except Exception as e:
-                print(f"更新异常: {e}")
-                return
+            # 使用动画API替代线程
+            def animate(_):
+                try:
+                    # 更新探针位置
+                    probe_point.set_data([locationClass.locationX], [locationClass.locationY])
 
-        # 创建动画对象
-        self.ani = animation.FuncAnimation(
-            self.fig,
-            animate,
-            interval=2000,  # 2秒间隔
-            cache_frame_data=False
-        )
-        # 绑定鼠标点击事件
-        self.fig.canvas.mpl_connect('button_press_event', self.on_click)
+                    # 更新信息文本
+                    info_text.set_text('Time: %s\nX: %.4f\nY: %.4f' % (
+                        datetime.now().strftime("%H:%M:%S"),
+                        locationClass.locationX,
+                        locationClass.locationY
+                    ))
 
-        plt.show()
+                    # 请求重绘（线程安全方式）
+                    self.fig.canvas.draw_idle()
+                except Exception as e:
+                    print(f"更新异常: {e}")
+                    return
+
+            # 创建动画对象
+            self.ani = animation.FuncAnimation(
+                self.fig,
+                animate,
+                interval=2000,  # 2秒间隔
+                cache_frame_data=False
+            )
+
+            # 绑定鼠标点击事件
+            self.fig.canvas.mpl_connect('button_press_event', self.on_click)
+
+            plt.show()
 
 
 
@@ -275,7 +287,7 @@ class locationClass(QMainWindow, Ui_MainWindow):
                 target_x, target_y = self.device_positions[i]
                 logger.log(f'探针已经移动移动到目标点: x={target_x}, y={target_y}，准备模板匹配移动')
                 move_to_target(target_x, target_y,self.indicator)
-                time.sleep(2)
+                time.sleep(4)
 
                 #这里的template_error如果是true，说明模板匹配有问题，这个点就直接跳过，不匹配了
                 template_error = self.mainpage1.match_and_move()
@@ -425,32 +437,19 @@ class locationClass(QMainWindow, Ui_MainWindow):
     #     # 转置网格点矩阵，然后展平，实现竖向编号
     #     return list(zip(xx.T.flatten(), yy.T.flatten()))
 
+    import numpy as np
+
     def calculate_device_positions(self,
                                    inner_top_left, inner_top_left_row, inner_top_left_col,
                                    inner_top_right, inner_top_right_row, inner_top_right_col,
                                    inner_bottom_right, inner_bottom_right_row, inner_bottom_right_col,
                                    outer_rows, outer_cols):
         """
-        计算扩展矩阵的点阵列（使用1-based行列索引），采用S型扫描模式
-
-        参数:
-        - inner_top_left: 内部矩阵左上角坐标 (x, y)
-        - inner_top_left_row: 左上角在外部矩阵中的行号 (1-based)
-        - inner_top_left_col: 左上角在外部矩阵中的列号 (1-based)
-        - inner_top_right: 内部矩阵右上角坐标 (x, y)
-        - inner_top_right_row: 右上角在外部矩阵中的行号 (1-based)
-        - inner_top_right_col: 右上角在外部矩阵中的列号 (1-based)
-        - inner_bottom_right: 内部矩阵右下角坐标 (x, y)
-        - inner_bottom_right_row: 右下角在外部矩阵中的行号 (1-based)
-        - inner_bottom_right_col: 右下角在外部矩阵中的列号 (1-based)
-        - outer_rows: 外部矩阵总行数
-        - outer_cols: 外部矩阵总列数
-
-        返回:
-        - 扩展矩阵所有点的坐标列表 [(x1, y1), (x2, y2), ...]，按S型扫描顺序排列
+        计算设备坐标（适配X轴反转 + S型扫描顺序）
+        列顺序：从右到左（最右侧为第1列）
+        行顺序：奇数列（从右数）自上而下，偶数列自下而上
         """
-
-        # 将1-based索引转换为0-based（用于内部计算）
+        # 转换为0-based索引
         tl_row = inner_top_left_row - 1
         tl_col = inner_top_left_col - 1
         tr_row = inner_top_right_row - 1
@@ -458,49 +457,39 @@ class locationClass(QMainWindow, Ui_MainWindow):
         br_row = inner_bottom_right_row - 1
         br_col = inner_bottom_right_col - 1
 
-        # 计算水平和垂直方向的单位间距
-        # 水平间距 (基于右上角和左上角的差异)
+        # 计算单位间距（允许dx为负）
         dx = (inner_top_right[0] - inner_top_left[0]) / (tr_col - tl_col) if (tr_col != tl_col) else 0
-        # 垂直间距 (基于右下角和右上角的差异)
         dy = (inner_bottom_right[1] - inner_top_right[1]) / (br_row - tr_row) if (br_row != tr_row) else 0
 
         # 计算外部矩阵四个角的坐标
-        # 左上角
         outer_top_left = (
             inner_top_left[0] - dx * tl_col,
             inner_top_left[1] - dy * tl_row
         )
-
-        # 右上角
         outer_top_right = (
             inner_top_right[0] + dx * (outer_cols - 1 - tr_col),
             inner_top_right[1] - dy * tr_row
         )
-
-        # 右下角
         outer_bottom_right = (
-            inner_bottom_right[0] + dx * (outer_cols - 1 - br_col),
+            outer_top_right[0],  # X与右上角对齐
             inner_bottom_right[1] + dy * (outer_rows - 1 - br_row)
         )
 
-        # 生成扩展矩阵的点阵列
-        x = np.linspace(outer_top_left[0], outer_top_right[0], outer_cols)
+        # 生成网格（X从右到左：start > stop）
+        x = np.linspace(outer_top_right[0], outer_top_left[0], outer_cols)
         y = np.linspace(outer_top_left[1], outer_bottom_right[1], outer_rows)
-        xx, yy = np.meshgrid(x, y)
+        xx, yy = np.meshgrid(x, y, indexing='xy')
 
-        # 创建S型扫描顺序的点列表
+        # S型扫描顺序（从右到左的列，奇数列上→下，偶数列下→上）
         points = []
-        for col in range(outer_cols):
-            if col % 2 == 0:  # 偶数列（从0开始计数），从上到下
-                for row in range(outer_rows):
-                    points.append((xx[row, col], yy[row, col]))
-            else:  # 奇数列，从下到上
-                for row in range(outer_rows - 1, -1, -1):
-                    points.append((xx[row, col], yy[row, col]))
+        for col_idx in range(outer_cols):  # col_idx=0是最右侧列
+            col = outer_cols - 1 - col_idx  # 转换为网格索引
+            if col_idx % 2 == 0:  # 奇数列（从右数）：自上而下
+                points.extend([(xx[row, col], yy[row, col]) for row in range(outer_rows)])
+            else:  # 偶数列：自下而上
+                points.extend([(xx[row, col], yy[row, col]) for row in reversed(range(outer_rows))])
 
         return points
-
-
     # 鼠标点击事件处理函数
     def on_click(self,event):
         click_x, click_y = event.xdata, event.ydata
@@ -515,6 +504,7 @@ class locationClass(QMainWindow, Ui_MainWindow):
     def on_move_complete(self,future):
         # 当 move_to_target 完成后执行的回调函数
         locationClass.locationX, locationClass.locationY = future.result()
+        time.sleep(4)
         self.mainpage1.match_and_move()
 
     # 找到距离当前位置最近的点的索引
