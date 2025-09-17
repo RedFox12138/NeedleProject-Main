@@ -1,7 +1,7 @@
 import time
 
 
-from QTneedle.QTneedle.QTneedle.SerialLock import SerialLock
+from QTneedle.QTneedle.SerialLock import SerialLock
 from SerialPage import NeedelConnectionThread, SIM928ConnectionThread
 import sys
 
@@ -68,7 +68,7 @@ def getPosition(Z_flag=False,Only_XY=False):
 def move_to_Z(z,indicatorLight,Voltage_flag=False):
     with SerialLock.serial_lock:
         _, _, z_current = getPosition(Z_flag=True)
-    from QTneedle.QTneedle.QTneedle import MainPage
+    from QTneedle.QTneedle import MainPage
     indicatorLight.setStyleSheet(MainPage.MainPage1.get_stylesheet(True))
     # 定义不同阶段的阈值和参数
     FAR_THRESHOLD = 0.02  # 20微米以上为远距离移动
@@ -129,40 +129,50 @@ def move_to_Z(z,indicatorLight,Voltage_flag=False):
 
 def move(axis, distance, flag,Z_adjust=False):
     ser4 = NeedelConnectionThread.anc
-    move_time = distance/4000 #初始为0.3
+    move_time = distance/10000 #初始为0.3
+
+    xyForLowTemp = '1000'
+    xyForhighTemp = '300'
+    zForLowTemp = '1000'
+    zForhighTemp = '500'
+    frequencyXY = xyForhighTemp
+    frequencyZ = zForhighTemp
+
+    voltageForhighTemp = '150'
+    voltageForlowTemp = '200'
 
     # X/Y轴保持原始代码（固定频率1000Hz，固定时间0.3秒）
     if axis == '-X':
         ser4.write('[ch3:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
-        ser4.write('[volt:+200V] '.encode())
-        ser4.write('[freq:+1000Hz]'.encode())
+        ser4.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+        ser4.write(('[freq:+'+frequencyXY+'Hz]').encode())
         ser4.write(('[+:0000' + str(distance) + '] ').encode())
 
     elif axis == 'X':
         ser4.write('[ch3:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
-        ser4.write('[volt:+200V] '.encode())
-        ser4.write('[freq:+1000Hz]'.encode())
+        ser4.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+        ser4.write(('[freq:+'+frequencyXY+'Hz]').encode())
         ser4.write(('[-:0000' + str(distance) + '] ').encode())
     elif axis == '-Y':
         ser4.write('[ch2:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
-        ser4.write('[volt:+200V] '.encode())
-        ser4.write('[freq:+1000Hz]'.encode())
+        ser4.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+        ser4.write(('[freq:+'+frequencyXY+'Hz]').encode())
         ser4.write(('[+:0000' + str(distance) + '] ').encode())
     elif axis == 'Y':
         ser4.write('[ch2:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
-        ser4.write('[volt:+200V] '.encode())
-        ser4.write('[freq:+1000Hz]'.encode())
+        ser4.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+        ser4.write(('[freq:+'+frequencyXY+'Hz]').encode())
         ser4.write(('[-:0000' + str(distance) + '] ').encode())
 
     # Z轴保持微调和非微调功能
     elif axis == 'Z':
         ser4.write('[ch1:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
-        ser4.write('[volt:+200V] '.encode())
+        ser4.write(('[volt:+'+voltageForhighTemp+'V]').encode())
 
         # 根据flag决定频率（微调500Hz，非微调800Hz）
         freq = '+0500Hz' if Z_adjust else '+0800Hz'
@@ -178,7 +188,7 @@ def move(axis, distance, flag,Z_adjust=False):
     elif axis == '-Z':
         ser4.write('[ch1:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
-        ser4.write('[volt:+200V] '.encode())
+        ser4.write(('[volt:+'+voltageForhighTemp+'V]').encode())
 
         # 根据flag决定频率（微调500Hz，非微调800Hz）
         freq = '+0500Hz' if Z_adjust else '+0800Hz'
@@ -202,7 +212,7 @@ def move_to_target(x, y,indicatorLight):
     XY_k = 1000
     XY_k_2 = 10000
     step_per_unit = 0.06  # 假设每 0.06 单位对应 100 步
-    from QTneedle.QTneedle.QTneedle import MainPage
+    from QTneedle.QTneedle import MainPage
     indicatorLight.setStyleSheet(MainPage.MainPage1.get_stylesheet(True))
     with SerialLock.serial_lock:
         x_current, y_current,_ = getPosition(Only_XY=True)

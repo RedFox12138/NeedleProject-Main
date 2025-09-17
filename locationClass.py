@@ -7,10 +7,10 @@ import numpy as np
 from matplotlib import pyplot as plt, animation
 from PyQt5.QtCore import QTimer, Qt
 
-from QTneedle.QTneedle.QTneedle.DailyLogger import DailyLogger
-from QTneedle.QTneedle.QTneedle.Position import move_to_Z, getPosition, move_to_target
-from QTneedle.QTneedle.QTneedle.SerialLock import SerialLock
-from QTneedle.QTneedle.QTneedle.demo import Ui_MainWindow
+from QTneedle.QTneedle.DailyLogger import DailyLogger
+from QTneedle.QTneedle.Position import move_to_Z, getPosition, move_to_target
+from QTneedle.QTneedle.SerialLock import SerialLock
+from QTneedle.QTneedle.demo import Ui_MainWindow
 from SerialPage import SIM928ConnectionThread, RelayConnectionThread
 from StopClass import StopClass
 

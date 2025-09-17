@@ -1,3 +1,5 @@
+import os
+
 import cv2
 import numpy as np
 from functools import lru_cache
@@ -13,36 +15,34 @@ templateLight_size = (0, 0)
 
 # 缓存模板加载结果
 def load_templates():
-    """
-    预加载模板图像，避免在每次匹配时重复读取。
-    使用lru_cache确保只加载一次
-    """
     global templateNeedle, templateNeedle_size, templateDevice, templateDevice_size, templateLight, templateLight_size
+    # 定义模板路径和对应的全局变量
+    templates = {
+        'templateNeedle.png': ('templateNeedle', 'templateNeedle_size'),
+        'templatepad.png': ('templateDevice', 'templateDevice_size'),
+        'templateLight.png': ('templateLight', 'templateLight_size')
+    }
 
-    templateNeedle_path = 'templateNeedle.png'
-    templateDevice_path = 'templatepad.png'
-    templateLight_path = 'templateLight.png'
+    # 检查每个模板文件
+    for path, (template_var, size_var) in templates.items():
+        if os.path.exists(path):
+            current_mtime = os.path.getmtime(path)
 
-    # 预加载 templateNeedle
-    templateNeedle = cv2.imread(templateNeedle_path, cv2.IMREAD_COLOR)
-    if templateNeedle is not None:
-        templateNeedle_size = templateNeedle.shape[:2]
-    else:
-        print(f"Failed to load template image from {templateNeedle_path}")
-
-    # 预加载 templateLight
-    templateLight = cv2.imread(templateLight_path, cv2.IMREAD_COLOR)
-    if templateLight is not None:
-        templateLight_size = templateLight.shape[:2]
-    else:
-        print(f"Failed to load template image from {templateLight_path}")
-
-    # 预加载 templateDevice
-    templateDevice = cv2.imread(templateDevice_path, cv2.IMREAD_COLOR)
-    if templateDevice is not None:
-        templateDevice_size = templateDevice.shape[:2]
-    else:
-        print(f"Failed to load template image from {templateDevice_path}")
+            # 检查是否需要重新加载
+            cache_key = f"{template_var}_mtime"
+            if not hasattr(load_templates, cache_key) or getattr(load_templates, cache_key) != current_mtime:
+                # 文件发生变化或首次加载，重新读取
+                template_img = cv2.imread(path, cv2.IMREAD_COLOR)
+                if template_img is not None:
+                    globals()[template_var] = template_img
+                    globals()[size_var] = template_img.shape[:2]
+                    setattr(load_templates, cache_key, current_mtime)
+                    print(f"Loaded template: {path}")
+                else:
+                    print(f"Failed to load template image from {path}")
+            # else: 文件未变化，使用缓存中的模板
+        else:
+            print(f"Template file not found: {path}")
 
 
 def is_nearby_vectorized(centers_np, x, y, min_distance):
@@ -54,84 +54,6 @@ def is_nearby_vectorized(centers_np, x, y, min_distance):
         return False
     squared_distances = (centers_np[:, 0] - x) ** 2 + (centers_np[:, 1] - y) ** 2
     return np.any(squared_distances < min_distance ** 2)
-
-
-# def sharpen_image(image, method='usm', kernel_size=(3, 3), strength=1.5):
-#     """
-#     图像锐化处理（多种方法可选）
-#     优化: 提前定义常用kernel，减少重复计算
-#     """
-#     # 预定义常用kernel
-#     LAPLACIAN_KERNEL = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
-#
-#     if method == 'usm':
-#         # 非锐化掩蔽 (Unsharp Masking)
-#         blurred = cv2.GaussianBlur(image, kernel_size, 0)
-#         sharpened = cv2.addWeighted(image, 1.0 + strength, blurred, -strength, 0)
-#     elif method == 'laplacian':
-#         # 使用预定义的kernel
-#         sharpened = cv2.filter2D(image, -1, LAPLACIAN_KERNEL)
-#     elif method == 'sobel':
-#         # Sobel边缘增强
-#         sobelx = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=3)
-#         sobely = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=3)
-#         edges = cv2.magnitude(sobelx, sobely)
-#         sharpened = cv2.addWeighted(image, 1.0, edges, strength / 255.0, 0)
-#     elif method == 'gaussian':
-#         # 高斯差分锐化
-#         blur1 = cv2.GaussianBlur(image, kernel_size, 0)
-#         blur2 = cv2.GaussianBlur(image, (kernel_size[0] + 2, kernel_size[1] + 2), 0)
-#         sharpened = cv2.addWeighted(blur1, 1.5, blur2, -0.5, 0)
-#     else:
-#         sharpened = image.copy()
-#
-#     return np.clip(sharpened, 0, 255).astype(np.uint8)
-
-
-# def template(video, x_dia=0, y_dia=0, equipment=0, sharpen_params=None):
-#     """
-#     高性能模板匹配函数（强制灰度处理）
-#     返回值保持: (red_dot_x, red_dot_y, template_height, template_width)
-#     """
-#     global templateNeedle, templateLight
-#
-#     # 1. 强制转换为灰度图像（性能关键！）
-#     if len(video.shape) == 3:
-#         video_gray = cv2.cvtColor(video, cv2.COLOR_BGR2GRAY)
-#     else:
-#         video_gray = video
-#
-#     # 2. 获取模板并灰度化
-#     template_img = templateLight if equipment else templateNeedle
-#     if template_img is None:
-#         return None, None, 0, 0
-#
-#     if len(template_img.shape) == 3:
-#         template_gray = cv2.cvtColor(template_img, cv2.COLOR_BGR2GRAY)
-#     else:
-#         template_gray = template_img
-#
-#     # 3. 锐化预处理（可选）
-#     if sharpen_params:
-#         video_gray = sharpen_image(video_gray, **sharpen_params)
-#         template_gray = sharpen_image(template_gray, **sharpen_params)
-#
-#     # 4. 单次匹配（平衡精度和性能）
-#     res = cv2.matchTemplate(video_gray, template_gray, cv2.TM_CCOEFF_NORMED)
-#     _, max_val, _, max_loc = cv2.minMaxLoc(res)
-#
-#     # 5. 结果处理（保持原返回值格式）
-#     if max_val < 0.6:  # 置信度阈值
-#         return None, None, template_img.shape[0], template_img.shape[1]
-#
-#     # 计算红点位置（保持原有逻辑）
-#     h, w = template_gray.shape
-#     red_dot_x = max_loc[0] + w // 2 + x_dia
-#     red_dot_y = max_loc[1] + h // 2 + y_dia
-#
-#     cv2.circle(video, (red_dot_x, red_dot_y), 5, (0, 0, 255), -1)  # 绘制红点
-#     return red_dot_x, red_dot_y, template_img.shape[0], template_img.shape[1]
-
 
 import cv2
 import numpy as np

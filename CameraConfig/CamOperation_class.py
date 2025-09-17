@@ -333,53 +333,102 @@ class CameraOperation:
         stPayloadSize = MVCC_INTVALUE_EX()
         ret_temp = self.obj_cam.MV_CC_GetIntValueEx("PayloadSize", stPayloadSize)
         if ret_temp != MV_OK:
+            print(f"获取PayloadSize失败: {To_hex_str(ret_temp)}")
             return
         NeedBufSize = int(stPayloadSize.nCurValue)
+
+        # 连续错误计数器
+        consecutive_errors = 0
+        max_consecutive_errors = 10  # 最大连续错误次数
+
         while True:
-            if self.buf_grab_image_size < NeedBufSize:
-                self.buf_grab_image = (c_ubyte * NeedBufSize)()
-                self.buf_grab_image_size = NeedBufSize
+            try:
+                if self.buf_grab_image_size < NeedBufSize:
+                    self.buf_grab_image = (c_ubyte * NeedBufSize)()
+                    self.buf_grab_image_size = NeedBufSize
 
-            ret = self.obj_cam.MV_CC_GetOneFrameTimeout(self.buf_grab_image, self.buf_grab_image_size, stFrameInfo)
+                ret = self.obj_cam.MV_CC_GetOneFrameTimeout(self.buf_grab_image, self.buf_grab_image_size, stFrameInfo, 1000)
 
-            # ret = self.obj_cam.MV_CC_GetImageBuffer(stOutFrame, 1000)
-            if 0 == ret:
-                # 拷贝图像和图像信息
-                if self.buf_save_image is None:
-                    self.buf_save_image = (c_ubyte * stFrameInfo.nFrameLen)()
-                self.st_frame_info = stFrameInfo
+                if 0 == ret:
+                    # 重置错误计数器
+                    consecutive_errors = 0
 
-                # 获取缓存锁
-                self.buf_lock.acquire()
-                cdll.msvcrt.memcpy(byref(self.buf_save_image), self.buf_grab_image, self.st_frame_info.nFrameLen)
-                self.buf_lock.release()
+                    # 拷贝图像和图像信息
+                    if self.buf_save_image is None:
+                        self.buf_save_image = (c_ubyte * stFrameInfo.nFrameLen)()
+                    self.st_frame_info = stFrameInfo
 
-                # print("get one frame: Width[%d], Height[%d], nFrameNum[%d]"
-                #      % (self.st_frame_info.nWidth, self.st_frame_info.nHeight, self.st_frame_info.nFrameNum))
-                # 释放缓存
-                # self.obj_cam.MV_CC_FreeImageBuffer(stOutFrame)
-            else:
-                print("no data, ret = " + To_hex_str(ret))
-                continue
+                    # 获取缓存锁
+                    self.buf_lock.acquire()
+                    try:
+                        cdll.msvcrt.memcpy(byref(self.buf_save_image), self.buf_grab_image, self.st_frame_info.nFrameLen)
+                    finally:
+                        self.buf_lock.release()
 
-            # 使用Display接口显示图像
-            stDisplayParam = MV_DISPLAY_FRAME_INFO()
-            memset(byref(stDisplayParam), 0, sizeof(stDisplayParam))
-            stDisplayParam.hWnd = int(winHandle)
-            stDisplayParam.nWidth = self.st_frame_info.nWidth
-            stDisplayParam.nHeight = self.st_frame_info.nHeight
-            stDisplayParam.enPixelType = self.st_frame_info.enPixelType
-            stDisplayParam.pData = self.buf_save_image
-            stDisplayParam.nDataLen = self.st_frame_info.nFrameLen
-            self.obj_cam.MV_CC_DisplayOneFrame(stDisplayParam)
+                    # print("get one frame: Width[%d], Height[%d], nFrameNum[%d]"
+                    #      % (self.st_frame_info.nWidth, self.st_frame_info.nHeight, self.st_frame_info.nFrameNum))
 
-            # 是否退出
-            if self.b_exit:
-                if img_buff is not None:
-                    del img_buff
-                if self.buf_save_image is not None:
-                    del self.buf_save_image
-                break
+                else:
+                    # 处理错误情况
+                    consecutive_errors += 1
+                    error_code = To_hex_str(ret)
+                    print(f"获取帧失败, ret = {error_code}, 连续错误次数: {consecutive_errors}")
+
+                    # 根据错误类型进行不同处理
+                    if ret == 0x80000007:  # 超时错误
+                        print("相机获取帧超时")
+                        if consecutive_errors >= 5:
+                            print("连续超时次数过多，增加等待时间")
+                            time.sleep(0.5)  # 增加等待时间
+                    elif ret == 0x80000001:  # 相机断开连接
+                        print("相机可能已断开连接")
+                        break
+                    elif ret == 0x80000004:  # 资源不足
+                        print("系统资源不足")
+                        time.sleep(0.1)
+
+                    # 如果连续错误次数过多，停止线程避免系统崩溃
+                    if consecutive_errors >= max_consecutive_errors:
+                        print(f"连续错误次数达到{max_consecutive_errors}次，停止相机线程以防止系统崩溃")
+                        break
+
+                    # 短暂等待后继续
+                    time.sleep(0.05)
+                    continue
+
+                # 使用Display接口显示图像
+                if winHandle != 0:
+                    try:
+                        stDisplayParam = MV_DISPLAY_FRAME_INFO()
+                        memset(byref(stDisplayParam), 0, sizeof(stDisplayParam))
+                        stDisplayParam.hWnd = int(winHandle)
+                        stDisplayParam.nWidth = self.st_frame_info.nWidth
+                        stDisplayParam.nHeight = self.st_frame_info.nHeight
+                        stDisplayParam.enPixelType = self.st_frame_info.enPixelType
+                        stDisplayParam.pData = self.buf_save_image
+                        stDisplayParam.nDataLen = self.st_frame_info.nFrameLen
+                        self.obj_cam.MV_CC_DisplayOneFrame(stDisplayParam)
+                    except Exception as e:
+                        print(f"显示帧时出错: {e}")
+
+                # 是否退出
+                if self.b_exit:
+                    break
+
+            except Exception as e:
+                consecutive_errors += 1
+                print(f"Work_thread中发生异常: {e}")
+                if consecutive_errors >= max_consecutive_errors:
+                    print("异常次数过多，退出线程")
+                    break
+                time.sleep(0.1)
+
+        # 清理资源
+        print("相机工作线程退出")
+        if img_buff is not None:
+            del img_buff
+        if self.buf_save_image is not None:
+            del self.buf_save_image
 
     # 存jpg图像
     def Save_jpg(self):
@@ -433,4 +482,3 @@ class CameraOperation:
         self.buf_lock.release()
 
         return ret
-

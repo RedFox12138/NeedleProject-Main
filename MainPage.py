@@ -2,8 +2,9 @@ import os
 import subprocess
 import sys
 
-from QTneedle.QTneedle.QTneedle.DailyLogger import DailyLogger
-from QTneedle.QTneedle.QTneedle.Load_Mat import load_and_plot_latest_mat_signals
+from QTneedle.QTneedle.CameraConfig.CameraParams_const import MV_GIGE_DEVICE, MV_USB_DEVICE
+from QTneedle.QTneedle.DailyLogger import DailyLogger
+from QTneedle.QTneedle.Load_Mat import load_and_plot_latest_mat_signals
 from StopClass import StopClass
 
 # 定义你要添加的库文件路径
@@ -26,7 +27,7 @@ from PyQt5.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 from CameraConfig.CamOperation_class import CameraOperation
 from CameraConfig.CameraParams_header import MV_CC_DEVICE_INFO_LIST
 from CameraConfig.ImagePro import load_templates, template, match_device_templates
-from CameraConfig.MvCameraControl_class import MV_GIGE_DEVICE, MV_USB_DEVICE, MvCamera
+from CameraConfig.MvCameraControl_class import MvCamera
 from LTDS import ReturnNeedleMove, WhileMove
 from Microscope import ReturnZauxdll
 from SerialPage import SIM928ConnectionThread, RelayConnectionThread, NeedelConnectionThread
@@ -251,26 +252,38 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
     # @staticmethod
     def initCamera(self):
-        # Enumerate devices
-        ret = self.cam.MV_CC_EnumDevices(MV_GIGE_DEVICE | MV_USB_DEVICE, self.deviceList)
-        if ret != 0:
-            return
+        try:
+            # Enumerate devices
+            ret = self.cam.MV_CC_EnumDevices(MV_GIGE_DEVICE | MV_USB_DEVICE, self.deviceList)
+            if ret != 0:
+                print(f"枚举设备失败，错误码: {ret}")
+                return False
 
-        if self.deviceList.nDeviceNum == 0:
-            print("Find no device")
-            return
+            if self.deviceList.nDeviceNum == 0:
+                print("Find no device")
+                return False
 
-        # Select the first device
-        nSelCamIndex = 0
-        # Open selected device
-        MainPage1.obj_cam_operation = CameraOperation(self.cam, self.deviceList, nSelCamIndex)
-        ret = MainPage1.obj_cam_operation.Open_device()
-        if ret != 0:
-            return
-        # Start grabbing
-        ret = MainPage1.obj_cam_operation.Start_grabbing(0)
-        if ret != 0:
-            return
+            # Select the first device
+            nSelCamIndex = 0
+            # Open selected device
+            MainPage1.obj_cam_operation = CameraOperation(self.cam, self.deviceList, nSelCamIndex)
+            ret = MainPage1.obj_cam_operation.Open_device()
+            if ret != 0:
+                print(f"打开设备失败，错误码: {ret}")
+                return False
+
+            # Start grabbing
+            ret = MainPage1.obj_cam_operation.Start_grabbing(0)
+            if ret != 0:
+                print(f"开始取图失败，错误码: {ret}")
+                return False
+
+            print("相机初始化成功")
+            return True
+
+        except Exception as e:
+            print(f"初始化相机时发生异常: {e}")
+            return False
 
 
     def update_frame(self):
@@ -1105,12 +1118,15 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
     # 计算距离并移动探针
     def move_probe_to_target(self, target_x, target_y):
-        distance_weight = 50 #低温50，常温1
+        distance_weight = 10 #低温50，常温1
+        errorForLowTemp = 3
+        errorForHighTemp = 10
+
         self.allow_alignment = False  # 禁用对齐
         self.indicator.setStyleSheet(MainPage1.get_stylesheet(True))
         probe_x, probe_y = self.get_probe_position()
         distance = np.sqrt((target_x - probe_x) ** 2) *distance_weight
-        while distance>=3:
+        while distance>=errorForHighTemp:
             if StopClass.stop_num == 1:
                 break
             if probe_x is None:
@@ -1126,7 +1142,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
             distance = np.sqrt((target_x - probe_x) ** 2)*distance_weight
 
         distance = np.sqrt((target_y - probe_y) ** 2)*distance_weight
-        while distance>=3:
+        while distance>=errorForHighTemp:
             if StopClass.stop_num == 1:
                 break
             if probe_y is None:

@@ -6,14 +6,25 @@ import MainPage
 from ANC300 import Positioner
 import math
 
-from QTneedle.QTneedle.QTneedle.Position import getPosition
-from QTneedle.QTneedle.QTneedle.SerialLock import SerialLock
-from QTneedle.QTneedle.QTneedle.locationClass import locationClass
+from QTneedle.QTneedle.Position import getPosition
+from QTneedle.QTneedle.SerialLock import SerialLock
+from QTneedle.QTneedle.locationClass import locationClass
 from SerialPage import NeedelConnectionThread, SIM928ConnectionThread
 from StopClass import StopClass
 
 ax = {'x':1,'y':2,'z':3,'x2':4,'y2':5,'z2':6}
 def ReturnNeedleMove(direction,distance,indicatorLight,isclick=False,flag=False,equipment=0):
+    xyForLowTemp = '2000'
+    xyForhighTemp = '300'
+    zForLowTemp = '500'
+    zForhighTemp = '100'
+
+    frequencyXY = xyForhighTemp
+    frequencyZ = zForhighTemp
+
+    voltageForhighTemp = '100'
+    voltageForlowTemp = '200'
+
     directionArray = [[2,3,1],[6,5,4]]
     with SerialLock.serial_lock:
         try:
@@ -22,20 +33,20 @@ def ReturnNeedleMove(direction,distance,indicatorLight,isclick=False,flag=False,
             if direction == 0:
                 anc.write( ('[ch'+ str(directionArray[equipment][0])+':1]').encode())
                 anc.write('[cap:013nF]'.encode())
-                anc.write('[volt:+200V] '.encode())
-                anc.write('[freq:+02000Hz]'.encode())
+                anc.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+                anc.write(('[freq:+0'+frequencyXY+'Hz]').encode())
                 anc.write(('[-:0000' + str(distance) + '] ').encode())  # +-方向
             elif direction == 1:
                 anc.write( ('[ch'+ str(directionArray[equipment][0])+':1]').encode())
                 anc.write('[cap:013nF]'.encode())
-                anc.write('[volt:+200V] '.encode())
-                anc.write('[freq:+02000Hz]'.encode())
+                anc.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+                anc.write(('[freq:+0'+frequencyXY+'Hz]').encode())
                 anc.write(('[+:0000' + str(distance) + '] ').encode())  # +-方向
             elif direction == 2:
                 anc.write( ('[ch'+ str(directionArray[equipment][1])+':1]').encode())
                 anc.write('[cap:013nF]'.encode())
-                anc.write('[volt:+150V] '.encode())
-                anc.write('[freq:+02000Hz]'.encode())
+                anc.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+                anc.write(('[freq:+0'+frequencyXY+'Hz]').encode())
                 if equipment==1:
                     anc.write(('[+:0000' + str(distance) + '] ').encode())  # +-方向
                 else :
@@ -44,8 +55,8 @@ def ReturnNeedleMove(direction,distance,indicatorLight,isclick=False,flag=False,
             elif direction ==3 :
                 anc.write( ('[ch'+ str(directionArray[equipment][1])+':1]').encode())
                 anc.write('[cap:013nF]'.encode())
-                anc.write('[volt:+150V] '.encode())
-                anc.write('[freq:+02000Hz]'.encode())
+                anc.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+                anc.write(('[freq:+0'+frequencyXY+'Hz]').encode())
                 if equipment==1:
                     anc.write(('[-:0000' + str(distance) + '] ').encode())  # +-方向
                 else :
@@ -53,14 +64,14 @@ def ReturnNeedleMove(direction,distance,indicatorLight,isclick=False,flag=False,
             elif direction == 4 :
                 anc.write(('[ch'+ str(directionArray[equipment][2])+':1]').encode())
                 anc.write('[cap:013nF]'.encode())
-                anc.write('[volt:+200V] '.encode())
-                anc.write('[freq:+00500Hz]'.encode())
+                anc.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+                anc.write(('[freq:+00'+frequencyZ+'Hz]').encode())
                 anc.write(('[-:0000' + str(distance) + '] ').encode())  # +-方向
             elif direction == 5:
                 anc.write( ('[ch'+ str(directionArray[equipment][2])+':1]').encode())
                 anc.write('[cap:013nF]'.encode())
-                anc.write('[volt:+200V] '.encode())
-                anc.write('[freq:+00500Hz]'.encode())
+                anc.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+                anc.write(('[freq:+00'+frequencyZ+'Hz]').encode())
                 anc.write(('[+:0000' + str(distance) + '] ').encode())  # +-方向
             if flag:
                 time.sleep((distance + 1) / 300)
@@ -74,6 +85,18 @@ def ReturnNeedleMove(direction,distance,indicatorLight,isclick=False,flag=False,
 
 
 def WhileMove(direction,indicatorLight,equipment=0,distance=1000):
+    xyForLowTemp = '2000'
+    xyForhighTemp = '300'
+    zForLowTemp = '1000'
+    zForhighTemp = '500'
+    voltageForhighTemp = '100'
+    voltageForlowTemp = '200'
+
+    frequencyXY = xyForhighTemp
+    frequencyZ = zForhighTemp
+
+
+
     directionArray = [[2,3,1],[6,5,4]]
     with SerialLock.serial_lock:
         indicatorLight.setStyleSheet(MainPage.MainPage1.get_stylesheet(True))
@@ -89,8 +112,8 @@ def WhileMove(direction,indicatorLight,equipment=0,distance=1000):
         if direction == 0 or direction == 1:
             anc.write( ('[ch'+ str(directionArray[equipment][0])+':1]').encode())
             anc.write('[cap:013nF]'.encode())
-            anc.write('[volt:+200V] '.encode())
-            anc.write('[freq:+02000Hz]'.encode())
+            anc.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+            anc.write(('[freq:+0'+frequencyXY+'Hz]').encode())
             time.sleep(0.1)
             num_str = '[-:0000' if direction ==0 else '[+:0000'
             while StopClass.stop_num == 0:
@@ -99,8 +122,8 @@ def WhileMove(direction,indicatorLight,equipment=0,distance=1000):
         elif direction == 2 or direction == 3:
             anc.write( ('[ch'+ str(directionArray[equipment][1])+':1]').encode())
             anc.write('[cap:013nF]'.encode())
-            anc.write('[volt:+200V] '.encode())
-            anc.write('[freq:+02000Hz]'.encode())
+            anc.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+            anc.write(('[freq:+0'+frequencyXY+'Hz]').encode())
             time.sleep(0.1)
             num_str1 = '[+:0000' if direction == 2 else '[-:0000'
             num_str2 = '[-:0000' if direction == 2 else '[+:0000'
@@ -114,8 +137,8 @@ def WhileMove(direction,indicatorLight,equipment=0,distance=1000):
         elif  direction == 4 or direction == 5:
             anc.write(('[ch' + str(directionArray[equipment][2]) + ':1]').encode())
             anc.write('[cap:013nF]'.encode())
-            anc.write('[volt:+200V] '.encode())
-            anc.write('[freq:+01000Hz]'.encode())
+            anc.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+            anc.write(('[freq:+0'+frequencyZ+'Hz]').encode())
             time.sleep(0.2)
             num_str = '[+:0000' if direction == 4 else '[-:0000'
             while StopClass.stop_num == 0:

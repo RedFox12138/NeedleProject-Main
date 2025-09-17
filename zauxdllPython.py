@@ -166,9 +166,7 @@ class ZMCWrapper:
     # 直线运动
     def move(self, iaxis, iValue):
         ret = zauxdll.ZAux_Direct_Single_Move(self.handle, iaxis, ctypes.c_float(iValue))
-        if ret == 0:
-            print("Axis (", iaxis, ") Move:", iValue)
-        else:
+        if ret != 0:
             print("Axis (", iaxis, ") Move Fail")
         return ret
 
