@@ -32,6 +32,8 @@ from LTDS import ReturnNeedleMove, WhileMove
 from Microscope import ReturnZauxdll
 from SerialPage import SIM928ConnectionThread, RelayConnectionThread, NeedelConnectionThread
 from demo import Ui_MainWindow
+# 导入全局温度配置
+from QTneedle.QTneedle.TemperatureConfig import set_low, set_high, is_low
 
 
 def handle_coordinates(x, y):
@@ -89,7 +91,8 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                  Button_relay, label_needle1, lineEdit_SaveResult,
                  lineEdit_needleSetXdis, lineEdit_needleSetYdis,lineEdit_needleSetZdis,
                  lineEdit_microSetXdis, lineEdit_microSetYdis,lineEdit_Scripts,
-                 plot_Label):
+                 plot_Label,
+                 Checkbox_lowTemp, Checkbox_highTemp):
         super().__init__()
 
         self.plot_Label = plot_Label
@@ -217,6 +220,14 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         self.Checkbox_ElecNeedle.toggled.connect(lambda: self.checkbox_ElecNeedle_changed(self.Checkbox_ElecNeedle))
         self.Checkbox_Light.toggled.connect(lambda: self.checkbox_Light_changed(self.Checkbox_Light))
 
+        # 绑定温度模式切换
+        self.Checkbox_lowTemp = Checkbox_lowTemp
+        self.Checkbox_highTemp = Checkbox_highTemp
+        self.Checkbox_lowTemp.toggled.connect(self.on_temp_mode_changed)
+        self.Checkbox_highTemp.toggled.connect(self.on_temp_mode_changed)
+        # 初始化默认模式
+        self.on_temp_mode_changed()
+
         # 显微镜移动按钮
         Button_Micro_up.clicked.connect(self.move_microscope_up)
         Button_Micro_down.clicked.connect(self.move_microscope_down)
@@ -260,7 +271,13 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         except Exception as e:
             print(f"初始化模板监视器失败: {e}")
 
-
+    def on_temp_mode_changed(self):
+        if self.Checkbox_lowTemp.isChecked():
+            set_low()
+            logger.log("温度模式切换为：低温")
+        elif self.Checkbox_highTemp.isChecked():
+            set_high()
+            logger.log("温度模式切换为：常温")
 
     # 继电器的开关函数
     def relay_IO(self):
@@ -1201,16 +1218,21 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
     # 计算距离并移动探针
     def move_probe_to_target(self, target_x, target_y):
-        distance_weight = 50 #低温50，常温10
-
-        errorForLowTemp = 3
-        errorForHighTemp = 10
+        # 根据全局配置选择参数
+        if is_low():
+            distance_weight = 50  # 低温
+            error = 3
+            sleep_time = 0.5
+        else:
+            distance_weight = 10  # 常温
+            error = 10
+            sleep_time = 0.1
 
         self.allow_alignment = False  # 禁用对齐
         self.indicator.setStyleSheet(MainPage1.get_stylesheet(True))
         probe_x, probe_y = self.get_probe_position()
         distance = np.sqrt((target_x - probe_x) ** 2) *distance_weight
-        while distance>=errorForLowTemp:
+        while distance>=error:
             if StopClass.stop_num == 1:
                 break
             if probe_x is None:
@@ -1221,12 +1243,12 @@ class MainPage1(QMainWindow, Ui_MainWindow):
             elif target_x > probe_x:
                 ReturnNeedleMove(self.needleright, distance, self.indicator, True, False, MainPage1.equipment)
             # 低温情况下time.sleep应该是0.5，常温情况是0.1
-            time.sleep(0.1)
+            time.sleep(sleep_time)
             probe_x, probe_y = self.get_probe_position()
             distance = np.sqrt((target_x - probe_x) ** 2)*distance_weight
 
         distance = np.sqrt((target_y - probe_y) ** 2)*distance_weight
-        while distance>=errorForLowTemp:
+        while distance>=error:
             if StopClass.stop_num == 1:
                 break
             if probe_y is None:
@@ -1237,7 +1259,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
             elif target_y > probe_y:
                 ReturnNeedleMove(self.needledown, distance, self.indicator, True, False, MainPage1.equipment)
             # 低温情况下time.sleep应该是0.5，常温情况是0.1
-            time.sleep(0.1)
+            time.sleep(sleep_time)
             probe_x, probe_y = self.get_probe_position()
             distance = np.sqrt((target_y - probe_y) ** 2)*distance_weight
 
@@ -1282,7 +1304,8 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         if SIM928ConnectionThread.anc is None or not self.lineEdit_SIM928.text():
             logger.log("警告：anc 是 None，无法执行 Pushing 操作")
         else:
-            WhileMove(4, self.indicator,MainPage1.equipment, MainPage1.needle_distanceZ)
+            distance = 5000 if is_low() else 1000
+            WhileMove(4, self.indicator,MainPage1.equipment, distance)
             logger.log("探针下压了")
 
     def Pulling(self):
@@ -1290,7 +1313,8 @@ class MainPage1(QMainWindow, Ui_MainWindow):
             logger.log("警告：anc 是 None，无法执行 Pulling 操作")
         else:
             # 常温下min的最大值是1000，低温下min的最大值是5000
-            WhileMove(5, self.indicator,MainPage1.equipment, MainPage1.needle_distanceZ)
+            distance = 5000 if is_low() else 1000
+            WhileMove(5, self.indicator,MainPage1.equipment, distance)
             logger.log("探针抬升了")
 
 

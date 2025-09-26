@@ -48,7 +48,7 @@ class UsingTest(QMainWindow, Ui_MainWindow):
                                    self.Button_pushing, self.Button_pulling, self.Button_relay,
                                    self.label_needle1,self.lineEdit_SaveResult,
                                    self.lineEdit_needleSetXdis, self.lineEdit_needleSetYdis, self.lineEdit_needleSetZdis,
-                                   self.lineEdit_microSetXdis, self.lineEdit_microSetYdis,self.lineEdit_Scripts,self.plot_Label)
+                                   self.lineEdit_microSetXdis, self.lineEdit_microSetYdis,self.lineEdit_Scripts,self.plot_Label,self.Checkbox_lowTemp,self.Checkbox_highTemp)
         self.mainpage2 = SerialPage(self.comboBox_micro, self.label_microConnect, self.Button_microConnect,
                                     self.Button_microDisConnect,
                                     self.comboBox_needle, self.label_needleConnect, self.Button_needleConnect,

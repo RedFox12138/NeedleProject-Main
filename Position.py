@@ -6,6 +6,8 @@ from SerialPage import NeedelConnectionThread, SIM928ConnectionThread
 import sys
 
 from StopClass import StopClass
+# 导入全局温度配置
+from QTneedle.QTneedle.TemperatureConfig import is_low
 
 # 定义你要添加的库文件路径
 custom_lib_path = "c:\\users\\administrator\\appdata\\local\\programs\\python\\python37\\lib\\site-packages"
@@ -75,8 +77,8 @@ def move_to_Z(z,indicatorLight,Voltage_flag=False):
     NEAR_THRESHOLD = 0.005  # 5微米以下为微调阶段
     step_per_unit = 0.06  # 1单位对应0.06实际距离
 
-    # 低温情况下Z_k应该是500，常温情况是0.1
-    Z_k = 600
+    # 根据全局配置选择参数
+    Z_k = 600 if is_low() else 100  # 低温600，常温100（基于其他文件推断）
 
     while abs(z_current - z) > 0.005:  # 最终精度要求5纳米
         if Voltage_flag:
@@ -132,40 +134,40 @@ def move(axis, distance, flag,Z_adjust=False):
     ser4 = NeedelConnectionThread.anc
     move_time = distance/10000 #初始为0.3
 
-    xyForLowTemp = '1000'
-    xyForhighTemp = '300'
-    zForLowTemp = '1000'
-    zForhighTemp = '500'
-    frequencyXY = xyForLowTemp
-    frequencyZ = zForLowTemp
-
-    voltageForhighTemp = '150'
-    voltageForlowTemp = '200'
+    # 根据全局配置选择参数
+    if is_low():
+        frequencyXY = '1000'
+        frequencyZ = '1000'
+        voltage = '200'
+    else:
+        frequencyXY = '300'
+        frequencyZ = '500'
+        voltage = '150'
 
     # X/Y轴保持原始代码（固定频率1000Hz，固定时间0.3秒）
     if axis == '-X':
         ser4.write('[ch3:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
-        ser4.write(('[volt:+'+voltageForlowTemp+'V]').encode())
+        ser4.write(('[volt:+'+voltage+'V]').encode())
         ser4.write(('[freq:+'+frequencyXY+'Hz]').encode())
         ser4.write(('[+:0000' + str(distance) + ']').encode())
 
     elif axis == 'X':
         ser4.write('[ch3:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
-        ser4.write(('[volt:+'+voltageForlowTemp+'V]').encode())
+        ser4.write(('[volt:+'+voltage+'V]').encode())
         ser4.write(('[freq:+'+frequencyXY+'Hz]').encode())
         ser4.write(('[-:0000' + str(distance) + ']').encode())
     elif axis == '-Y':
         ser4.write('[ch2:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
-        ser4.write(('[volt:+'+voltageForlowTemp+'V]').encode())
+        ser4.write(('[volt:+'+voltage+'V]').encode())
         ser4.write(('[freq:+'+frequencyXY+'Hz]').encode())
         ser4.write(('[+:0000' + str(distance) + ']').encode())
     elif axis == 'Y':
         ser4.write('[ch2:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
-        ser4.write(('[volt:+'+voltageForlowTemp+'V]').encode())
+        ser4.write(('[volt:+'+voltage+'V]').encode())
         ser4.write(('[freq:+'+frequencyXY+'Hz]').encode())
         ser4.write(('[-:0000' + str(distance) + ']').encode())
 
@@ -173,7 +175,7 @@ def move(axis, distance, flag,Z_adjust=False):
     elif axis == 'Z':
         ser4.write('[ch1:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
-        ser4.write(('[volt:+'+voltageForlowTemp+'V]').encode())
+        ser4.write(('[volt:+'+voltage+'V]').encode())
 
         # 根据flag决定频率（微调500Hz，非微调800Hz）
         freq = '+0500Hz' if Z_adjust else '+0800Hz'
@@ -189,7 +191,7 @@ def move(axis, distance, flag,Z_adjust=False):
     elif axis == '-Z':
         ser4.write('[ch1:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
-        ser4.write(('[volt:+'+voltageForlowTemp+'V]').encode())
+        ser4.write(('[volt:+'+voltage+'V]').encode())
 
         # 根据flag决定频率（微调500Hz，非微调800Hz）
         freq = '+0500Hz' if Z_adjust else '+0800Hz'
@@ -209,10 +211,14 @@ def move(axis, distance, flag,Z_adjust=False):
         time.sleep(move_time)
 
 def move_to_target(x, y,indicatorLight):
-    # 低温情况下XY_k是1000，常温情况是300
-    # 低温情况下XY_k_2是10000，常温情况是3000
-    XY_k = 1000
-    XY_k_2 = 10000
+    # 根据全局配置选择参数
+    if is_low():
+        XY_k = 1000
+        XY_k_2 = 10000
+    else:
+        XY_k = 300
+        XY_k_2 = 3000
+
     step_per_unit = 0.06  # 假设每 0.06 单位对应 100 步
     from QTneedle.QTneedle import MainPage
     indicatorLight.setStyleSheet(MainPage.MainPage1.get_stylesheet(True))
@@ -304,8 +310,3 @@ def move_to_target(x, y,indicatorLight):
                 time.sleep(0.2)
     indicatorLight.setStyleSheet(MainPage.MainPage1.get_stylesheet(False))
     return x_current, y_current
-
-
-
-
-
