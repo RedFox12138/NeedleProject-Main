@@ -19,8 +19,8 @@ def ReturnNeedleMove(direction,distance,indicatorLight,isclick=False,flag=False,
     zForLowTemp = '500'
     zForhighTemp = '100'
 
-    frequencyXY = xyForhighTemp
-    frequencyZ = zForhighTemp
+    frequencyXY = xyForLowTemp
+    frequencyZ = zForLowTemp
 
     voltageForhighTemp = '100'
     voltageForlowTemp = '200'
@@ -33,19 +33,19 @@ def ReturnNeedleMove(direction,distance,indicatorLight,isclick=False,flag=False,
             if direction == 0:
                 anc.write( ('[ch'+ str(directionArray[equipment][0])+':1]').encode())
                 anc.write('[cap:013nF]'.encode())
-                anc.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+                anc.write(('[volt:+'+voltageForlowTemp+'V]').encode())
                 anc.write(('[freq:+0'+frequencyXY+'Hz]').encode())
                 anc.write(('[-:0000' + str(distance) + '] ').encode())  # +-方向
             elif direction == 1:
                 anc.write( ('[ch'+ str(directionArray[equipment][0])+':1]').encode())
                 anc.write('[cap:013nF]'.encode())
-                anc.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+                anc.write(('[volt:+'+voltageForlowTemp+'V]').encode())
                 anc.write(('[freq:+0'+frequencyXY+'Hz]').encode())
                 anc.write(('[+:0000' + str(distance) + '] ').encode())  # +-方向
             elif direction == 2:
                 anc.write( ('[ch'+ str(directionArray[equipment][1])+':1]').encode())
                 anc.write('[cap:013nF]'.encode())
-                anc.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+                anc.write(('[volt:+'+voltageForlowTemp+'V]').encode())
                 anc.write(('[freq:+0'+frequencyXY+'Hz]').encode())
                 if equipment==1:
                     anc.write(('[+:0000' + str(distance) + '] ').encode())  # +-方向
@@ -55,7 +55,7 @@ def ReturnNeedleMove(direction,distance,indicatorLight,isclick=False,flag=False,
             elif direction ==3 :
                 anc.write( ('[ch'+ str(directionArray[equipment][1])+':1]').encode())
                 anc.write('[cap:013nF]'.encode())
-                anc.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+                anc.write(('[volt:+'+voltageForlowTemp+'V]').encode())
                 anc.write(('[freq:+0'+frequencyXY+'Hz]').encode())
                 if equipment==1:
                     anc.write(('[-:0000' + str(distance) + '] ').encode())  # +-方向
@@ -64,13 +64,13 @@ def ReturnNeedleMove(direction,distance,indicatorLight,isclick=False,flag=False,
             elif direction == 4 :
                 anc.write(('[ch'+ str(directionArray[equipment][2])+':1]').encode())
                 anc.write('[cap:013nF]'.encode())
-                anc.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+                anc.write(('[volt:+'+voltageForlowTemp+'V]').encode())
                 anc.write(('[freq:+00'+frequencyZ+'Hz]').encode())
                 anc.write(('[-:0000' + str(distance) + '] ').encode())  # +-方向
             elif direction == 5:
                 anc.write( ('[ch'+ str(directionArray[equipment][2])+':1]').encode())
                 anc.write('[cap:013nF]'.encode())
-                anc.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+                anc.write(('[volt:+'+voltageForlowTemp+'V]').encode())
                 anc.write(('[freq:+00'+frequencyZ+'Hz]').encode())
                 anc.write(('[+:0000' + str(distance) + '] ').encode())  # +-方向
             if flag:
@@ -92,8 +92,8 @@ def WhileMove(direction,indicatorLight,equipment=0,distance=1000):
     voltageForhighTemp = '100'
     voltageForlowTemp = '200'
 
-    frequencyXY = xyForhighTemp
-    frequencyZ = zForhighTemp
+    frequencyXY = xyForLowTemp
+    frequencyZ = zForLowTemp
 
 
 
@@ -112,7 +112,7 @@ def WhileMove(direction,indicatorLight,equipment=0,distance=1000):
         if direction == 0 or direction == 1:
             anc.write( ('[ch'+ str(directionArray[equipment][0])+':1]').encode())
             anc.write('[cap:013nF]'.encode())
-            anc.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+            anc.write(('[volt:+'+voltageForlowTemp+'V]').encode())
             anc.write(('[freq:+0'+frequencyXY+'Hz]').encode())
             time.sleep(0.1)
             num_str = '[-:0000' if direction ==0 else '[+:0000'
@@ -122,7 +122,7 @@ def WhileMove(direction,indicatorLight,equipment=0,distance=1000):
         elif direction == 2 or direction == 3:
             anc.write( ('[ch'+ str(directionArray[equipment][1])+':1]').encode())
             anc.write('[cap:013nF]'.encode())
-            anc.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+            anc.write(('[volt:+'+voltageForlowTemp+'V]').encode())
             anc.write(('[freq:+0'+frequencyXY+'Hz]').encode())
             time.sleep(0.1)
             num_str1 = '[+:0000' if direction == 2 else '[-:0000'
@@ -137,7 +137,7 @@ def WhileMove(direction,indicatorLight,equipment=0,distance=1000):
         elif  direction == 4 or direction == 5:
             anc.write(('[ch' + str(directionArray[equipment][2]) + ':1]').encode())
             anc.write('[cap:013nF]'.encode())
-            anc.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+            anc.write(('[volt:+'+voltageForlowTemp+'V]').encode())
             anc.write(('[freq:+0'+frequencyZ+'Hz]').encode())
             time.sleep(0.2)
             num_str = '[+:0000' if direction == 4 else '[-:0000'

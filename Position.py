@@ -128,6 +128,7 @@ def move_to_Z(z,indicatorLight,Voltage_flag=False):
 
 
 def move(axis, distance, flag,Z_adjust=False):
+    distance = round(distance)
     ser4 = NeedelConnectionThread.anc
     move_time = distance/10000 #初始为0.3
 
@@ -135,8 +136,8 @@ def move(axis, distance, flag,Z_adjust=False):
     xyForhighTemp = '300'
     zForLowTemp = '1000'
     zForhighTemp = '500'
-    frequencyXY = xyForhighTemp
-    frequencyZ = zForhighTemp
+    frequencyXY = xyForLowTemp
+    frequencyZ = zForLowTemp
 
     voltageForhighTemp = '150'
     voltageForlowTemp = '200'
@@ -145,34 +146,34 @@ def move(axis, distance, flag,Z_adjust=False):
     if axis == '-X':
         ser4.write('[ch3:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
-        ser4.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+        ser4.write(('[volt:+'+voltageForlowTemp+'V]').encode())
         ser4.write(('[freq:+'+frequencyXY+'Hz]').encode())
-        ser4.write(('[+:0000' + str(distance) + '] ').encode())
+        ser4.write(('[+:0000' + str(distance) + ']').encode())
 
     elif axis == 'X':
         ser4.write('[ch3:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
-        ser4.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+        ser4.write(('[volt:+'+voltageForlowTemp+'V]').encode())
         ser4.write(('[freq:+'+frequencyXY+'Hz]').encode())
-        ser4.write(('[-:0000' + str(distance) + '] ').encode())
+        ser4.write(('[-:0000' + str(distance) + ']').encode())
     elif axis == '-Y':
         ser4.write('[ch2:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
-        ser4.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+        ser4.write(('[volt:+'+voltageForlowTemp+'V]').encode())
         ser4.write(('[freq:+'+frequencyXY+'Hz]').encode())
-        ser4.write(('[+:0000' + str(distance) + '] ').encode())
+        ser4.write(('[+:0000' + str(distance) + ']').encode())
     elif axis == 'Y':
         ser4.write('[ch2:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
-        ser4.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+        ser4.write(('[volt:+'+voltageForlowTemp+'V]').encode())
         ser4.write(('[freq:+'+frequencyXY+'Hz]').encode())
-        ser4.write(('[-:0000' + str(distance) + '] ').encode())
+        ser4.write(('[-:0000' + str(distance) + ']').encode())
 
     # Z轴保持微调和非微调功能
     elif axis == 'Z':
         ser4.write('[ch1:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
-        ser4.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+        ser4.write(('[volt:+'+voltageForlowTemp+'V]').encode())
 
         # 根据flag决定频率（微调500Hz，非微调800Hz）
         freq = '+0500Hz' if Z_adjust else '+0800Hz'
@@ -188,7 +189,7 @@ def move(axis, distance, flag,Z_adjust=False):
     elif axis == '-Z':
         ser4.write('[ch1:1]'.encode())
         ser4.write('[cap:013nF]'.encode())
-        ser4.write(('[volt:+'+voltageForhighTemp+'V]').encode())
+        ser4.write(('[volt:+'+voltageForlowTemp+'V]').encode())
 
         # 根据flag决定频率（微调500Hz，非微调800Hz）
         freq = '+0500Hz' if Z_adjust else '+0800Hz'
@@ -208,7 +209,8 @@ def move(axis, distance, flag,Z_adjust=False):
         time.sleep(move_time)
 
 def move_to_target(x, y,indicatorLight):
-    # 低温情况下XY_k是1000，常温情况是100
+    # 低温情况下XY_k是1000，常温情况是300
+    # 低温情况下XY_k_2是10000，常温情况是3000
     XY_k = 1000
     XY_k_2 = 10000
     step_per_unit = 0.06  # 假设每 0.06 单位对应 100 步
@@ -218,6 +220,7 @@ def move_to_target(x, y,indicatorLight):
         x_current, y_current,_ = getPosition(Only_XY=True)
         x_diff = round((x - x_current), 3)
         y_diff = round((y - y_current), 3)
+
         flag = True
         if x_diff > 0:
             move('X', abs(x_diff) / 0.03 * XY_k, flag)
@@ -229,7 +232,7 @@ def move_to_target(x, y,indicatorLight):
         elif y_diff < 0:
             move('-Y', abs(y_diff) / 0.03 * XY_k, flag)
         x_current, y_current,_ = getPosition(Only_XY=True)
-
+        time.sleep(0.2)
 
     while  abs(y_current - y) > 0.01 :
         if StopClass.stop_num == 1:
@@ -264,6 +267,7 @@ def move_to_target(x, y,indicatorLight):
                 elif y_diff < 0:
                     move('-Y', abs(y_diff) / step_per_unit * XY_k_2, flag)
                 _, y_current,_ = getPosition(Only_XY=True)
+                time.sleep(0.2)
     while abs(x_current - x) > 0.01:
         if StopClass.stop_num == 1:
             StopClass.stop_num = 0
@@ -297,7 +301,7 @@ def move_to_target(x, y,indicatorLight):
                 elif x_diff < 0:
                     move('-X', abs(x_diff) / step_per_unit * XY_k_2, flag)
                 x_current, _, _ = getPosition(Only_XY=True)
-
+                time.sleep(0.2)
     indicatorLight.setStyleSheet(MainPage.MainPage1.get_stylesheet(False))
     return x_current, y_current
 

@@ -64,6 +64,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
     global_frame = None
 
     # 给小灯设置颜色
+    @staticmethod
     def get_stylesheet(status):
         color = "red" if status else "green"
         return f"""
@@ -163,6 +164,9 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         self.timer = QTimer()
         self.label_video = label_video
 
+        # 保护帧访问的锁，避免多线程读写冲突
+        self._frame_lock = threading.Lock()
+
         self.label_video.mousePressEvent = self.mousePressEvent
 
         self.label_cameraLabel = label_cameraLabel
@@ -193,11 +197,14 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         Button_needle1SetYdisConfirm.clicked.connect(self.update_needle_distanceY)
         Button_needle1SetZdisConfirm.clicked.connect(self.update_needle_distanceZ)
 
-        Button_screenshot.clicked.connect(lambda: threading.Thread(target=self.save_image).start())
+        # 避免在子线程中操作UI：改为主线程直接保存当前帧
+        Button_screenshot.clicked.connect(self.save_image)
         Button_browse.clicked.connect(self.browse_folder)
+        # OpenCV 交互界面在子线程运行，避免阻塞Qt，但不要在子线程中操作Qt控件
         Button_needleTemplate.clicked.connect(lambda: threading.Thread(target=self.select_template).start())
         Button_padTemplate.clicked.connect(lambda: threading.Thread(target=self.select_pad_template).start())
-        Button_iuCalculate.clicked.connect(lambda: threading.Thread(target=self.CalIU()).start())
+        # 运行测量与绘图过程在主线程中更新UI，避免跨线程操作Qt控件导致崩溃
+        Button_iuCalculate.clicked.connect(self.CalIU)
 
         # 显微镜是否跟随
         Checkbox_microAutoTrace.stateChanged.connect(self.checkbox_state_changed)
@@ -231,6 +238,26 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         self.log_timer = QTimer(self)
         self.log_timer.timeout.connect(self.update_log_display)
         self.log_timer.start(500)  # 每秒更新一次
+
+        # 初次加载模板，并启动文件监视器，仅在模板发生变化时刷新缓存
+        try:
+            load_templates()
+            self._template_files = [
+                os.path.abspath('templateNeedle.png'),
+                os.path.abspath('templatepad.png'),
+                os.path.abspath('templateLight.png'),
+            ]
+            self._template_watcher = QtCore.QFileSystemWatcher(self)
+            existing = [p for p in self._template_files if os.path.exists(p)]
+            if existing:
+                self._template_watcher.addPaths(existing)
+            # 监视当前工作目录，以便捕获新建模板文件
+            self._watched_dir = os.path.abspath(os.getcwd())
+            self._template_watcher.addPath(self._watched_dir)
+            self._template_watcher.fileChanged.connect(self._on_template_changed)
+            self._template_watcher.directoryChanged.connect(self._on_template_dir_changed)
+        except Exception as e:
+            print(f"初始化模板监视器失败: {e}")
 
 
 
@@ -285,59 +312,113 @@ class MainPage1(QMainWindow, Ui_MainWindow):
             print(f"初始化相机时发生异常: {e}")
             return False
 
-
     def update_frame(self):
-        load_templates()
+        try:
+            # 不要每帧都加载模板，使用文件监视器按需刷新
 
-        stFrameInfo = MainPage1.obj_cam_operation.st_frame_info
-        if MainPage1.obj_cam_operation.buf_grab_image_size > 0 and stFrameInfo:
-            if stFrameInfo.nWidth > 0 and stFrameInfo.nHeight > 0 and stFrameInfo.nFrameLen > 0:
-                try:
-                    global red_dot_x, red_dot_y
+            stFrameInfo = MainPage1.obj_cam_operation.st_frame_info
+            if MainPage1.obj_cam_operation.buf_grab_image_size > 0 and stFrameInfo:
+                if stFrameInfo.nWidth > 0 and stFrameInfo.nHeight > 0 and stFrameInfo.nFrameLen > 0:
+                    try:
+                        global red_dot_x, red_dot_y
 
-                    data = np.frombuffer(MainPage1.obj_cam_operation.buf_grab_image, dtype=np.uint8,
-                                         count=stFrameInfo.nFrameLen)
+                        # 从底层缓冲区复制数据，避免被驱动覆盖导致崩溃
+                        data = np.frombuffer(MainPage1.obj_cam_operation.buf_grab_image, dtype=np.uint8,
+                                             count=stFrameInfo.nFrameLen).copy()
 
-                    frame = data.reshape((stFrameInfo.nHeight, stFrameInfo.nWidth))
-                    self.frame_resized = cv2.cvtColor(frame, cv2.COLOR_BayerBG2RGB)
-                    self.frame_resized = cv2.resize(self.frame_resized,
-                                                    (stFrameInfo.nWidth // 4, stFrameInfo.nHeight // 4),
-                                                    interpolation=cv2.INTER_LINEAR)
-                    self.frame_resized = cv2.resize(self.frame_resized, (851, 851), interpolation=cv2.INTER_LINEAR)
+                        frame = data.reshape((stFrameInfo.nHeight, stFrameInfo.nWidth))
+                        # 从Bayer转为RGB（恢复原先颜色显示逻辑）
+                        rgb = cv2.cvtColor(frame, cv2.COLOR_BayerBG2RGB)
+                        resized = cv2.resize(rgb, (stFrameInfo.nWidth // 4, stFrameInfo.nHeight // 4),
+                                             interpolation=cv2.INTER_LINEAR)
+                        resized = cv2.resize(resized, (851, 851), interpolation=cv2.INTER_LINEAR)
 
-                    with open('dia' + str(MainPage1.equipment) + '.txt', 'r') as file:
-                        line = file.readline().strip()  # 读取第一行并去除首尾空白字符
-                    # 将字符串按空格分割成列表
-                    numbers = line.split(',')
-                    # 将字符串转换为整数
-                    xdia = int(numbers[0])
-                    ydia = int(numbers[1])
+                        # 写入共享帧前加锁
+                        with self._frame_lock:
+                            self.frame_resized = resized
 
-                    red_dot_x, red_dot_y, self.board_height, self.board_width = template(self.frame_resized, xdia,
-                                                                                         ydia, MainPage1.equipment)
+                        try:
+                            dia_file = 'dia' + str(MainPage1.equipment) + '.txt'
+                            if not os.path.exists(dia_file):
+                                raise FileNotFoundError(f"文件 {dia_file} 不存在")
 
+                            with open(dia_file, 'r') as file:
+                                line = file.readline().strip()
+                                if not line:
+                                    raise ValueError("文件内容为空")
 
-                    if self.DeviceTemplate_view:
-                        match_device_templates(self.frame_resized)
-                    self.frame_resized = self.align_frame_with_probe()
+                                numbers = line.split(',')
+                                if len(numbers) < 2:
+                                    raise ValueError("文件格式不正确，应为 'x,y'")
 
-                    height, width, channel = self.frame_resized.shape
-                    bytes_per_line = 3 * width
-                    q_image = QImage(self.frame_resized.data, width, height, bytes_per_line, QImage.Format_BGR888)
+                                try:
+                                    xdia = int(numbers[0])
+                                    ydia = int(numbers[1])
+                                except ValueError as e:
+                                    raise ValueError(f"无法解析数字: {e}")
 
-                    self.label_video.setPixmap(QPixmap.fromImage(q_image))
-                    # 提取中心区域
-                    center_width, center_height = width // 2, height // 2
+                        except Exception as e:
+                            print(f"读取dia文件错误: {e}")
+                            # 设置默认值或采取其他恢复措施
+                            xdia, ydia = 0, 0  # 根据你的需求设置合理的默认值
 
-                    start_x, start_y = max(0, center_width // 2), max(0, center_height // 2)
-                    q_image_zoom = q_image.copy(start_x, start_y, center_width, center_height)
-                    self.label_cameraLabel.setPixmap(QPixmap.fromImage(q_image_zoom))
+                        red_dot_x, red_dot_y, self.board_height, self.board_width = template(resized, xdia,
+                                                                                             ydia, MainPage1.equipment)
 
-                    MainPage1.global_frame = self.frame_resized
-                    return self.frame_resized
+                        if self.DeviceTemplate_view:
+                            match_device_templates(resized)
+                        aligned = self.align_frame_with_probe()
+                        # 如果对齐返回无效，则使用当前帧
+                        if aligned is None or isinstance(aligned, int):
+                            aligned = resized
 
-                except Exception as e:
-                    print(f"Error updating frame: {e}")
+                        height, width, channel = aligned.shape
+                        bytes_per_line = 3 * width
+                        # 使用BGR888，并copy()生成独立内存，避免0xC0000005
+                        q_image = QImage(aligned.data, width, height, bytes_per_line, QImage.Format_BGR888).copy()
+
+                        self.label_video.setPixmap(QPixmap.fromImage(q_image))
+                        # 提取中心区域
+                        center_width, center_height = width // 2, height // 2
+
+                        start_x, start_y = max(0, center_width // 2), max(0, center_height // 2)
+                        q_image_zoom = q_image.copy(start_x, start_y, center_width, center_height)
+                        self.label_cameraLabel.setPixmap(QPixmap.fromImage(q_image_zoom))
+
+                        MainPage1.global_frame = aligned
+                        return aligned
+
+                    except Exception as e:
+                        print(f"Error processing frame: {e}")
+                        return None
+        except Exception as e:
+            print(f"Error updating frame: {e}")
+            return None
+
+    def _on_template_changed(self, path):
+        # 文件更改时刷新模板，并重新添加监视（Windows上有时需要）
+        try:
+            load_templates()
+        except Exception as e:
+            print(f"刷新模板失败({path}): {e}")
+        finally:
+            try:
+                if os.path.exists(path):
+                    self._template_watcher.addPath(path)
+            except Exception:
+                pass
+
+    def _on_template_dir_changed(self, path):
+        # 目录变化时尝试添加新创建的模板文件
+        try:
+            for f in self._template_files:
+                if os.path.exists(f) and f not in self._template_watcher.files():
+                    try:
+                        self._template_watcher.addPath(f)
+                    except Exception:
+                        pass
+        except Exception as e:
+            print(f"监视目录更新失败({path}): {e}")
 
     def browse_folder(self):
         # 打开文件夹选择对话框
@@ -348,11 +429,19 @@ class MainPage1(QMainWindow, Ui_MainWindow):
             self.save_folder = folder
 
     def save_image(self):
-        frame = self.update_frame()
+        # 使用最新帧保存，避免在子线程/此处触发update_frame导致UI竞争
+        with self._frame_lock:
+            frame = None if isinstance(self.frame_resized, int) else self.frame_resized.copy()
+        if frame is None or frame.size == 0:
+            print("当前无可保存的帧")
+            return
         timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         filename = f"{timestamp}.png"
         path = os.path.join(self.save_folder, filename)
-        cv2.imwrite(path, frame)
+        try:
+            cv2.imwrite(path, frame)
+        except Exception as e:
+            print(f"保存图片失败: {e}")
 
     def match_and_move(self):
         # 获取当前帧并进行模板匹配
@@ -365,6 +454,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
         min_distance = float('inf')
         probe_x, probe_y = self.get_probe_position()
+        closest = [probe_x, probe_y]
 
         for center_x, center_y in matched_centers:
             distance = pow(abs(center_x - probe_x), 2) + pow(abs(center_y - probe_y), 2)
@@ -458,8 +548,15 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         except:
             pass
 
+        # 读取帧时加锁，避免并发
+        with self._frame_lock:
+            frame = None if isinstance(self.frame_resized, int) else self.frame_resized.copy()
+        if frame is None or frame.size == 0:
+            print("当前无可用帧")
+            return None
+
         # 使用自定义的ROI选择函数
-        r = self.selectROIWithAdjust("Take Screenshot", self.frame_resized)
+        r = self.selectROIWithAdjust("Take Screenshot", frame)
 
         # 检查用户是否取消选择或选择了无效的区域
         if r is None or r[2] == 0 or r[3] == 0:
@@ -469,7 +566,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
         # 获取选中的矩形区域，并进行裁剪
         x, y, w, h = r
-        cropped_image = self.frame_resized[y:y + h, x:x + w]
+        cropped_image = frame[y:y + h, x:x + w]
 
         # 保存截图
         cv2.imwrite("screenshot.png", cropped_image)
@@ -478,7 +575,12 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         return cropped_image
 
     def select_template(self):
-        param = self.frame_resized
+        # 读取帧时加锁，避免与update_frame竞争
+        with self._frame_lock:
+            param = None if isinstance(self.frame_resized, int) else self.frame_resized.copy()
+        if param is None or param.size == 0:
+            print("当前无可用帧，无法选择模板")
+            return None
 
         # 确保窗口不存在
         try:
@@ -558,40 +660,6 @@ class MainPage1(QMainWindow, Ui_MainWindow):
             cv2.destroyWindow("Select Needle Template")
             return None
 
-        # 获取选中的矩形区域，并进行裁剪
-        x, y, w, h = r
-        cropped_image = param[y:y + h, x:x + w]
-        if MainPage1.equipment:
-            cv2.imwrite("templateLight.png", cropped_image)
-        else:
-            cv2.imwrite("templateNeedle.png", cropped_image)
-
-        # 重新加载模板
-        load_templates()
-
-        # 在当前帧中进行模板匹配
-        matched_points = template(self.frame_resized, equipment=MainPage1.equipment)
-
-        if not matched_points:
-            print("模板匹配失败，无法找到目标")
-            cv2.destroyWindow("Select Needle Template")
-            return None
-
-        # 获取第一个匹配点的坐标（通常是最佳匹配）
-        # 注意：template函数返回的可能是多个点，我们需要确认其格式
-        if isinstance(matched_points, tuple) and len(matched_points) >= 2:
-            # 如果返回的是 (x, y, w, h) 格式
-            matched_x, matched_y = matched_points[0], matched_points[1]
-        elif isinstance(matched_points, list) and len(matched_points) > 0:
-            # 如果返回的是点列表 [(x1,y1), (x2,y2), ...]
-            matched_x, matched_y = matched_points[0]
-        else:
-            print("无法解析模板匹配结果")
-            cv2.destroyWindow("Select Needle Template")
-            return None
-
-        print(f"模板匹配坐标: ({matched_x}, {matched_y})")
-        print(f"鼠标点击坐标: ({mouseX}, {mouseY})")
 
         # 获取选中的矩形区域，并进行裁剪
         x, y, w, h = r
@@ -622,7 +690,11 @@ class MainPage1(QMainWindow, Ui_MainWindow):
             pass
 
         # 使用摄像头当前帧
-        frame = self.frame_resized.copy()
+        with self._frame_lock:
+            frame = None if isinstance(self.frame_resized, int) else self.frame_resized.copy()
+        if frame is None or frame.size == 0:
+            print("当前无可用帧")
+            return None
 
         # 框选单个pad
         pad_roi = self.selectROIWithAdjust("Select Pad Template", frame)
@@ -803,7 +875,9 @@ class MainPage1(QMainWindow, Ui_MainWindow):
     # 自动跟随函数
     def align_frame_with_probe(self):
         if not self.allow_alignment:
-            return self.frame_resized
+            # 未启用对齐时直接返回当前帧
+            with self._frame_lock:
+                return self.frame_resized if not isinstance(self.frame_resized, int) else None
 
         # 初始化线程锁
         if not hasattr(self, '_align_lock'):
@@ -813,11 +887,13 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         current_time = time.time()
         if hasattr(self, '_last_align_time'):
             if current_time - self._last_align_time < 0.5:  # 500ms内不重复启动
-                return self.frame_resized
+                with self._frame_lock:
+                    return self.frame_resized if not isinstance(self.frame_resized, int) else None
 
         # 尝试获取锁，如果已经有线程在运行则直接返回
         if not self._align_lock.acquire(blocking=False):
-            return self.frame_resized
+            with self._frame_lock:
+                return self.frame_resized if not isinstance(self.frame_resized, int) else None
 
         # 更新上次对齐时间
         self._last_align_time = current_time
@@ -852,7 +928,10 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                     last_time = current_time
 
                     # 获取当前帧（避免在循环中修改原始帧）
-                    current_frame = self.frame_resized.copy()
+                    with self._frame_lock:
+                        if isinstance(self.frame_resized, int):
+                            break
+                        current_frame = self.frame_resized.copy()
                     frame_center_x = current_frame.shape[1] // 2
                     frame_center_y = current_frame.shape[0] // 2
 
@@ -1085,6 +1164,9 @@ class MainPage1(QMainWindow, Ui_MainWindow):
             Return:
                 none
         """
+        # 如果当前帧不可用，直接返回
+        if isinstance(self.frame_resized, int) or self.frame_resized is None:
+            return
         # 获取 label_video 在屏幕中的位置
         top_left_global = self.label_video.mapToGlobal(QtCore.QPoint(0, 0))
 
@@ -1118,7 +1200,8 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
     # 计算距离并移动探针
     def move_probe_to_target(self, target_x, target_y):
-        distance_weight = 10 #低温50，常温1
+        distance_weight = 50 #低温50，常温10
+
         errorForLowTemp = 3
         errorForHighTemp = 10
 
@@ -1126,7 +1209,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         self.indicator.setStyleSheet(MainPage1.get_stylesheet(True))
         probe_x, probe_y = self.get_probe_position()
         distance = np.sqrt((target_x - probe_x) ** 2) *distance_weight
-        while distance>=errorForHighTemp:
+        while distance>=errorForLowTemp:
             if StopClass.stop_num == 1:
                 break
             if probe_x is None:
@@ -1142,7 +1225,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
             distance = np.sqrt((target_x - probe_x) ** 2)*distance_weight
 
         distance = np.sqrt((target_y - probe_y) ** 2)*distance_weight
-        while distance>=errorForHighTemp:
+        while distance>=errorForLowTemp:
             if StopClass.stop_num == 1:
                 break
             if probe_y is None:

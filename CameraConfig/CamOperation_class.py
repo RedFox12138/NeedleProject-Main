@@ -11,12 +11,25 @@ import ctypes
 import random
 from ctypes import *
 
-from MvErrorDefine_const import MV_OK, MV_E_CALLORDER
+
+from QTneedle.QTneedle.CameraConfig.CameraParams_const import MV_GIGE_DEVICE
+from QTneedle.QTneedle.CameraConfig.CameraParams_header import MVCC_INTVALUE_EX, MV_FRAME_OUT_INFO_EX, \
+    MV_TRIGGER_MODE_OFF, MV_CC_DEVICE_INFO, MVCC_FLOATVALUE, MV_DISPLAY_FRAME_INFO, MV_SAVE_IMG_TO_FILE_PARAM, \
+    MV_Image_Jpeg, MV_Image_Bmp
+from QTneedle.QTneedle.CameraConfig.MvCameraControl_class import MvCamera
+from QTneedle.QTneedle.CameraConfig.PixelType_header import PixelType_Gvsp_Mono8, PixelType_Gvsp_Mono10, \
+    PixelType_Gvsp_Mono12, PixelType_Gvsp_Mono10_Packed, PixelType_Gvsp_Mono12_Packed, PixelType_Gvsp_BayerGR8, \
+    PixelType_Gvsp_BayerRG8, PixelType_Gvsp_BayerGB8, PixelType_Gvsp_BayerBG8, PixelType_Gvsp_BayerGR10, \
+    PixelType_Gvsp_BayerRG10, PixelType_Gvsp_BayerBG10, PixelType_Gvsp_BayerGB10, PixelType_Gvsp_BayerGR12, \
+    PixelType_Gvsp_BayerRG12, PixelType_Gvsp_BayerBG12, PixelType_Gvsp_BayerGB12, PixelType_Gvsp_BayerGR10_Packed, \
+    PixelType_Gvsp_BayerRG10_Packed, PixelType_Gvsp_BayerGB10_Packed, PixelType_Gvsp_BayerBG10_Packed, \
+    PixelType_Gvsp_BayerRG12_Packed, PixelType_Gvsp_BayerGR12_Packed, PixelType_Gvsp_BayerGB12_Packed, \
+    PixelType_Gvsp_YUV422_Packed, PixelType_Gvsp_BayerBG12_Packed, PixelType_Gvsp_YUV422_YUYV_Packed
+from QTneedle.QTneedle.MvErrorDefine_const import MV_E_CALLORDER, MV_OK, MV_E_PARAMETER
 
 sys.path.append("../MvImport")
 
-from CameraConfig.CameraParams_header import *
-from CameraConfig.MvCameraControl_class import *
+
 
 # 强制关闭线程
 def Async_raise(tid, exctype):
