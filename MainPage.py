@@ -171,7 +171,8 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
         self.label_cameraLabel = label_cameraLabel
         self.timer.timeout.connect(self.update_frame)
-        self.timer.start(30)
+        # 将UI刷新频率从 ~33FPS 降到 ~16FPS，减轻相机与处理压力
+        self.timer.start(60)
         self.frame_resized = 0
         self.lineEdit_savePath = lineEdit_savePath
         self.lineEdit_savePath.setText("C:\\Users\\Administrator\\PycharmProjects\\QTneedle\\ScreenShot")

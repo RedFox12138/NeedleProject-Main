@@ -14,8 +14,9 @@ from QTneedle.QTneedle.demo import Ui_MainWindow
 from SerialPage import SIM928ConnectionThread, RelayConnectionThread
 from StopClass import StopClass
 
-import tkinter as tk
-from tkinter import messagebox
+# 移除对 tkinter 的依赖，避免与 PyQt 事件循环冲突
+# import tkinter as tk
+# from tkinter import messagebox
 
 custom_lib_path = "c:\\users\\administrator\\appdata\\local\\programs\\python\\python37\\lib\\site-packages"
 # 将路径添加到 sys.path
@@ -25,7 +26,8 @@ import threading
 import time
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
 
-matplotlib.use('TkAgg')
+# 使用与 PyQt 兼容的后端，避免使用 TkAgg 引发的跨主线程错误
+matplotlib.use('Qt5Agg')
 
 # 设置中文字体
 plt.rcParams['font.family'] = 'SimHei'
@@ -106,7 +108,8 @@ class locationClass(QMainWindow, Ui_MainWindow):
         Button_PushLocation.clicked.connect(lambda: threading.Thread(target=self.ZConfirmPosition, args=(1,)).start())
         Button_PullLocation.clicked.connect(lambda: threading.Thread(target=self.ZConfirmPosition, args=(2,)).start())
 
-        Button_CreateMap.clicked.connect(lambda: threading.Thread(target=self.CreateMap).start())
+        # 重要：CreateMap 在主线程执行，避免 Matplotlib/Qt 后端跨线程崩溃
+        Button_CreateMap.clicked.connect(self.CreateMap)
 
         Button_ContinueTest.clicked.connect(lambda: threading.Thread(target=self.continue_test).start())
         Button_StopTest.clicked.connect(lambda: threading.Thread(target=self.stop_test).start())
@@ -512,5 +515,3 @@ class locationClass(QMainWindow, Ui_MainWindow):
         distances = [np.sqrt((current_x - pos[0])**2 + (current_y - pos[1])**2) for pos in self.device_positions]
         nearest_index = np.argmin(distances)
         return nearest_index
-
-

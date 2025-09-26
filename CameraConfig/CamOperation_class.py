@@ -158,6 +158,8 @@ class CameraOperation:
         self.exposure_time = exposure_time
         self.gain = gain
         self.buf_lock = threading.Lock()  # 取图和存图的buffer锁
+        # 目标抓取间隔（秒），用于轻微节流，默认约16FPS
+        self.target_grab_interval = 0.06
 
 
     # 打开相机
@@ -193,10 +195,19 @@ class CameraOperation:
                 else:
                     print("warning: set packet size fail! ret[0x%x]" % nPacketSize)
 
-            stBool = c_bool(False)
-            ret = self.obj_cam.MV_CC_GetBoolValue("AcquisitionFrameRateEnable", stBool)
-            if ret != 0:
-                print("get acquisition frame rate enable fail! ret[0x%x]" % ret)
+            # 尝试开启并设置较低的采集帧率，缓解超时
+            try:
+                # 启用 AcquisitionFrameRateEnable
+                ret = self.obj_cam.MV_CC_SetBoolValue("AcquisitionFrameRateEnable", True)
+                if ret != 0:
+                    print("warning: enable AcquisitionFrameRateEnable fail! ret[0x%x]" % ret)
+                else:
+                    # 将采集帧率设置为 ~15 FPS（可根据需要微调）
+                    ret = self.obj_cam.MV_CC_SetFloatValue("AcquisitionFrameRate", 15.0)
+                    if ret != 0:
+                        print("warning: set AcquisitionFrameRate fail! ret[0x%x]" % ret)
+            except Exception as e:
+                print(f"warning: set frame rate exception: {e}")
 
             # ch:设置触发模式为off | en:Set trigger mode as off
             ret = self.obj_cam.MV_CC_SetEnumValue("TriggerMode", MV_TRIGGER_MODE_OFF)
@@ -327,6 +338,8 @@ class CameraOperation:
                 print('show error', 'set gain fail! ret = ' + To_hex_str(ret))
                 return ret
 
+            # 确保使能帧率控制，然后设置新的帧率
+            self.obj_cam.MV_CC_SetBoolValue("AcquisitionFrameRateEnable", True)
             ret = self.obj_cam.MV_CC_SetFloatValue("AcquisitionFrameRate", float(frameRate))
             if ret != 0:
                 print('show error', 'set acquistion frame rate fail! ret = ' + To_hex_str(ret))
@@ -355,6 +368,7 @@ class CameraOperation:
         max_consecutive_errors = 10  # 最大连续错误次数
 
         while True:
+            loop_start = time.time()
             try:
                 if self.buf_grab_image_size < NeedBufSize:
                     self.buf_grab_image = (c_ubyte * NeedBufSize)()
@@ -378,9 +392,6 @@ class CameraOperation:
                     finally:
                         self.buf_lock.release()
 
-                    # print("get one frame: Width[%d], Height[%d], nFrameNum[%d]"
-                    #      % (self.st_frame_info.nWidth, self.st_frame_info.nHeight, self.st_frame_info.nFrameNum))
-
                 else:
                     # 处理错误情况
                     consecutive_errors += 1
@@ -390,6 +401,8 @@ class CameraOperation:
                     # 根据错误类型进行不同处理
                     if ret == 0x80000007:  # 超时错误
                         print("相机获取帧超时")
+                        # 适度退避，避免忙等
+                        time.sleep(min(0.2 + 0.05 * consecutive_errors, 0.6))
                         if consecutive_errors >= 5:
                             print("连续超时次数过多，增加等待时间")
                             time.sleep(0.5)  # 增加等待时间
@@ -435,6 +448,11 @@ class CameraOperation:
                     print("异常次数过多，退出线程")
                     break
                 time.sleep(0.1)
+            finally:
+                # 统一节流，避免过快循环
+                elapsed = time.time() - loop_start
+                if self.target_grab_interval > 0 and elapsed < self.target_grab_interval:
+                    time.sleep(self.target_grab_interval - elapsed)
 
         # 清理资源
         print("相机工作线程退出")
