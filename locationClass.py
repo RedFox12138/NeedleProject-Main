@@ -24,7 +24,7 @@ if custom_lib_path not in sys.path:
     sys.path.append(custom_lib_path)
 import threading
 import time
-from PyQt5.QtWidgets import QMainWindow, QMessageBox
+from PyQt5.QtWidgets import QMainWindow
 
 # 使用与 PyQt 兼容的后端，避免使用 TkAgg 引发的跨主线程错误
 matplotlib.use('Qt5Agg')
@@ -95,9 +95,9 @@ class locationClass(QMainWindow, Ui_MainWindow):
         self.lineEdit_Pulllocation = lineEdit_Pulllocation
 
 
-        self.location1 = 0
-        self.location2 = 0
-        self.location3 = 0
+        self.location1 = None
+        self.location2 = None
+        self.location3 = None
         self.Zlocation1 = 0
         self.Zlocation2 = 0
 
@@ -181,7 +181,7 @@ class locationClass(QMainWindow, Ui_MainWindow):
             self.fig = None  # 显式释放资源
 
         if (self.lineEdit_row.text() == '' or self.lineEdit_col.text() == '' or
-                self.location1 == '' or self.location2 == '' or self.location3 == '' or
+                self.location1 is None or self.location2 is None or self.location3 is None or
                 self.lineEdit_rightTopX.text() == '' or self.lineEdit_rightTopY.text() == '' or
                 self.lineEdit_leftTopX.text() == '' or self.lineEdit_leftTopY.text() == '' or
                 self.lineEdit_rightBottomX.text() == '' or self.lineEdit_rightBottomY.text() == ''):
@@ -205,12 +205,20 @@ class locationClass(QMainWindow, Ui_MainWindow):
                 row, col
             )
 
+            # 基于三个基准名称生成整图命名（左上、右上、右下）
+            self.device_names = self.calculate_device_names(
+                self.lineEdit_leftTopName.text().strip(),
+                self.lineEdit_rightTopName.text().strip(),
+                self.lineEdit_rightBottomName.text().strip(),
+                row, col
+            )
+
             # 创建新的图形和坐标轴
             self.fig, self.ax = plt.subplots()
 
             # 获取所有设备的坐标
-            x_coords = [pos[0] for pos in self.device_positions]
-            y_coords = [pos[1] for pos in self.device_positions]
+            x_coords = [float(pos[0]) for pos in self.device_positions]
+            y_coords = [float(pos[1]) for pos in self.device_positions]
 
             # 计算坐标范围（自适应）
             x_min, x_max = min(x_coords), max(x_coords)
@@ -242,6 +250,14 @@ class locationClass(QMainWindow, Ui_MainWindow):
                 color='blue', label='设备'
             )
 
+            # 在图上为每个点标注名称（若已生成）
+            try:
+                if getattr(self, 'device_names', None) and len(self.device_names) == len(self.device_positions):
+                    for i, name in enumerate(self.device_names):
+                        self.ax.text(x_coords[i], y_coords[i] + margin_y * 0.08, name, fontsize=9, ha='center', color='black')
+            except Exception as e:
+                logger.log(f"标注名称时出现问题: {e}")
+
             # 绘制探针点
             probe_point, = self.ax.plot([], [], 'ro', label='探针')
 
@@ -263,6 +279,7 @@ class locationClass(QMainWindow, Ui_MainWindow):
                 except Exception as e:
                     print(f"更新异常: {e}")
                     return
+                return [probe_point, info_text]
 
             # 创建动画对象
             self.ani = animation.FuncAnimation(
@@ -290,6 +307,7 @@ class locationClass(QMainWindow, Ui_MainWindow):
                     break
 
                 target_x, target_y = self.device_positions[i]
+                PadName = self.device_names[i] if getattr(self, 'device_names', None) and i < len(self.device_names) else ''
                 logger.log(f'探针已经移动移动到目标点: x={target_x}, y={target_y}，准备模板匹配移动')
                 move_to_target(target_x, target_y,self.indicator)
                 time.sleep(4)
@@ -334,7 +352,7 @@ class locationClass(QMainWindow, Ui_MainWindow):
                         time.sleep(1)
 
                         #执行IU计算
-                        self.mainpage1.CalIU(PadName)
+                        self.mainpage1.CalIU(self.device_names[i])
                         d = bytes.fromhex('A0 01 01 A2')  # 打开
                         RelayConnectionThread.anc.write(d)
                         time.sleep(1)
@@ -550,3 +568,85 @@ class locationClass(QMainWindow, Ui_MainWindow):
     def start_map_creation(self):
         # 在主线程中执行 CreateMap
         self.CreateMap()
+
+    def calculate_device_names(self, left_top_name: str, right_top_name: str, right_bottom_name: str, rows: int, cols: int):
+        """
+        使用三个基准名称（左上、右上、右下）为地图内每个点生成名称。
+        命名规则：
+        - 水平移动（屏幕左→右）：第二个字母按列依次+1（考虑 A..Z 循环），后缀不变。
+        - 垂直移动（从上到下）：2 -> 1（字母不变），1 -> 2（第一个字母-1，并在 A..Z 内循环）。
+        - 每个字母组合有两份，后缀为 _1 或 _2。
+        按与 device_positions 相同的 S 型扫描顺序展平返回。
+        """
+        def parse_name(name: str):
+            letters, suf = name.split('_')
+            if len(letters) != 2:
+                raise ValueError('字母部分长度必须为2')
+            return ord(letters[0].upper()), ord(letters[1].upper()), int(suf)
+
+        def format_name(a_ord: int, b_ord: int, suffix: int) -> str:
+            return f"{chr(a_ord)}{chr(b_ord)}_{suffix}"
+
+        def wrap_inc(letter_ord: int, steps: int) -> int:
+            base = ord('A'); span = 26
+            return base + ((letter_ord - base + steps) % span)
+
+        def wrap_dec(letter_ord: int, steps: int) -> int:
+            base = ord('A'); span = 26
+            return base + ((letter_ord - base - steps) % span)
+
+        if not left_top_name or '_' not in left_top_name:
+            return [f"Dev_{i}" for i in range(rows * cols)]
+
+        try:
+            a0, b0, s0 = parse_name(left_top_name)
+            if right_top_name and '_' in right_top_name:
+                a_rt, b_rt, s_rt = parse_name(right_top_name)
+            else:
+                # 右上 = 左上向右 (cols-1) 个位置（第二个字母增加，循环）
+                a_rt, b_rt, s_rt = a0, wrap_inc(b0, cols - 1), s0
+        except Exception:
+            return [f"Dev_{i}" for i in range(rows * cols)]
+
+        # 生成首行（屏幕左→右，第二个字母递增并在A..Z内循环）
+        grid = [[None for _ in range(cols)] for _ in range(rows)]
+        for c in range(cols):
+            grid[0][c] = format_name(a0, wrap_inc(b0, c), s0)
+
+        # 每列向下递推（第一个字母在A..Z内循环递减，仅当 1->2 切换时）
+        for c in range(cols):
+            a, b, s = parse_name(grid[0][c])
+            for r in range(1, rows):
+                if s == 2:
+                    s = 1
+                else:
+                    s = 2
+                    a = wrap_dec(a, 1)
+                grid[r][c] = format_name(a, b, s)
+
+        # 一致性提示（非强校验）
+        try:
+            if grid[0][-1] != format_name(a_rt, b_rt, s_rt):
+                logger.log(f"提示：根据左上推算的右上是 {grid[0][-1]}，与提供的右上 {format_name(a_rt,b_rt,s_rt)} 不一致，将以推算规则为准。")
+        except Exception:
+            pass
+
+        if right_bottom_name and '_' in right_bottom_name:
+            try:
+                if grid[rows-1][cols-1] != right_bottom_name:
+                    logger.log(f"提示：根据规则推算的右下是 {grid[rows-1][cols-1]}，与提供的右下 {right_bottom_name} 不一致，将以推算规则为准。")
+            except Exception:
+                pass
+
+        names_s = []
+        for col_idx in range(cols):
+            # c = cols - 1 - col_idx # 之前是从右到左遍历列
+            c = col_idx  # 现在从左到右遍历列
+            if col_idx % 2 == 0:  # 偶数列（从左数）：自上而下
+                for r in range(rows):
+                    names_s.append(grid[r][c])
+            else:  # 奇数列：自下而上
+                for r in reversed(range(rows)):
+                    names_s.append(grid[r][c])
+        return names_s
+
