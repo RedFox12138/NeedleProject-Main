@@ -50,7 +50,8 @@ class locationClass(QMainWindow, Ui_MainWindow):
                  Button_PushLocation, Button_PullLocation,
                  Button_PushBack, Button_PullBack,
                  lineEdit_leftTopX, lineEdit_leftTopY, lineEdit_rightTopX, lineEdit_rightTopY, lineEdit_rightBottomX, lineEdit_rightBottomY,
-                 Checkbox_DontTest,widget_map,tabWidget,label_light
+                 Checkbox_DontTest,widget_map,tabWidget,label_light,
+                 lineEdit_leftTopName, lineEdit_rightTopName, lineEdit_rightBottomName
     ):
         super().__init__()
 
@@ -72,6 +73,13 @@ class locationClass(QMainWindow, Ui_MainWindow):
         self.lineEdit_rightTopY=lineEdit_rightTopY
         self.lineEdit_rightBottomX=lineEdit_rightBottomX
         self.lineEdit_rightBottomY=lineEdit_rightBottomY
+
+        self.lineEdit_leftTopName=lineEdit_leftTopName
+        self.lineEdit_rightTopName=lineEdit_rightTopName
+        self.lineEdit_rightBottomName=lineEdit_rightBottomName
+
+        # 创建一个持久的线程池，避免重复创建销毁带来的开销
+        self.move_executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix='MoveExecutor')
 
         self.device_positions = []
         self.ax = None
@@ -109,7 +117,7 @@ class locationClass(QMainWindow, Ui_MainWindow):
         Button_PullLocation.clicked.connect(lambda: threading.Thread(target=self.ZConfirmPosition, args=(2,)).start())
 
         # 重要：CreateMap 在主线程执行，避免 Matplotlib/Qt 后端跨线程崩溃
-        Button_CreateMap.clicked.connect(self.CreateMap)
+        Button_CreateMap.clicked.connect(self.start_map_creation)
 
         Button_ContinueTest.clicked.connect(lambda: threading.Thread(target=self.continue_test).start())
         Button_StopTest.clicked.connect(lambda: threading.Thread(target=self.stop_test).start())
@@ -171,13 +179,7 @@ class locationClass(QMainWindow, Ui_MainWindow):
         if hasattr(self, 'fig') and self.fig is not None:
             plt.close(self.fig)
             self.fig = None  # 显式释放资源
-        # 用户输入的参数
-        # top_left = (-0.3835, -2.2729)
-        # top_right = (-0.6593, -2.2734)
-        # bottom_right = (-0.6587, -2.4062)
-        # row = 4
-        # col = 4
-        #
+
         if (self.lineEdit_row.text() == '' or self.lineEdit_col.text() == '' or
                 self.location1 == '' or self.location2 == '' or self.location3 == '' or
                 self.lineEdit_rightTopX.text() == '' or self.lineEdit_rightTopY.text() == '' or
@@ -332,7 +334,7 @@ class locationClass(QMainWindow, Ui_MainWindow):
                         time.sleep(1)
 
                         #执行IU计算
-                        self.mainpage1.CalIU()
+                        self.mainpage1.CalIU(PadName)
                         d = bytes.fromhex('A0 01 01 A2')  # 打开
                         RelayConnectionThread.anc.write(d)
                         time.sleep(1)
@@ -495,23 +497,56 @@ class locationClass(QMainWindow, Ui_MainWindow):
         return points
     # 鼠标点击事件处理函数
     def on_click(self,event):
+        # 忽略坐标轴外的点击
+        if event.xdata is None or event.ydata is None:
+            return
+
         click_x, click_y = event.xdata, event.ydata
         nearest_index = self.find_nearest_index(click_x, click_y)
         target_x, target_y = self.device_positions[nearest_index]
-        with ThreadPoolExecutor() as executor:
-            future = executor.submit(move_to_target, target_x, target_y,self.indicator)
-            locationClass.locationX,locationClass.locationY = future.result()  # 获取运行结果
-            future.add_done_callback(self.on_move_complete)
+
+        logger.log(f"地图点击：移动到目标点 ({target_x:.4f}, {target_y:.4f})")
+
+        # 使用持久化的线程池提交任务，避免重复创建线程带来的开销
+        future = self.move_executor.submit(move_to_target, target_x, target_y, self.indicator)
+        future.add_done_callback(self.on_move_complete)
 
 
     def on_move_complete(self,future):
-        # 当 move_to_target 完成后执行的回调函数
-        locationClass.locationX, locationClass.locationY = future.result()
-        time.sleep(4)
-        self.mainpage1.match_and_move()
+        # 当 move_to_target 完成后，此回调在主线程中被触发
+        try:
+            # 获取移动结果，并更新UI（如果需要）
+            result = future.result()
+            if result:
+                locationClass.locationX, locationClass.locationY = result
+                logger.log(f"地图点击移动完成，当前位置: ({locationClass.locationX:.4f}, {locationClass.locationY:.4f})")
+            else:
+                # 如果没有返回有效结果，重新获取一次
+                locationClass.locationX, locationClass.locationY, _ = getPosition()
+
+            # 将后续的耗时操作（模板匹配）也放入后台线程，防止阻塞UI
+            threading.Thread(target=self._post_move_actions, daemon=True).start()
+
+        except Exception as e:
+            logger.log(f"移动完成回调(on_move_complete)中出现异常: {e}")
+
+    def _post_move_actions(self):
+        # 移动后的耗时操作（如模板匹配）
+        try:
+            # 等待探针稳定
+            time.sleep(1)
+            logger.log("准备执行移动后的模板匹配...")
+            self.mainpage1.match_and_move()
+            logger.log("移动后的模板匹配完成。")
+        except Exception as e:
+            logger.log(f"后台模板匹配(_post_move_actions)中出现异常: {e}")
 
     # 找到距离当前位置最近的点的索引
     def find_nearest_index(self,current_x, current_y):
         distances = [np.sqrt((current_x - pos[0])**2 + (current_y - pos[1])**2) for pos in self.device_positions]
         nearest_index = np.argmin(distances)
         return nearest_index
+
+    def start_map_creation(self):
+        # 在主线程中执行 CreateMap
+        self.CreateMap()

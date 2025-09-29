@@ -23,13 +23,13 @@ def main():
     #=================================================================================================
     #初始需修改的参数
 
-    # sample_number = 'GQ1'   # 样品批号
-    sample_number = 'GQ1'   # 样品批号
+    deviceName =  "Default"
+    if(sys.argv[2]is not None):
+        deviceName = sys.argv[2]
 
-    Device_no = 'EB_1'
-    V_max = 0.35  # IV扫描最大电压，单位：V
-    V_step = 0.01  # 电压步进
-    R_bias = 10070  # 偏置电阻大小
+    V_max = 3.5  # IV扫描最大电压，单位：V
+    V_step = 0.05  # 电压步进
+    R_bias = 98800  # 偏置电阻大小
 
     #=================================================================================================
 
@@ -87,7 +87,7 @@ def main():
     datapath = sys.argv[1]
     if not os.path.exists(datapath) :
         os.makedirs (datapath)
-    fileName =sample_number +'_' +Device_no+'_Vmax_' + str(V_max) +'_Vstep_'+ str(V_step)+'_R_bias_'+ str(R_bias) +'_'+ time_str+'.mat'   # 保存的数据文件名称
+    fileName ='deviceName_'+ deviceName +'_Vmax_' + str(V_max) +'_Vstep_'+ str(V_step)+'_R_bias_'+ str(R_bias) +'_'+ time_str+'.mat'   # 保存的数据文件名称
     matFile = datapath +fileName
     print("保存路径是", matFile)
     sio.savemat(matFile, {'V_source_set' : V_set,'V': V,'I': I})

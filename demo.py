@@ -655,84 +655,11 @@ class Ui_MainWindow(object):
         self.label_6.setFont(font)
         self.label_6.setObjectName("label_6")
         self.gridLayoutWidget_7 = QtWidgets.QWidget(self.frame_9)
-        self.gridLayoutWidget_7.setGeometry(QtCore.QRect(30, 100, 411, 171))
+        self.gridLayoutWidget_7.setGeometry(QtCore.QRect(30, 100, 431, 171))
         self.gridLayoutWidget_7.setObjectName("gridLayoutWidget_7")
         self.gridLayout_8 = QtWidgets.QGridLayout(self.gridLayoutWidget_7)
         self.gridLayout_8.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_8.setObjectName("gridLayout_8")
-        self.Button_Location1 = QtWidgets.QPushButton(self.gridLayoutWidget_7)
-        font = QtGui.QFont()
-        font.setFamily("Calibri")
-        font.setPointSize(15)
-        self.Button_Location1.setFont(font)
-        self.Button_Location1.setObjectName("Button_Location1")
-        self.gridLayout_8.addWidget(self.Button_Location1, 1, 4, 1, 1)
-        self.label_47 = QtWidgets.QLabel(self.gridLayoutWidget_7)
-        font = QtGui.QFont()
-        font.setFamily("Calibri")
-        font.setPointSize(15)
-        self.label_47.setFont(font)
-        self.label_47.setObjectName("label_47")
-        self.gridLayout_8.addWidget(self.label_47, 0, 3, 1, 1)
-        self.Button_Location2 = QtWidgets.QPushButton(self.gridLayoutWidget_7)
-        font = QtGui.QFont()
-        font.setFamily("Calibri")
-        font.setPointSize(15)
-        self.Button_Location2.setFont(font)
-        self.Button_Location2.setObjectName("Button_Location2")
-        self.gridLayout_8.addWidget(self.Button_Location2, 2, 4, 1, 1)
-        self.Button_Location3 = QtWidgets.QPushButton(self.gridLayoutWidget_7)
-        font = QtGui.QFont()
-        font.setFamily("Calibri")
-        font.setPointSize(15)
-        self.Button_Location3.setFont(font)
-        self.Button_Location3.setObjectName("Button_Location3")
-        self.gridLayout_8.addWidget(self.Button_Location3, 3, 4, 1, 1)
-        self.label_46 = QtWidgets.QLabel(self.gridLayoutWidget_7)
-        font = QtGui.QFont()
-        font.setFamily("Calibri")
-        font.setPointSize(15)
-        self.label_46.setFont(font)
-        self.label_46.setObjectName("label_46")
-        self.gridLayout_8.addWidget(self.label_46, 0, 2, 1, 1)
-        self.label_45 = QtWidgets.QLabel(self.gridLayoutWidget_7)
-        font = QtGui.QFont()
-        font.setFamily("Calibri")
-        font.setPointSize(15)
-        self.label_45.setFont(font)
-        self.label_45.setObjectName("label_45")
-        self.gridLayout_8.addWidget(self.label_45, 0, 1, 1, 1)
-        self.lineEdit_Location1 = QtWidgets.QLineEdit(self.gridLayoutWidget_7)
-        font = QtGui.QFont()
-        font.setFamily("Calibri")
-        font.setPointSize(15)
-        self.lineEdit_Location1.setFont(font)
-        self.lineEdit_Location1.setStyleSheet("QLineEdit {\n"
-"    background-color: #f0f0f0;\n"
-"    border: 2px solid #a0a0a0;\n"
-"    border-radius: 5px;\n"
-"    padding: 5px;\n"
-"    color: #000000;\n"
-"    selection-background-color: #c0c0c0;\n"
-"    selection-color: #000000;\n"
-"}\n"
-"\n"
-"QLineEdit:focus {\n"
-"    border: 2px solid #606060;\n"
-"    background-color: #e0e0e0;\n"
-"}\n"
-"\n"
-"QLineEdit:hover {\n"
-"    border: 2px solid #808080;\n"
-"}\n"
-"\n"
-"QLineEdit:disabled {\n"
-"    background-color: #d0d0d0;\n"
-"    color: #808080;\n"
-"    border: 2px solid #c0c0c0;\n"
-"}")
-        self.lineEdit_Location1.setObjectName("lineEdit_Location1")
-        self.gridLayout_8.addWidget(self.lineEdit_Location1, 1, 1, 1, 1)
         self.lineEdit_Location2 = QtWidgets.QLineEdit(self.gridLayoutWidget_7)
         font = QtGui.QFont()
         font.setFamily("Calibri")
@@ -764,12 +691,19 @@ class Ui_MainWindow(object):
 "}")
         self.lineEdit_Location2.setObjectName("lineEdit_Location2")
         self.gridLayout_8.addWidget(self.lineEdit_Location2, 2, 1, 1, 1)
-        self.lineEdit_leftTopX = QtWidgets.QLineEdit(self.gridLayoutWidget_7)
+        self.Button_Location1 = QtWidgets.QPushButton(self.gridLayoutWidget_7)
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
-        self.lineEdit_leftTopX.setFont(font)
-        self.lineEdit_leftTopX.setStyleSheet("QLineEdit {\n"
+        self.Button_Location1.setFont(font)
+        self.Button_Location1.setObjectName("Button_Location1")
+        self.gridLayout_8.addWidget(self.Button_Location1, 1, 5, 1, 1)
+        self.lineEdit_leftTopName = QtWidgets.QLineEdit(self.gridLayoutWidget_7)
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(15)
+        self.lineEdit_leftTopName.setFont(font)
+        self.lineEdit_leftTopName.setStyleSheet("QLineEdit {\n"
 "    background-color: #f0f0f0;\n"
 "    border: 2px solid #a0a0a0;\n"
 "    border-radius: 5px;\n"
@@ -793,8 +727,53 @@ class Ui_MainWindow(object):
 "    color: #808080;\n"
 "    border: 2px solid #c0c0c0;\n"
 "}")
-        self.lineEdit_leftTopX.setObjectName("lineEdit_leftTopX")
-        self.gridLayout_8.addWidget(self.lineEdit_leftTopX, 1, 2, 1, 1)
+        self.lineEdit_leftTopName.setObjectName("lineEdit_leftTopName")
+        self.gridLayout_8.addWidget(self.lineEdit_leftTopName, 1, 4, 1, 1)
+        self.label_46 = QtWidgets.QLabel(self.gridLayoutWidget_7)
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(15)
+        self.label_46.setFont(font)
+        self.label_46.setObjectName("label_46")
+        self.gridLayout_8.addWidget(self.label_46, 0, 2, 1, 1)
+        self.Button_Location2 = QtWidgets.QPushButton(self.gridLayoutWidget_7)
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(15)
+        self.Button_Location2.setFont(font)
+        self.Button_Location2.setObjectName("Button_Location2")
+        self.gridLayout_8.addWidget(self.Button_Location2, 2, 5, 1, 1)
+        self.lineEdit_Location1 = QtWidgets.QLineEdit(self.gridLayoutWidget_7)
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(15)
+        self.lineEdit_Location1.setFont(font)
+        self.lineEdit_Location1.setStyleSheet("QLineEdit {\n"
+"    background-color: #f0f0f0;\n"
+"    border: 2px solid #a0a0a0;\n"
+"    border-radius: 5px;\n"
+"    padding: 5px;\n"
+"    color: #000000;\n"
+"    selection-background-color: #c0c0c0;\n"
+"    selection-color: #000000;\n"
+"}\n"
+"\n"
+"QLineEdit:focus {\n"
+"    border: 2px solid #606060;\n"
+"    background-color: #e0e0e0;\n"
+"}\n"
+"\n"
+"QLineEdit:hover {\n"
+"    border: 2px solid #808080;\n"
+"}\n"
+"\n"
+"QLineEdit:disabled {\n"
+"    background-color: #d0d0d0;\n"
+"    color: #808080;\n"
+"    border: 2px solid #c0c0c0;\n"
+"}")
+        self.lineEdit_Location1.setObjectName("lineEdit_Location1")
+        self.gridLayout_8.addWidget(self.lineEdit_Location1, 1, 1, 1, 1)
         self.label_25 = QtWidgets.QLabel(self.gridLayoutWidget_7)
         font = QtGui.QFont()
         font.setFamily("Calibri")
@@ -802,130 +781,13 @@ class Ui_MainWindow(object):
         self.label_25.setFont(font)
         self.label_25.setObjectName("label_25")
         self.gridLayout_8.addWidget(self.label_25, 1, 0, 1, 1)
-        self.lineEdit_Location3 = QtWidgets.QLineEdit(self.gridLayoutWidget_7)
+        self.label_47 = QtWidgets.QLabel(self.gridLayoutWidget_7)
         font = QtGui.QFont()
         font.setFamily("Calibri")
         font.setPointSize(15)
-        self.lineEdit_Location3.setFont(font)
-        self.lineEdit_Location3.setStyleSheet("QLineEdit {\n"
-"    background-color: #f0f0f0;\n"
-"    border: 2px solid #a0a0a0;\n"
-"    border-radius: 5px;\n"
-"    padding: 5px;\n"
-"    color: #000000;\n"
-"    selection-background-color: #c0c0c0;\n"
-"    selection-color: #000000;\n"
-"}\n"
-"\n"
-"QLineEdit:focus {\n"
-"    border: 2px solid #606060;\n"
-"    background-color: #e0e0e0;\n"
-"}\n"
-"\n"
-"QLineEdit:hover {\n"
-"    border: 2px solid #808080;\n"
-"}\n"
-"\n"
-"QLineEdit:disabled {\n"
-"    background-color: #d0d0d0;\n"
-"    color: #808080;\n"
-"    border: 2px solid #c0c0c0;\n"
-"}")
-        self.lineEdit_Location3.setObjectName("lineEdit_Location3")
-        self.gridLayout_8.addWidget(self.lineEdit_Location3, 3, 1, 1, 1)
-        self.lineEdit_rightTopX = QtWidgets.QLineEdit(self.gridLayoutWidget_7)
-        font = QtGui.QFont()
-        font.setFamily("Calibri")
-        font.setPointSize(15)
-        self.lineEdit_rightTopX.setFont(font)
-        self.lineEdit_rightTopX.setStyleSheet("QLineEdit {\n"
-"    background-color: #f0f0f0;\n"
-"    border: 2px solid #a0a0a0;\n"
-"    border-radius: 5px;\n"
-"    padding: 5px;\n"
-"    color: #000000;\n"
-"    selection-background-color: #c0c0c0;\n"
-"    selection-color: #000000;\n"
-"}\n"
-"\n"
-"QLineEdit:focus {\n"
-"    border: 2px solid #606060;\n"
-"    background-color: #e0e0e0;\n"
-"}\n"
-"\n"
-"QLineEdit:hover {\n"
-"    border: 2px solid #808080;\n"
-"}\n"
-"\n"
-"QLineEdit:disabled {\n"
-"    background-color: #d0d0d0;\n"
-"    color: #808080;\n"
-"    border: 2px solid #c0c0c0;\n"
-"}")
-        self.lineEdit_rightTopX.setObjectName("lineEdit_rightTopX")
-        self.gridLayout_8.addWidget(self.lineEdit_rightTopX, 2, 2, 1, 1)
-        self.lineEdit_rightBottomX = QtWidgets.QLineEdit(self.gridLayoutWidget_7)
-        font = QtGui.QFont()
-        font.setFamily("Calibri")
-        font.setPointSize(15)
-        self.lineEdit_rightBottomX.setFont(font)
-        self.lineEdit_rightBottomX.setStyleSheet("QLineEdit {\n"
-"    background-color: #f0f0f0;\n"
-"    border: 2px solid #a0a0a0;\n"
-"    border-radius: 5px;\n"
-"    padding: 5px;\n"
-"    color: #000000;\n"
-"    selection-background-color: #c0c0c0;\n"
-"    selection-color: #000000;\n"
-"}\n"
-"\n"
-"QLineEdit:focus {\n"
-"    border: 2px solid #606060;\n"
-"    background-color: #e0e0e0;\n"
-"}\n"
-"\n"
-"QLineEdit:hover {\n"
-"    border: 2px solid #808080;\n"
-"}\n"
-"\n"
-"QLineEdit:disabled {\n"
-"    background-color: #d0d0d0;\n"
-"    color: #808080;\n"
-"    border: 2px solid #c0c0c0;\n"
-"}")
-        self.lineEdit_rightBottomX.setObjectName("lineEdit_rightBottomX")
-        self.gridLayout_8.addWidget(self.lineEdit_rightBottomX, 3, 2, 1, 1)
-        self.lineEdit_rightBottomY = QtWidgets.QLineEdit(self.gridLayoutWidget_7)
-        font = QtGui.QFont()
-        font.setFamily("Calibri")
-        font.setPointSize(15)
-        self.lineEdit_rightBottomY.setFont(font)
-        self.lineEdit_rightBottomY.setStyleSheet("QLineEdit {\n"
-"    background-color: #f0f0f0;\n"
-"    border: 2px solid #a0a0a0;\n"
-"    border-radius: 5px;\n"
-"    padding: 5px;\n"
-"    color: #000000;\n"
-"    selection-background-color: #c0c0c0;\n"
-"    selection-color: #000000;\n"
-"}\n"
-"\n"
-"QLineEdit:focus {\n"
-"    border: 2px solid #606060;\n"
-"    background-color: #e0e0e0;\n"
-"}\n"
-"\n"
-"QLineEdit:hover {\n"
-"    border: 2px solid #808080;\n"
-"}\n"
-"\n"
-"QLineEdit:disabled {\n"
-"    background-color: #d0d0d0;\n"
-"    color: #808080;\n"
-"    border: 2px solid #c0c0c0;\n"
-"}")
-        self.lineEdit_rightBottomY.setObjectName("lineEdit_rightBottomY")
-        self.gridLayout_8.addWidget(self.lineEdit_rightBottomY, 3, 3, 1, 1)
+        self.label_47.setFont(font)
+        self.label_47.setObjectName("label_47")
+        self.gridLayout_8.addWidget(self.label_47, 0, 3, 1, 1)
         self.label_32 = QtWidgets.QLabel(self.gridLayoutWidget_7)
         font = QtGui.QFont()
         font.setFamily("Calibri")
@@ -964,6 +826,106 @@ class Ui_MainWindow(object):
 "}")
         self.lineEdit_rightTopY.setObjectName("lineEdit_rightTopY")
         self.gridLayout_8.addWidget(self.lineEdit_rightTopY, 2, 3, 1, 1)
+        self.lineEdit_rightTopX = QtWidgets.QLineEdit(self.gridLayoutWidget_7)
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(15)
+        self.lineEdit_rightTopX.setFont(font)
+        self.lineEdit_rightTopX.setStyleSheet("QLineEdit {\n"
+"    background-color: #f0f0f0;\n"
+"    border: 2px solid #a0a0a0;\n"
+"    border-radius: 5px;\n"
+"    padding: 5px;\n"
+"    color: #000000;\n"
+"    selection-background-color: #c0c0c0;\n"
+"    selection-color: #000000;\n"
+"}\n"
+"\n"
+"QLineEdit:focus {\n"
+"    border: 2px solid #606060;\n"
+"    background-color: #e0e0e0;\n"
+"}\n"
+"\n"
+"QLineEdit:hover {\n"
+"    border: 2px solid #808080;\n"
+"}\n"
+"\n"
+"QLineEdit:disabled {\n"
+"    background-color: #d0d0d0;\n"
+"    color: #808080;\n"
+"    border: 2px solid #c0c0c0;\n"
+"}")
+        self.lineEdit_rightTopX.setObjectName("lineEdit_rightTopX")
+        self.gridLayout_8.addWidget(self.lineEdit_rightTopX, 2, 2, 1, 1)
+        self.lineEdit_Location3 = QtWidgets.QLineEdit(self.gridLayoutWidget_7)
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(15)
+        self.lineEdit_Location3.setFont(font)
+        self.lineEdit_Location3.setStyleSheet("QLineEdit {\n"
+"    background-color: #f0f0f0;\n"
+"    border: 2px solid #a0a0a0;\n"
+"    border-radius: 5px;\n"
+"    padding: 5px;\n"
+"    color: #000000;\n"
+"    selection-background-color: #c0c0c0;\n"
+"    selection-color: #000000;\n"
+"}\n"
+"\n"
+"QLineEdit:focus {\n"
+"    border: 2px solid #606060;\n"
+"    background-color: #e0e0e0;\n"
+"}\n"
+"\n"
+"QLineEdit:hover {\n"
+"    border: 2px solid #808080;\n"
+"}\n"
+"\n"
+"QLineEdit:disabled {\n"
+"    background-color: #d0d0d0;\n"
+"    color: #808080;\n"
+"    border: 2px solid #c0c0c0;\n"
+"}")
+        self.lineEdit_Location3.setObjectName("lineEdit_Location3")
+        self.gridLayout_8.addWidget(self.lineEdit_Location3, 3, 1, 1, 1)
+        self.lineEdit_rightBottomX = QtWidgets.QLineEdit(self.gridLayoutWidget_7)
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(15)
+        self.lineEdit_rightBottomX.setFont(font)
+        self.lineEdit_rightBottomX.setStyleSheet("QLineEdit {\n"
+"    background-color: #f0f0f0;\n"
+"    border: 2px solid #a0a0a0;\n"
+"    border-radius: 5px;\n"
+"    padding: 5px;\n"
+"    color: #000000;\n"
+"    selection-background-color: #c0c0c0;\n"
+"    selection-color: #000000;\n"
+"}\n"
+"\n"
+"QLineEdit:focus {\n"
+"    border: 2px solid #606060;\n"
+"    background-color: #e0e0e0;\n"
+"}\n"
+"\n"
+"QLineEdit:hover {\n"
+"    border: 2px solid #808080;\n"
+"}\n"
+"\n"
+"QLineEdit:disabled {\n"
+"    background-color: #d0d0d0;\n"
+"    color: #808080;\n"
+"    border: 2px solid #c0c0c0;\n"
+"}")
+        self.lineEdit_rightBottomX.setObjectName("lineEdit_rightBottomX")
+        self.gridLayout_8.addWidget(self.lineEdit_rightBottomX, 3, 2, 1, 1)
+        self.label_45 = QtWidgets.QLabel(self.gridLayoutWidget_7)
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(15)
+        self.label_45.setFont(font)
+        self.label_45.setObjectName("label_45")
+        self.gridLayout_8.addWidget(self.label_45, 0, 1, 1, 1)
         self.label_26 = QtWidgets.QLabel(self.gridLayoutWidget_7)
         font = QtGui.QFont()
         font.setFamily("Calibri")
@@ -971,6 +933,44 @@ class Ui_MainWindow(object):
         self.label_26.setFont(font)
         self.label_26.setObjectName("label_26")
         self.gridLayout_8.addWidget(self.label_26, 2, 0, 1, 1)
+        self.lineEdit_leftTopX = QtWidgets.QLineEdit(self.gridLayoutWidget_7)
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(15)
+        self.lineEdit_leftTopX.setFont(font)
+        self.lineEdit_leftTopX.setStyleSheet("QLineEdit {\n"
+"    background-color: #f0f0f0;\n"
+"    border: 2px solid #a0a0a0;\n"
+"    border-radius: 5px;\n"
+"    padding: 5px;\n"
+"    color: #000000;\n"
+"    selection-background-color: #c0c0c0;\n"
+"    selection-color: #000000;\n"
+"}\n"
+"\n"
+"QLineEdit:focus {\n"
+"    border: 2px solid #606060;\n"
+"    background-color: #e0e0e0;\n"
+"}\n"
+"\n"
+"QLineEdit:hover {\n"
+"    border: 2px solid #808080;\n"
+"}\n"
+"\n"
+"QLineEdit:disabled {\n"
+"    background-color: #d0d0d0;\n"
+"    color: #808080;\n"
+"    border: 2px solid #c0c0c0;\n"
+"}")
+        self.lineEdit_leftTopX.setObjectName("lineEdit_leftTopX")
+        self.gridLayout_8.addWidget(self.lineEdit_leftTopX, 1, 2, 1, 1)
+        self.Button_Location3 = QtWidgets.QPushButton(self.gridLayoutWidget_7)
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(15)
+        self.Button_Location3.setFont(font)
+        self.Button_Location3.setObjectName("Button_Location3")
+        self.gridLayout_8.addWidget(self.Button_Location3, 3, 5, 1, 1)
         self.lineEdit_leftTopY = QtWidgets.QLineEdit(self.gridLayoutWidget_7)
         font = QtGui.QFont()
         font.setFamily("Calibri")
@@ -1002,6 +1002,106 @@ class Ui_MainWindow(object):
 "}")
         self.lineEdit_leftTopY.setObjectName("lineEdit_leftTopY")
         self.gridLayout_8.addWidget(self.lineEdit_leftTopY, 1, 3, 1, 1)
+        self.lineEdit_rightBottomY = QtWidgets.QLineEdit(self.gridLayoutWidget_7)
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(15)
+        self.lineEdit_rightBottomY.setFont(font)
+        self.lineEdit_rightBottomY.setStyleSheet("QLineEdit {\n"
+"    background-color: #f0f0f0;\n"
+"    border: 2px solid #a0a0a0;\n"
+"    border-radius: 5px;\n"
+"    padding: 5px;\n"
+"    color: #000000;\n"
+"    selection-background-color: #c0c0c0;\n"
+"    selection-color: #000000;\n"
+"}\n"
+"\n"
+"QLineEdit:focus {\n"
+"    border: 2px solid #606060;\n"
+"    background-color: #e0e0e0;\n"
+"}\n"
+"\n"
+"QLineEdit:hover {\n"
+"    border: 2px solid #808080;\n"
+"}\n"
+"\n"
+"QLineEdit:disabled {\n"
+"    background-color: #d0d0d0;\n"
+"    color: #808080;\n"
+"    border: 2px solid #c0c0c0;\n"
+"}")
+        self.lineEdit_rightBottomY.setObjectName("lineEdit_rightBottomY")
+        self.gridLayout_8.addWidget(self.lineEdit_rightBottomY, 3, 3, 1, 1)
+        self.lineEdit_rightTopName = QtWidgets.QLineEdit(self.gridLayoutWidget_7)
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(15)
+        self.lineEdit_rightTopName.setFont(font)
+        self.lineEdit_rightTopName.setStyleSheet("QLineEdit {\n"
+"    background-color: #f0f0f0;\n"
+"    border: 2px solid #a0a0a0;\n"
+"    border-radius: 5px;\n"
+"    padding: 5px;\n"
+"    color: #000000;\n"
+"    selection-background-color: #c0c0c0;\n"
+"    selection-color: #000000;\n"
+"}\n"
+"\n"
+"QLineEdit:focus {\n"
+"    border: 2px solid #606060;\n"
+"    background-color: #e0e0e0;\n"
+"}\n"
+"\n"
+"QLineEdit:hover {\n"
+"    border: 2px solid #808080;\n"
+"}\n"
+"\n"
+"QLineEdit:disabled {\n"
+"    background-color: #d0d0d0;\n"
+"    color: #808080;\n"
+"    border: 2px solid #c0c0c0;\n"
+"}")
+        self.lineEdit_rightTopName.setObjectName("lineEdit_rightTopName")
+        self.gridLayout_8.addWidget(self.lineEdit_rightTopName, 2, 4, 1, 1)
+        self.lineEdit_rightBottomName = QtWidgets.QLineEdit(self.gridLayoutWidget_7)
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(15)
+        self.lineEdit_rightBottomName.setFont(font)
+        self.lineEdit_rightBottomName.setStyleSheet("QLineEdit {\n"
+"    background-color: #f0f0f0;\n"
+"    border: 2px solid #a0a0a0;\n"
+"    border-radius: 5px;\n"
+"    padding: 5px;\n"
+"    color: #000000;\n"
+"    selection-background-color: #c0c0c0;\n"
+"    selection-color: #000000;\n"
+"}\n"
+"\n"
+"QLineEdit:focus {\n"
+"    border: 2px solid #606060;\n"
+"    background-color: #e0e0e0;\n"
+"}\n"
+"\n"
+"QLineEdit:hover {\n"
+"    border: 2px solid #808080;\n"
+"}\n"
+"\n"
+"QLineEdit:disabled {\n"
+"    background-color: #d0d0d0;\n"
+"    color: #808080;\n"
+"    border: 2px solid #c0c0c0;\n"
+"}")
+        self.lineEdit_rightBottomName.setObjectName("lineEdit_rightBottomName")
+        self.gridLayout_8.addWidget(self.lineEdit_rightBottomName, 3, 4, 1, 1)
+        self.label_48 = QtWidgets.QLabel(self.gridLayoutWidget_7)
+        font = QtGui.QFont()
+        font.setFamily("Calibri")
+        font.setPointSize(15)
+        self.label_48.setFont(font)
+        self.label_48.setObjectName("label_48")
+        self.gridLayout_8.addWidget(self.label_48, 0, 4, 1, 1)
         self.label_59 = QtWidgets.QLabel(self.frame_9)
         self.label_59.setGeometry(QtCore.QRect(10, 40, 441, 31))
         font = QtGui.QFont()
@@ -2499,7 +2599,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -2536,14 +2636,15 @@ class Ui_MainWindow(object):
         self.Checkbox_DontTest.setText(_translate("MainWindow", "仅移动，不进行按压与测试"))
         self.label_6.setText(_translate("MainWindow", "第三步，请找到三个点，作为大矩阵中的小矩阵，"))
         self.Button_Location1.setText(_translate("MainWindow", "确认"))
-        self.label_47.setText(_translate("MainWindow", "列"))
-        self.Button_Location2.setText(_translate("MainWindow", "确认"))
-        self.Button_Location3.setText(_translate("MainWindow", "确认"))
         self.label_46.setText(_translate("MainWindow", "行"))
-        self.label_45.setText(_translate("MainWindow", "坐标"))
+        self.Button_Location2.setText(_translate("MainWindow", "确认"))
         self.label_25.setText(_translate("MainWindow", "左上"))
+        self.label_47.setText(_translate("MainWindow", "列"))
         self.label_32.setText(_translate("MainWindow", "右下"))
+        self.label_45.setText(_translate("MainWindow", "坐标"))
         self.label_26.setText(_translate("MainWindow", "右上"))
+        self.Button_Location3.setText(_translate("MainWindow", "确认"))
+        self.label_48.setText(_translate("MainWindow", "编号名称"))
         self.label_59.setText(_translate("MainWindow", "其中，“行”、“列”代表了当前点在大矩阵中"))
         self.label_60.setText(_translate("MainWindow", "是第几行、第几列"))
         self.label_41.setText(_translate("MainWindow", "抬升点"))

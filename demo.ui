@@ -93,7 +93,7 @@ QTabWidget::pane {
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>1</number>
     </property>
     <property name="iconSize">
      <size>
@@ -1158,125 +1158,11 @@ border_color:rgb(255,255,127);
         <rect>
          <x>30</x>
          <y>100</y>
-         <width>411</width>
+         <width>431</width>
          <height>171</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_8">
-        <item row="1" column="4">
-         <widget class="QPushButton" name="Button_Location1">
-          <property name="font">
-           <font>
-            <family>Calibri</family>
-            <pointsize>15</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>确认</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="3">
-         <widget class="QLabel" name="label_47">
-          <property name="font">
-           <font>
-            <family>Calibri</family>
-            <pointsize>15</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>列</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="4">
-         <widget class="QPushButton" name="Button_Location2">
-          <property name="font">
-           <font>
-            <family>Calibri</family>
-            <pointsize>15</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>确认</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="4">
-         <widget class="QPushButton" name="Button_Location3">
-          <property name="font">
-           <font>
-            <family>Calibri</family>
-            <pointsize>15</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>确认</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QLabel" name="label_46">
-          <property name="font">
-           <font>
-            <family>Calibri</family>
-            <pointsize>15</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>行</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLabel" name="label_45">
-          <property name="font">
-           <font>
-            <family>Calibri</family>
-            <pointsize>15</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>坐标</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="lineEdit_Location1">
-          <property name="font">
-           <font>
-            <family>Calibri</family>
-            <pointsize>15</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLineEdit {
-    background-color: #f0f0f0;
-    border: 2px solid #a0a0a0;
-    border-radius: 5px;
-    padding: 5px;
-    color: #000000;
-    selection-background-color: #c0c0c0;
-    selection-color: #000000;
-}
-
-QLineEdit:focus {
-    border: 2px solid #606060;
-    background-color: #e0e0e0;
-}
-
-QLineEdit:hover {
-    border: 2px solid #808080;
-}
-
-QLineEdit:disabled {
-    background-color: #d0d0d0;
-    color: #808080;
-    border: 2px solid #c0c0c0;
-}</string>
-          </property>
-         </widget>
-        </item>
         <item row="2" column="1">
          <widget class="QLineEdit" name="lineEdit_Location2">
           <property name="font">
@@ -1313,8 +1199,83 @@ QLineEdit:disabled {
           </property>
          </widget>
         </item>
-        <item row="1" column="2">
-         <widget class="QLineEdit" name="lineEdit_leftTopX">
+        <item row="1" column="5">
+         <widget class="QPushButton" name="Button_Location1">
+          <property name="font">
+           <font>
+            <family>Calibri</family>
+            <pointsize>15</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>确认</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="4">
+         <widget class="QLineEdit" name="lineEdit_leftTopName">
+          <property name="font">
+           <font>
+            <family>Calibri</family>
+            <pointsize>15</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLineEdit {
+    background-color: #f0f0f0;
+    border: 2px solid #a0a0a0;
+    border-radius: 5px;
+    padding: 5px;
+    color: #000000;
+    selection-background-color: #c0c0c0;
+    selection-color: #000000;
+}
+
+QLineEdit:focus {
+    border: 2px solid #606060;
+    background-color: #e0e0e0;
+}
+
+QLineEdit:hover {
+    border: 2px solid #808080;
+}
+
+QLineEdit:disabled {
+    background-color: #d0d0d0;
+    color: #808080;
+    border: 2px solid #c0c0c0;
+}</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QLabel" name="label_46">
+          <property name="font">
+           <font>
+            <family>Calibri</family>
+            <pointsize>15</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>行</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="5">
+         <widget class="QPushButton" name="Button_Location2">
+          <property name="font">
+           <font>
+            <family>Calibri</family>
+            <pointsize>15</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>确认</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="lineEdit_Location1">
           <property name="font">
            <font>
             <family>Calibri</family>
@@ -1362,8 +1323,34 @@ QLineEdit:disabled {
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
-         <widget class="QLineEdit" name="lineEdit_Location3">
+        <item row="0" column="3">
+         <widget class="QLabel" name="label_47">
+          <property name="font">
+           <font>
+            <family>Calibri</family>
+            <pointsize>15</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>列</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_32">
+          <property name="font">
+           <font>
+            <family>Calibri</family>
+            <pointsize>15</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>右下</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="3">
+         <widget class="QLineEdit" name="lineEdit_rightTopY">
           <property name="font">
            <font>
             <family>Calibri</family>
@@ -1434,8 +1421,155 @@ QLineEdit:disabled {
           </property>
          </widget>
         </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="lineEdit_Location3">
+          <property name="font">
+           <font>
+            <family>Calibri</family>
+            <pointsize>15</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLineEdit {
+    background-color: #f0f0f0;
+    border: 2px solid #a0a0a0;
+    border-radius: 5px;
+    padding: 5px;
+    color: #000000;
+    selection-background-color: #c0c0c0;
+    selection-color: #000000;
+}
+
+QLineEdit:focus {
+    border: 2px solid #606060;
+    background-color: #e0e0e0;
+}
+
+QLineEdit:hover {
+    border: 2px solid #808080;
+}
+
+QLineEdit:disabled {
+    background-color: #d0d0d0;
+    color: #808080;
+    border: 2px solid #c0c0c0;
+}</string>
+          </property>
+         </widget>
+        </item>
         <item row="3" column="2">
          <widget class="QLineEdit" name="lineEdit_rightBottomX">
+          <property name="font">
+           <font>
+            <family>Calibri</family>
+            <pointsize>15</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLineEdit {
+    background-color: #f0f0f0;
+    border: 2px solid #a0a0a0;
+    border-radius: 5px;
+    padding: 5px;
+    color: #000000;
+    selection-background-color: #c0c0c0;
+    selection-color: #000000;
+}
+
+QLineEdit:focus {
+    border: 2px solid #606060;
+    background-color: #e0e0e0;
+}
+
+QLineEdit:hover {
+    border: 2px solid #808080;
+}
+
+QLineEdit:disabled {
+    background-color: #d0d0d0;
+    color: #808080;
+    border: 2px solid #c0c0c0;
+}</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLabel" name="label_45">
+          <property name="font">
+           <font>
+            <family>Calibri</family>
+            <pointsize>15</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>坐标</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_26">
+          <property name="font">
+           <font>
+            <family>Calibri</family>
+            <pointsize>15</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>右上</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QLineEdit" name="lineEdit_leftTopX">
+          <property name="font">
+           <font>
+            <family>Calibri</family>
+            <pointsize>15</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLineEdit {
+    background-color: #f0f0f0;
+    border: 2px solid #a0a0a0;
+    border-radius: 5px;
+    padding: 5px;
+    color: #000000;
+    selection-background-color: #c0c0c0;
+    selection-color: #000000;
+}
+
+QLineEdit:focus {
+    border: 2px solid #606060;
+    background-color: #e0e0e0;
+}
+
+QLineEdit:hover {
+    border: 2px solid #808080;
+}
+
+QLineEdit:disabled {
+    background-color: #d0d0d0;
+    color: #808080;
+    border: 2px solid #c0c0c0;
+}</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="5">
+         <widget class="QPushButton" name="Button_Location3">
+          <property name="font">
+           <font>
+            <family>Calibri</family>
+            <pointsize>15</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>确认</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="3">
+         <widget class="QLineEdit" name="lineEdit_leftTopY">
           <property name="font">
            <font>
             <family>Calibri</family>
@@ -1506,21 +1640,8 @@ QLineEdit:disabled {
           </property>
          </widget>
         </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_32">
-          <property name="font">
-           <font>
-            <family>Calibri</family>
-            <pointsize>15</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>右下</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="3">
-         <widget class="QLineEdit" name="lineEdit_rightTopY">
+        <item row="2" column="4">
+         <widget class="QLineEdit" name="lineEdit_rightTopName">
           <property name="font">
            <font>
             <family>Calibri</family>
@@ -1555,21 +1676,8 @@ QLineEdit:disabled {
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_26">
-          <property name="font">
-           <font>
-            <family>Calibri</family>
-            <pointsize>15</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>右上</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="3">
-         <widget class="QLineEdit" name="lineEdit_leftTopY">
+        <item row="3" column="4">
+         <widget class="QLineEdit" name="lineEdit_rightBottomName">
           <property name="font">
            <font>
             <family>Calibri</family>
@@ -1601,6 +1709,19 @@ QLineEdit:disabled {
     color: #808080;
     border: 2px solid #c0c0c0;
 }</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="4">
+         <widget class="QLabel" name="label_48">
+          <property name="font">
+           <font>
+            <family>Calibri</family>
+            <pointsize>15</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>编号名称</string>
           </property>
          </widget>
         </item>

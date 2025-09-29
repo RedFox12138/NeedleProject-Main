@@ -77,7 +77,8 @@ class UsingTest(QMainWindow, Ui_MainWindow):
                                    self.Button_PushLocation,self.Button_PullLocation,
                                    self.Button_PushBack,self.Button_PullBack,
                                    self.lineEdit_leftTopX,self.lineEdit_leftTopY,self.lineEdit_rightTopX,self.lineEdit_rightTopY,self.lineEdit_rightBottomX,self.lineEdit_rightBottomY,
-                                   self.Checkbox_DontTest,self.widget_map,self.tabWidget,self.label_light)
+                                   self.Checkbox_DontTest,self.widget_map,self.tabWidget,self.label_light,
+                                            self.lineEdit_leftTopName,self.lineEdit_rightTopName,self.lineEdit_rightBottomName)
 
 # 程序入口文件
 if __name__ == '__main__':

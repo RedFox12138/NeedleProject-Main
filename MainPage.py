@@ -781,7 +781,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         return True
 
 
-    def CalIU(self):
+    def CalIU(self,PadName):
 
         """
             Function:
@@ -803,7 +803,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                 save_script = 'D:\\lzg\\data\\' + time.strftime("save_%Y-%m-%d_%H-%M-%S") + '\\IV\\'
 
             result = subprocess.run(
-                [sys.executable, run_script, save_script],
+                [sys.executable, run_script, save_script,PadName],
                 capture_output=True,
                 text=True,
                 check=True,  # 如果返回非零会抛出异常
