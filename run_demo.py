@@ -26,6 +26,40 @@ from SerialPage import SerialPage
 from demo import Ui_MainWindow
 from full_screen import show_custom_fullscreen
 
+# 监控相关：启用faulthandler与tracemalloc，并在退出时输出报告
+import atexit
+import faulthandler
+import tracemalloc
+import os
+
+# 将crash堆栈输出到文件，辅助定位原生崩溃（如0xC0000374）
+_crash_log_file = open("faulthandler.log", "w", buffering=1, encoding="utf-8")
+faulthandler.enable(file=_crash_log_file, all_threads=True)
+
+# 通过环境变量控制是否启用内存跟踪，避免常态运行的性能影响
+_ENABLE_DIAG = os.getenv("ENABLE_DIAG", "0") == "1"
+if _ENABLE_DIAG:
+    # 启动内存跟踪，记录更多栈深以便定位来源
+    tracemalloc.start(15)
+
+
+def _print_memory_report():
+    if not _ENABLE_DIAG:
+        return
+    try:
+        snap = tracemalloc.take_snapshot()
+        top = snap.statistics('lineno')
+        with open("memory_report.txt", "w", encoding="utf-8") as f:
+            f.write("--- Top 20 memory usage by line ---\n")
+            for stat in top[:20]:
+                f.write(str(stat) + "\n")
+            f.write("-----------------------------------\n")
+    except Exception:
+        # 避免在退出阶段抛出异常
+        pass
+
+atexit.register(_print_memory_report)
+
 log_file = f"operation_log_{datetime.now().strftime('%Y-%m-%d')}.txt"
 
 
@@ -80,6 +114,46 @@ class UsingTest(QMainWindow, Ui_MainWindow):
                                    self.Checkbox_DontTest,self.widget_map,self.tabWidget,self.label_light,
                                             self.lineEdit_leftTopName,self.lineEdit_rightTopName,self.lineEdit_rightBottomName)
 
+        # 周期性输出内存快照（轻量），辅助观察是否持续增长（仅在诊断模式下启用）
+        from PyQt5.QtCore import QTimer
+        if _ENABLE_DIAG:
+            self._mem_timer = QTimer(self)
+            self._mem_timer.timeout.connect(self._dump_mem_tick)
+            self._mem_timer.start(30000)  # 每30秒记录一次
+
+    def _dump_mem_tick(self):
+        if not _ENABLE_DIAG:
+            return
+        try:
+            snap = tracemalloc.take_snapshot()
+            top = snap.statistics('lineno')
+            with open("memory_stats.txt", "a", encoding="utf-8") as f:
+                f.write(f"\n[{datetime.now().strftime('%H:%M:%S')}] Top 5 allocations:\n")
+                for stat in top[:5]:
+                    f.write(str(stat) + "\n")
+        except Exception:
+            pass
+
+    def closeEvent(self, event):
+        # 确保退出前释放相机资源
+        try:
+            if hasattr(self, 'mainpage1') and self.mainpage1 and getattr(MainPage1, 'obj_cam_operation', None):
+                try:
+                    MainPage1.obj_cam_operation.Stop_grabbing()
+                except Exception:
+                    pass
+                try:
+                    MainPage1.obj_cam_operation.Close_device()
+                except Exception:
+                    pass
+        except Exception:
+            pass
+        try:
+            _crash_log_file.flush()
+        except Exception:
+            pass
+        super().closeEvent(event)
+
 # 程序入口文件
 if __name__ == '__main__':
     app = QApplication(sys.argv)  # 创建窗口程序
@@ -90,5 +164,27 @@ if __name__ == '__main__':
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
     win = UsingTest()
+
+    # 进程退出前的兜底清理
+    def _cleanup():
+        try:
+            if getattr(MainPage1, 'obj_cam_operation', None):
+                try:
+                    MainPage1.obj_cam_operation.Stop_grabbing()
+                except Exception:
+                    pass
+                try:
+                    MainPage1.obj_cam_operation.Close_device()
+                except Exception:
+                    pass
+        except Exception:
+            pass
+        try:
+            _crash_log_file.flush()
+        except Exception:
+            pass
+
+    atexit.register(_cleanup)
+
     win.show()
     sys.exit(app.exec())

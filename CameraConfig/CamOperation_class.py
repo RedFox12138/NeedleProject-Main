@@ -153,13 +153,15 @@ class CameraOperation:
         self.buf_save_image = buf_save_image
         self.n_save_image_size = n_save_image_size
         self.h_thread_handle = h_thread_handle
-        self.b_thread_closed
+        # self.b_thread_closed  # removed no-op
         self.frame_rate = frame_rate
         self.exposure_time = exposure_time
         self.gain = gain
         self.buf_lock = threading.Lock()  # 取图和存图的buffer锁
         # 目标抓取间隔（秒），用于轻微节流，默认约16FPS
         self.target_grab_interval = 0.06
+        # 使用事件进行线程安全退出
+        self._stop_event = threading.Event()
 
 
     # 打开相机
@@ -219,14 +221,14 @@ class CameraOperation:
     def Start_grabbing(self, winHandle):
         if not self.b_start_grabbing and self.b_open_device:
             self.b_exit = False
+            self._stop_event.clear()
             ret = self.obj_cam.MV_CC_StartGrabbing()
             if ret != 0:
                 return ret
             self.b_start_grabbing = True
             print("start grabbing successfully!")
             try:
-                thread_id = random.randint(1, 10000)
-                self.h_thread_handle = threading.Thread(target=CameraOperation.Work_thread, args=(self, winHandle))
+                self.h_thread_handle = threading.Thread(target=CameraOperation.Work_thread, args=(self, winHandle), daemon=True)
                 self.h_thread_handle.start()
                 self.b_thread_closed = True
             finally:
@@ -235,12 +237,14 @@ class CameraOperation:
 
         return MV_E_CALLORDER
 
-    # 停止取图
+    # 停止取图（改为协作式停止）
     def Stop_grabbing(self):
         if self.b_start_grabbing and self.b_open_device:
-            # 退出线程
-            if self.b_thread_closed:
-                Stop_thread(self.h_thread_handle)
+            # 通知线程退出并等待
+            if self.b_thread_closed and self.h_thread_handle is not None:
+                self._stop_event.set()
+                # 等待线程结束，最多2秒，避免阻塞UI
+                self.h_thread_handle.join(timeout=2.0)
                 self.b_thread_closed = False
             ret = self.obj_cam.MV_CC_StopGrabbing()
             if ret != 0:
@@ -255,9 +259,10 @@ class CameraOperation:
     # 关闭相机
     def Close_device(self):
         if self.b_open_device:
-            # 退出线程
-            if self.b_thread_closed:
-                Stop_thread(self.h_thread_handle)
+            # 协作式退出线程
+            if self.b_thread_closed and self.h_thread_handle is not None:
+                self._stop_event.set()
+                self.h_thread_handle.join(timeout=2.0)
                 self.b_thread_closed = False
             ret = self.obj_cam.MV_CC_CloseDevice()
             if ret != 0:
@@ -338,8 +343,6 @@ class CameraOperation:
                 print('show error', 'set gain fail! ret = ' + To_hex_str(ret))
                 return ret
 
-            # 确保使能帧率控制，然后设置新的帧率
-            self.obj_cam.MV_CC_SetBoolValue("AcquisitionFrameRateEnable", True)
             ret = self.obj_cam.MV_CC_SetFloatValue("AcquisitionFrameRate", float(frameRate))
             if ret != 0:
                 print('show error', 'set acquistion frame rate fail! ret = ' + To_hex_str(ret))
@@ -351,10 +354,7 @@ class CameraOperation:
 
     # 取图线程函数
     def Work_thread(self, winHandle):
-        # stOutFrame = MV_FRAME_OUT()
         stFrameInfo = MV_FRAME_OUT_INFO_EX()
-        img_buff = None
-        numArray = None
 
         stPayloadSize = MVCC_INTVALUE_EX()
         ret_temp = self.obj_cam.MV_CC_GetIntValueEx("PayloadSize", stPayloadSize)
@@ -363,103 +363,51 @@ class CameraOperation:
             return
         NeedBufSize = int(stPayloadSize.nCurValue)
 
-        # 连续错误计数器
         consecutive_errors = 0
-        max_consecutive_errors = 10  # 最大连续错误次数
+        max_consecutive_errors = 5  # 连续5次错误后退出线程，由上层决定是否重连
 
-        while True:
-            loop_start = time.time()
+        # 预分配抓取缓冲区
+        if self.buf_grab_image is None or self.buf_grab_image_size < NeedBufSize:
             try:
-                if self.buf_grab_image_size < NeedBufSize:
-                    self.buf_grab_image = (c_ubyte * NeedBufSize)()
-                    self.buf_grab_image_size = NeedBufSize
+                self.buf_grab_image = (c_ubyte * NeedBufSize)()
+                self.buf_grab_image_size = NeedBufSize
+            except MemoryError:
+                print("内存不足，无法分配图像缓冲区")
+                return
 
-                ret = self.obj_cam.MV_CC_GetOneFrameTimeout(self.buf_grab_image, self.buf_grab_image_size, stFrameInfo, 1000)
+        while not self.b_exit and not self._stop_event.is_set():
+            ret = self.obj_cam.MV_CC_GetOneFrameTimeout(self.buf_grab_image, self.buf_grab_image_size, stFrameInfo, 2000)
 
-                if 0 == ret:
-                    # 重置错误计数器
-                    consecutive_errors = 0
-
-                    # 拷贝图像和图像信息
-                    if self.buf_save_image is None:
-                        self.buf_save_image = (c_ubyte * stFrameInfo.nFrameLen)()
-                    self.st_frame_info = stFrameInfo
-
-                    # 获取缓存锁
-                    self.buf_lock.acquire()
+            if ret == MV_OK:
+                consecutive_errors = 0
+                # 将当前帧复制到保存缓冲区（线程安全）
+                with self.buf_lock:
                     try:
-                        cdll.msvcrt.memcpy(byref(self.buf_save_image), self.buf_grab_image, self.st_frame_info.nFrameLen)
-                    finally:
-                        self.buf_lock.release()
-
-                else:
-                    # 处理错误情况
-                    consecutive_errors += 1
-                    error_code = To_hex_str(ret)
-                    print(f"获取帧失败, ret = {error_code}, 连续错误次数: {consecutive_errors}")
-
-                    # 根据错误类型进行不同处理
-                    if ret == 0x80000007:  # 超时错误
-                        print("相机获取帧超时")
-                        # 适度退避，避免忙等
-                        time.sleep(min(0.2 + 0.05 * consecutive_errors, 0.6))
-                        if consecutive_errors >= 5:
-                            print("连续超时次数过多，增加等待时间")
-                            time.sleep(0.5)  # 增加等待时间
-                    elif ret == 0x80000001:  # 相机断开连接
-                        print("相机可能已断开连接")
-                        break
-                    elif ret == 0x80000004:  # 资源不足
-                        print("系统资源不足")
-                        time.sleep(0.1)
-
-                    # 如果连续错误次数过多，停止线程避免系统崩溃
-                    if consecutive_errors >= max_consecutive_errors:
-                        print(f"连续错误次数达到{max_consecutive_errors}次，停止相机线程以防止系统崩溃")
-                        break
-
-                    # 短暂等待后继续
-                    time.sleep(0.05)
-                    continue
-
-                # 使用Display接口显示图像
-                if winHandle != 0:
-                    try:
-                        stDisplayParam = MV_DISPLAY_FRAME_INFO()
-                        memset(byref(stDisplayParam), 0, sizeof(stDisplayParam))
-                        stDisplayParam.hWnd = int(winHandle)
-                        stDisplayParam.nWidth = self.st_frame_info.nWidth
-                        stDisplayParam.nHeight = self.st_frame_info.nHeight
-                        stDisplayParam.enPixelType = self.st_frame_info.enPixelType
-                        stDisplayParam.pData = self.buf_save_image
-                        stDisplayParam.nDataLen = self.st_frame_info.nFrameLen
-                        self.obj_cam.MV_CC_DisplayOneFrame(stDisplayParam)
-                    except Exception as e:
-                        print(f"显示帧时出错: {e}")
-
-                # 是否退出
-                if self.b_exit:
-                    break
-
-            except Exception as e:
+                        if self.buf_save_image is None or self.n_save_image_size < stFrameInfo.nFrameLen:
+                            self.buf_save_image = (c_ubyte * stFrameInfo.nFrameLen)()
+                            self.n_save_image_size = stFrameInfo.nFrameLen
+                        # 保存帧信息的浅拷贝到新的结构体，避免复用导致的数据被覆盖
+                        st_copy = MV_FRAME_OUT_INFO_EX()
+                        ctypes.memmove(ctypes.byref(st_copy), ctypes.byref(stFrameInfo), ctypes.sizeof(MV_FRAME_OUT_INFO_EX))
+                        self.st_frame_info = st_copy
+                        # 复制图像数据
+                        ctypes.memmove(self.buf_save_image, self.buf_grab_image, stFrameInfo.nFrameLen)
+                    except MemoryError:
+                        print("内存不足，复制图像失败")
+                        # 降低帧率或短暂休眠以缓解
+                        time.sleep(0.05)
+                        continue
+            else:
                 consecutive_errors += 1
-                print(f"Work_thread中发生异常: {e}")
+                error_code = To_hex_str(ret)
+                print(f"获取帧失败, ret = {error_code}, 连续错误次数: {consecutive_errors}")
                 if consecutive_errors >= max_consecutive_errors:
-                    print("异常次数过多，退出线程")
+                    print("连续错误过多，抓图线程退出")
                     break
-                time.sleep(0.1)
-            finally:
-                # 统一节流，避免过快循环
-                elapsed = time.time() - loop_start
-                if self.target_grab_interval > 0 and elapsed < self.target_grab_interval:
-                    time.sleep(self.target_grab_interval - elapsed)
 
-        # 清理资源
-        print("相机工作线程退出")
-        if img_buff is not None:
-            del img_buff
-        if self.buf_save_image is not None:
-            del self.buf_save_image
+        # 线程即将退出
+        self._stop_event.set()
+        # 不在此处做任何句柄关闭，交由上层Stop_grabbing/Close_device处理
 
     # 存jpg图像
     def Save_jpg(self):

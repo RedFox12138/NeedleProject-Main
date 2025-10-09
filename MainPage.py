@@ -169,6 +169,10 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
         # 保护帧访问的锁，避免多线程读写冲突
         self._frame_lock = threading.Lock()
+        # 帧计数器用于节流重载计算
+        self._frame_idx = 0
+        # 缓存dia偏移及mtime，避免每帧读文件
+        self._dia_cache = {'mtime': None, 'xdia': 0, 'ydia': 0}
 
         self.label_video.mousePressEvent = self.mousePressEvent
 
@@ -332,7 +336,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
 
     def update_frame(self):
         try:
-            # 不要每帧都加载模板，使用文件监视器按需刷新
+            self._frame_idx += 1
 
             stFrameInfo = MainPage1.obj_cam_operation.st_frame_info
             if MainPage1.obj_cam_operation.buf_grab_image_size > 0 and stFrameInfo:
@@ -340,65 +344,71 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                     try:
                         global red_dot_x, red_dot_y
 
-                        # 从底层缓冲区复制数据，避免被驱动覆盖导致崩溃
-                        data = np.frombuffer(MainPage1.obj_cam_operation.buf_grab_image, dtype=np.uint8,
-                                             count=stFrameInfo.nFrameLen).copy()
+                        # 从保存缓冲区复制数据，使用锁防止抓图线程写入过程中发生竞态
+                        with MainPage1.obj_cam_operation.buf_lock:
+                            st_info = MainPage1.obj_cam_operation.st_frame_info
+                            if not st_info or st_info.nFrameLen <= 0:
+                                return
+                            data = np.frombuffer(MainPage1.obj_cam_operation.buf_save_image, dtype=np.uint8,
+                                                 count=st_info.nFrameLen).copy()
+                            width = st_info.nWidth
+                            height = st_info.nHeight
 
-                        frame = data.reshape((stFrameInfo.nHeight, stFrameInfo.nWidth))
-                        # 从Bayer转为RGB（恢复原先颜色显示逻辑）
+                        # 解码 Bayer -> RGB（这一步较重，必要时可进一步降低分辨率）
+                        frame = data.reshape((height, width))
                         rgb = cv2.cvtColor(frame, cv2.COLOR_BayerBG2RGB)
-                        resized = cv2.resize(rgb, (stFrameInfo.nWidth // 4, stFrameInfo.nHeight // 4),
-                                             interpolation=cv2.INTER_LINEAR)
-                        resized = cv2.resize(resized, (851, 851), interpolation=cv2.INTER_LINEAR)
+
+                        # 单次resize到目标显示尺寸，避免二次缩放
+                        target_size = (851, 851)
+                        resized = cv2.resize(rgb, target_size, interpolation=cv2.INTER_LINEAR)
 
                         # 写入共享帧前加锁
                         with self._frame_lock:
                             self.frame_resized = resized
 
+                        # 仅在必要频率做模板/器件匹配，降低CPU占用
+                        # 每2帧进行一次针/光模板匹配
+                        do_template = (self._frame_idx % 2 == 0)
+                        # 每15帧进行一次器件模板匹配（且仅当显示开启）
+                        do_device_match = self.DeviceTemplate_view and (self._frame_idx % 15 == 0)
+
+                        # 缓存并读取dia偏移（仅当文件修改时才重载）
                         try:
                             dia_file = 'dia' + str(MainPage1.equipment) + '.txt'
-                            if not os.path.exists(dia_file):
-                                raise FileNotFoundError(f"文件 {dia_file} 不存在")
-
-                            with open(dia_file, 'r') as file:
-                                line = file.readline().strip()
-                                if not line:
-                                    raise ValueError("文件内容为空")
-
-                                numbers = line.split(',')
-                                if len(numbers) < 2:
-                                    raise ValueError("文件格式不正确，应为 'x,y'")
-
-                                try:
-                                    xdia = int(numbers[0])
-                                    ydia = int(numbers[1])
-                                except ValueError as e:
-                                    raise ValueError(f"无法解析数字: {e}")
-
+                            cur_mtime = os.path.getmtime(dia_file) if os.path.exists(dia_file) else None
+                            if cur_mtime and cur_mtime != self._dia_cache['mtime']:
+                                with open(dia_file, 'r') as file:
+                                    line = file.readline().strip()
+                                    numbers = line.split(',') if line else []
+                                    if len(numbers) >= 2:
+                                        self._dia_cache['xdia'] = int(numbers[0])
+                                        self._dia_cache['ydia'] = int(numbers[1])
+                                        self._dia_cache['mtime'] = cur_mtime
                         except Exception as e:
-                            print(f"读取dia文件错误: {e}")
-                            # 设置默认值或采取其他恢复措施
-                            xdia, ydia = 0, 0  # 根据你的需求设置合理的默认值
+                            # 使用缓存中的默认值
+                            pass
 
-                        red_dot_x, red_dot_y, self.board_height, self.board_width = template(resized, xdia,
-                                                                                             ydia, MainPage1.equipment)
+                        xdia = self._dia_cache['xdia']
+                        ydia = self._dia_cache['ydia']
 
-                        if self.DeviceTemplate_view:
+                        if do_template:
+                            red_dot_x, red_dot_y, self.board_height, self.board_width = template(resized, xdia,
+                                                                                                 ydia, MainPage1.equipment)
+                        # 如果开启了器件显示，降低频率进行匹配
+                        if do_device_match:
                             match_device_templates(resized)
+
                         aligned = self.align_frame_with_probe()
-                        # 如果对齐返回无效，则使用当前帧
                         if aligned is None or isinstance(aligned, int):
                             aligned = resized
 
-                        height, width, channel = aligned.shape
-                        bytes_per_line = 3 * width
-                        # 使用BGR888，并copy()生成独立内存，避免0xC0000005
-                        q_image = QImage(aligned.data, width, height, bytes_per_line, QImage.Format_BGR888).copy()
+                        h, w, c = aligned.shape
+                        bytes_per_line = 3 * w
+                        q_image = QImage(aligned.data, w, h, bytes_per_line, QImage.Format_BGR888).copy()
 
                         self.label_video.setPixmap(QPixmap.fromImage(q_image))
                         # 提取中心区域
-                        center_width, center_height = width // 2, height // 2
-
+                        center_width, center_height = w // 2, h // 2
                         start_x, start_y = max(0, center_width // 2), max(0, center_height // 2)
                         q_image_zoom = q_image.copy(start_x, start_y, center_width, center_height)
                         self.label_cameraLabel.setPixmap(QPixmap.fromImage(q_image_zoom))
@@ -407,11 +417,9 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                         return aligned
 
                     except Exception as e:
-                        print(f"Error processing frame: {e}")
-                        return None
-        except Exception as e:
-            print(f"Error updating frame: {e}")
-            return None
+                        print(f"更新视频帧异常: {e}")
+        except Exception as e_outer:
+            print(f"update_frame外层异常: {e_outer}")
 
     def _on_template_changed(self, path):
         # 文件更改时刷新模板，并重新添加监视（Windows上有时需要）
@@ -1221,7 +1229,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
         # 根据全局配置选择参数
         if is_low():
             distance_weight = 50  # 低温
-            error = 3
+            error = 6
             sleep_time = 0.5
         else:
             distance_weight = 10  # 常温
