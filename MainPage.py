@@ -370,7 +370,7 @@ class MainPage1(QMainWindow, Ui_MainWindow):
                         # 每2帧进行一次针/光模板匹配
                         do_template = (self._frame_idx % 2 == 0)
                         # 每15帧进行一次器件模板匹配（且仅当显示开启）
-                        do_device_match = self.DeviceTemplate_view and (self._frame_idx % 15 == 0)
+                        do_device_match = self.DeviceTemplate_view
 
                         # 缓存并读取dia偏移（仅当文件修改时才重载）
                         try:
